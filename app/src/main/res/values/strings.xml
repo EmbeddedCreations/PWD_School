@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">PWD School</string>
+    <string-array name="dummy_dropdown_values">
+        <item>Dummy Value 1</item>
+        <item>Dummy Value 2</item>
+        <item>Dummy Value 3</item>
+        <!-- Add more dummy values as needed -->
+    </string-array>
+    <string-array name="school_names">
+        <item>School A</item>
+        <item>School B</item>
+        <item>School C</item>
+        <!-- Add more school names as needed -->
+    </string-array>
+
+    <string-array name="building_names">
+        <item>Building 1</item>
+        <item>Building 2</item>
+        <item>Building 3</item>
+        <!-- Add more building names as needed -->
+    </string-array>
+</resources>
