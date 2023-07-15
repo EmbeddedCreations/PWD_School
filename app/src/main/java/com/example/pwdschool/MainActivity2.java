@@ -1,15 +1,28 @@
 package com.example.pwdschool;
+
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.github.dhaval2404.imagepicker.ImagePicker;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -20,15 +33,38 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
     private Spinner spinnerBuilding;
     private TextView textViewSelectedDate;
     private Calendar calendar;
+    private ImageView iv_imgView;
+    private Button pickImageButton;
+    private Button buttonUploadImage;
+    private ProgressBar loader;
+    private static final int CAMERA_CODE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        iv_imgView = findViewById(R.id.image_view);
+        pickImageButton = findViewById(R.id.pickimage);
+
+        //For Getting Image From gallery
+        pickImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagePicker.with(MainActivity2.this)
+                        .crop()	    			//Crop image(Optional), Check Customization for more option
+                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(720, 720)	//Final image resolution will be less than 1080 x 1080(Optional)
+                        .start();
+            }
+        });
+
         // Initialize views
         spinnerSchool = findViewById(R.id.spinnerSchool);
         spinnerBuilding = findViewById(R.id.spinnerBuilding);
         textViewSelectedDate = findViewById(R.id.textViewSelectedDate);
+        buttonUploadImage = findViewById(R.id.buttonUploadImage);
+        loader = findViewById(R.id.loader);
 
         // Set spinner listeners
         spinnerSchool.setOnItemSelectedListener(this);
@@ -54,14 +90,27 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         textViewSelectedDate.setText(currentDate);
 
         // Set button click listener for image upload
-        Button buttonUploadImage = findViewById(R.id.buttonUploadImage);
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle image upload button click event
-                Toast.makeText(MainActivity2.this, "Image upload functionality not implemented yet.", Toast.LENGTH_SHORT).show();
+                if (iv_imgView.getDrawable() == null) {
+                    Toast.makeText(MainActivity2.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                } else {
+                    showLoader();
+                    // Simulate a 2-second delay for demonstration purposes
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideLoader();
+                            // Handle image upload after the delay
+                            Toast.makeText(MainActivity2.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                        }
+                    }, 2000);
+                }
             }
         });
+
 
         // Set text view click listener for date picker
         textViewSelectedDate.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +120,7 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             }
         });
     }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // Handle spinner item selection
@@ -85,10 +135,39 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 break;
         }
     }
+
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Handle case when no item is selected
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Uri uri = data.getData();
+        iv_imgView.setImageURI(uri);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void showLoader() {
+        loader.setVisibility(View.VISIBLE);
+    }
+
+    private void hideLoader() {
+        loader.setVisibility(View.GONE);
+    }
+
     private void showDatePickerDialog() {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
