@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,34 +22,11 @@
             android:layout_gravity="center_horizontal"
             android:src="@drawable/pwd" />
 
-        <!-- Add the "Select ATC office" dropdown -->
-        <Spinner
-            android:id="@+id/select_atc_office"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:padding="12dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-        <!-- Add the "Select PO office" dropdown -->
-        <Spinner
-            android:id="@+id/select_po_office"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/btn_dropdown"
-            android:padding="12dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
-
-
         <EditText
             android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="32dp"
             android:hint="Username"
             android:padding="12dp"
             android:background="@drawable/background_drawing_view_layout"
@@ -61,7 +39,7 @@
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:hint="Password"
             android:inputType="textPassword"
             android:padding="12dp"
@@ -79,7 +57,30 @@
             android:text="Log In"
             android:background="@drawable/background_drawing_view_layout"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            />
+
+        <TextView
+            android:id="@+id/forgot_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Forgot Password?"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            />
+
+        <TextView
+            android:id="@+id/register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Don't have an account? Register"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="14sp"
+            />
 
     </LinearLayout>
 

@@ -31,7 +31,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
 
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
-    private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
     private Calendar calendar;
     private ImageView iv_imgView;
@@ -40,44 +39,45 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
     private ProgressBar loader;
     private static final int CAMERA_CODE = 101;
 
-    // Sample data for school names, workorder names, and building names
-    private String[] schoolNames = {"Select School", "School 1", "School 2", "School 3"};
-    private String[] workorderNames = {"Select Workorder", "Workorder 1", "Workorder 2", "Workorder 3"};
-    private String[] buildingNames = {"Select Building", "Building 1", "Building 2", "Building 3"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        // Find views by their IDs
-        spinnerSchool = findViewById(R.id.spinnerSchool);
-        spinnerBuilding = findViewById(R.id.spinnerBuilding);
-        spinnerWorkorder = findViewById(R.id.spinnerWorkorder);
-        textViewSelectedDate = findViewById(R.id.textViewSelectedDate);
         iv_imgView = findViewById(R.id.image_view);
         pickImageButton = findViewById(R.id.pickimage);
+
+        //For Getting Image From gallery
+        pickImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagePicker.with(MainActivity2.this)
+                        .crop()	    			//Crop image(Optional), Check Customization for more option
+                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(720, 720)	//Final image resolution will be less than 1080 x 1080(Optional)
+                        .start();
+            }
+        });
+
+        // Initialize views
+        spinnerSchool = findViewById(R.id.spinnerSchool);
+        spinnerBuilding = findViewById(R.id.spinnerBuilding);
+        textViewSelectedDate = findViewById(R.id.textViewSelectedDate);
         buttonUploadImage = findViewById(R.id.buttonUploadImage);
         loader = findViewById(R.id.loader);
 
         // Set spinner listeners
         spinnerSchool.setOnItemSelectedListener(this);
         spinnerBuilding.setOnItemSelectedListener(this);
-        spinnerWorkorder.setOnItemSelectedListener(this);
 
-        // Set up spinner adapters with the arrays
-        ArrayAdapter<String> schoolAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, schoolNames);
+        // Set up spinner adapters
+        ArrayAdapter<CharSequence> schoolAdapter = ArrayAdapter.createFromResource(this,
+                R.array.school_names, android.R.layout.simple_spinner_item);
         schoolAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSchool.setAdapter(schoolAdapter);
 
-        ArrayAdapter<String> workorderAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, workorderNames);
-        workorderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerWorkorder.setAdapter(workorderAdapter);
-
-        ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, buildingNames);
+        ArrayAdapter<CharSequence> buildingAdapter = ArrayAdapter.createFromResource(this,
+                R.array.building_names, android.R.layout.simple_spinner_item);
         buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerBuilding.setAdapter(buildingAdapter);
 
@@ -111,23 +111,12 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
+
         // Set text view click listener for date picker
         textViewSelectedDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDatePickerDialog();
-            }
-        });
-
-        //For Getting Image From gallery
-        pickImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImagePicker.with(MainActivity2.this)
-                        .crop()	    			//Crop image(Optional), Check Customization for more option
-                        .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                        .maxResultSize(720, 720)	//Final image resolution will be less than 1080 x 1080(Optional)
-                        .start();
             }
         });
     }
@@ -144,10 +133,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 String selectedBuilding = parent.getItemAtPosition(position).toString();
                 // TODO: Handle selected building
                 break;
-            case R.id.spinnerWorkorder:
-                String selectedWorkorder = parent.getItemAtPosition(position).toString();
-                // TODO: Handle selected workorder
-                break;
         }
     }
 
@@ -159,10 +144,8 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE) {
-            Uri uri = data.getData();
-            iv_imgView.setImageURI(uri);
-        }
+        Uri uri = data.getData();
+        iv_imgView.setImageURI(uri);
     }
 
     @Override
