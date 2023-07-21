@@ -31,27 +31,9 @@
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@+id/textViewSchoolTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewSchoolTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
-    <TextView
-        android:id="@+id/textViewWorkorderTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Workorder:"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toStartOf="@+id/textViewDateTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSchoolTitle" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:entries="@array/school_names" />
 
-    <Spinner
-        android:id="@+id/spinnerWorkorder"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@+id/textViewWorkorderTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
     <TextView
         android:id="@+id/textViewBuildingTitle"
         android:layout_width="wrap_content"
@@ -62,7 +44,7 @@
         android:layout_marginTop="20dp"
 
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewWorkorderTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerSchool" />
 
     <Spinner
         android:id="@+id/spinnerBuilding"
@@ -72,7 +54,8 @@
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@+id/textViewBuildingTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:entries="@array/building_names" />
 
     <TextView
         android:id="@+id/textViewDateTitle"
@@ -103,15 +86,15 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
         android:background="#000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDateTitle"
-        app:layout_constraintDimensionRatio="1:.9"
-    app:layout_constraintHorizontal_bias="0.4"
-    app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintDimensionRatio="1:1"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/Dimensions"
