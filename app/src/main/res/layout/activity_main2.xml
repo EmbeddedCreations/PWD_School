@@ -25,13 +25,13 @@
     <Spinner
         android:id="@+id/spinnerSchool"
         android:layout_width="0dp"
-
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@+id/textViewSchoolTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewSchoolTitle"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/textViewWorkorderTitle"
         android:layout_width="wrap_content"
@@ -52,6 +52,7 @@
         app:layout_constraintStart_toEndOf="@+id/textViewWorkorderTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/textViewBuildingTitle"
         android:layout_width="wrap_content"
@@ -60,7 +61,6 @@
         android:textStyle="bold"
         android:textSize="22sp"
         android:layout_marginTop="20dp"
-
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
         app:layout_constraintTop_toBottomOf="@+id/textViewWorkorderTitle" />
 
@@ -76,11 +76,10 @@
 
     <TextView
         android:id="@+id/textViewDateTitle"
+        android:layout_marginTop="30px"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date:"
-        android:layout_marginTop="20dp"
-
         android:textStyle="bold"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
@@ -90,7 +89,7 @@
         android:id="@+id/textViewSelectedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Date: 14/7/23"
+        android:text=""
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/textViewDateTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewDateTitle"
@@ -110,8 +109,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDateTitle"
         app:layout_constraintDimensionRatio="1:.9"
-    app:layout_constraintHorizontal_bias="0.4"
-    app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintVertical_bias="0.3" />
 
     <TextView
         android:id="@+id/Dimensions"
@@ -131,23 +130,22 @@
         android:id="@+id/pickimage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:text="Select Image"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Dimensions" />
+        app:layout_constraintStart_toStartOf="@+id/textViewDateTitle"
+        app:layout_constraintTop_toBottomOf="@+id/Dimensions"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp" />
 
     <Button
         android:id="@+id/buttonUploadImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Upload to System"
+        android:text="Upload Image"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pickimage" />
+        app:layout_constraintStart_toEndOf="@+id/pickimage"
+        app:layout_constraintTop_toTopOf="@+id/pickimage"
+        android:layout_marginStart="16dp" />
 
     <ProgressBar
         android:id="@+id/loader"

@@ -113,7 +113,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 }
             }
         });
-
         // Set text view click listener for date picker
         textViewSelectedDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +120,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 showDatePickerDialog();
             }
         });
-
         //For Getting Image From gallery
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +132,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             }
         });
     }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // Handle spinner item selection
@@ -153,12 +150,10 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
                 break;
         }
     }
-
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Handle case when no item is selected
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -199,9 +194,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             }
         }
     }
-
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -213,7 +205,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
             }
         }
     }
-
     private void showLoader() {
         loader.setVisibility(View.VISIBLE);
     }
@@ -245,7 +236,6 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         );
         // Set the maximum date to prevent selecting future dates
         datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-
         datePickerDialog.show();
     }
 }
