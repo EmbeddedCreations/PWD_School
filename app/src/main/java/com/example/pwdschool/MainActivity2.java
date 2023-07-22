@@ -1,5 +1,4 @@
 package com.example.pwdschool;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,7 +21,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -162,8 +165,42 @@ public class MainActivity2 extends AppCompatActivity implements AdapterView.OnIt
         if (resultCode == RESULT_OK && requestCode == ImagePicker.REQUEST_CODE) {
             Uri uri = data.getData();
             iv_imgView.setImageURI(uri);
+
+            // Get the current date and time
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            String dateTime = sdf.format(Calendar.getInstance().getTime());
+
+            // Set the current date and time to the "Description" TextView
+            TextView descriptionTextView = findViewById(R.id.Dimensions);
+            descriptionTextView.setText("Desc: " + dateTime);
+
+            String imagePath = FileUtils.getPath(this, uri);
+            if (imagePath != null) {
+                try {
+                    Metadata metadata = ImageMetadataReader.readMetadata(new File(imagePath));
+                    ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+                    if (directory != null) {
+                        String date = directory.getString(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+                        String aperture = directory.getString(ExifSubIFDDirectory.TAG_APERTURE);
+                        String exposureTime = directory.getString(ExifSubIFDDirectory.TAG_EXPOSURE_TIME);
+
+                        // You can use these variables to display or process the EXIF information as needed
+                        // For example:
+                        Toast.makeText(this, "Date: " + date, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Aperture: " + aperture, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Exposure Time: " + exposureTime, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // Handle the case where the image path is null (not found)
+                Toast.makeText(this, "Image not found or inaccessible.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
