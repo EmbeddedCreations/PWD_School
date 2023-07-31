@@ -1,5 +1,7 @@
 package com.example.pwdschool;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -8,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -15,13 +18,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Hardcoded username and password for demonstration purposes
-    private static final String CORRECT_USERNAME = "admin";
-    private static final String CORRECT_PASSWORD = "password";
+    // Hardcoded passwords for demonstration purposes
+    private static final String ATC_PASS_1 = "atcpass1";
+    private static final String ATC_PASS_2 = "atcpass2";
+
+    // Hardcoded Junior Engineer names for demonstration purposes
+    private static final String[] JUNIOR_ENGINEERS = {"Select Junior Engineer", "Abhishek", "Deepak", "Kushagra", "Yash"};
+
+    // Public variables to store user input
+    public static String selectedAtcOffice;
+    public static String selectedPoOffice;
+    public static String selectedJuniorEngineer;
+    public static String enteredPassword;
 
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
-    private EditText usernameEditText, passwordEditText;
+    private Spinner selectJuniorEngineerSpinner;
+    private EditText passwordEditText;
     private Button loginButton;
 
     @Override
@@ -32,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
         selectPoOfficeSpinner = findViewById(R.id.select_po_office);
-        usernameEditText = findViewById(R.id.username);
+        selectJuniorEngineerSpinner = findViewById(R.id.select_junior_engineer);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
 
@@ -45,39 +58,53 @@ public class MainActivity extends AppCompatActivity {
                 this, android.R.layout.simple_spinner_item, atcOfficeArray);
         ArrayAdapter<String> poAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, poOfficeArray);
+        ArrayAdapter<String> jeAdapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, JUNIOR_ENGINEERS);
 
         // Specify the layout to use when the list of choices appears
         atcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         poAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        jeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // Apply the adapters to the Spinners
         selectAtcOfficeSpinner.setAdapter(atcAdapter);
         selectPoOfficeSpinner.setAdapter(poAdapter);
+        selectJuniorEngineerSpinner.setAdapter(jeAdapter);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Retrieve input values
-                String atcOffice = selectAtcOfficeSpinner.getSelectedItem().toString();
-                String poOffice = selectPoOfficeSpinner.getSelectedItem().toString();
-                String username = usernameEditText.getText().toString().trim();
-                String password = passwordEditText.getText().toString().trim();
+                selectedAtcOffice = selectAtcOfficeSpinner.getSelectedItem().toString();
+                selectedPoOffice = selectPoOfficeSpinner.getSelectedItem().toString();
+                selectedJuniorEngineer = selectJuniorEngineerSpinner.getSelectedItem().toString();
+                enteredPassword = passwordEditText.getText().toString().trim();
 
                 // Validate input
-                if (atcOffice.equals("Select ATC Office") || poOffice.equals("Select PO Office")
-                        || TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                if (selectedAtcOffice.equals("Select ATC Office")
+                        || selectedPoOffice.equals("Select PO Office")
+                        || selectedJuniorEngineer.equals("Select Junior Engineer")
+                        || TextUtils.isEmpty(enteredPassword)) {
                     Toast.makeText(MainActivity.this, "Please enter all details", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Check username and password
-                    if (username.equals(CORRECT_USERNAME) && password.equals(CORRECT_PASSWORD)) {
-                        // Username and password are correct, proceed to the next activity
+                    // Check if the password matches the selected ATC office
+                    if (selectedAtcOffice.equals("ATC Office 1") && enteredPassword.equals(ATC_PASS_1)
+                            && selectedJuniorEngineer.equals("Abhishek")) {
+                        // Password, ATC office, and Junior Engineer match, proceed to the next activity
+                        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                        startActivity(intent);
+                        finish(); // Optional: Finish the login activity so the user can't go back to it
+                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                    } else if (selectedAtcOffice.equals("ATC Office 2") && enteredPassword.equals(ATC_PASS_2)
+                            && selectedJuniorEngineer.equals("Deepak")) {
+                        // Password, ATC office, and Junior Engineer match, proceed to the next activity
                         Intent intent = new Intent(MainActivity.this, MainActivity2.class);
                         startActivity(intent);
                         finish(); // Optional: Finish the login activity so the user can't go back to it
                         Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Incorrect username or password
-                        Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_SHORT).show();
+                        // Incorrect password, ATC office, or Junior Engineer
+                        Toast.makeText(MainActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -112,5 +139,63 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        // Set an OnItemSelectedListener to handle the user selection
+        selectJuniorEngineerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    // Reset the spinner selection to the hint if the user selects the hint item again
+                    selectJuniorEngineerSpinner.setSelection(0, false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+// Eye button for password visibility
+        ImageView eyeButton = findViewById(R.id.eye_button);
+        eyeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                togglePasswordVisibility();
+            }
+        });
+    }
+
+    // Method to toggle password visibility
+    private void togglePasswordVisibility() {
+        EditText passwordEditText = findViewById(R.id.password);
+        if (passwordEditText.getInputType() == 129) { // 129 corresponds to InputType.TYPE_TEXT_VARIATION_PASSWORD
+            passwordEditText.setInputType(1); // InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+        } else {
+            passwordEditText.setInputType(129);
+        }
+        passwordEditText.setSelection(passwordEditText.getText().length()); // Move cursor to the end of the text
+    }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Closing the PWD App")
+                .setMessage("Are you sure?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing or add specific handling for cancel
+                    }
+                })
+                .setCancelable(false);
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
