@@ -43,33 +43,48 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-
-        <EditText
-            android:id="@+id/username"
+        <!-- Add the "Select Junior Engineer" dropdown -->
+        <Spinner
+            android:id="@+id/select_junior_engineer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Username"
+            android:background="@android:drawable/btn_dropdown"
             android:padding="12dp"
-            android:background="@drawable/background_drawing_view_layout"
-            android:drawableStart="@drawable/ic_baseline_person_24"
-            android:drawablePadding="8dp"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-        <EditText
-            android:id="@+id/password"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:padding="12dp"
-            android:background="@drawable/background_drawing_view_layout"
-            android:drawableStart="@drawable/ic_baseline_password_24"
-            android:drawablePadding="8dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="8dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:background="@drawable/background_drawing_view_layout"
+                android:drawableStart="@drawable/ic_baseline_password_24"
+                android:drawablePadding="8dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/eye_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_visibility_24"
+                android:contentDescription="Toggle Password Visibility"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/login_button"
