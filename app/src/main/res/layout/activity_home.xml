@@ -9,17 +9,78 @@
     android:paddingEnd="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    tools:context=".MainActivity2">
+    tools:context=".Home">
 
+    <!-- "Logged In" TextView -->
+    <TextView
+        android:layout_marginTop="25dp"
+        android:id="@+id/textViewLoggedIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- "Profile" ImageView -->
+    <ImageView
+        android:layout_marginTop="25dp"
+        android:id="@+id/imageViewProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_person_24"
+        android:contentDescription="Profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/atc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ATC:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLoggedIn"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/poOffice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PO:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/atc"
+        app:layout_constraintTop_toBottomOf="@+id/atc"
+        android:layout_marginTop="14dp" />
+
+    <TextView
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fill in the details below"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:flow_horizontalAlign="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/poOffice"
+        android:layout_marginTop="16dp" />
+
+    <!-- TextView for "School:" -->
     <TextView
         android:id="@+id/textViewSchoolTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="School:"
+
         android:textStyle="bold"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/start"
+        android:layout_marginTop="26dp" />
 
     <Spinner
         android:id="@+id/spinnerSchool"
@@ -35,7 +96,7 @@
         android:id="@+id/textViewWorkorderTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select Workorder:"
+        android:text="Visit Type:"
         android:textStyle="bold"
         android:textSize="22sp"
         android:layout_marginTop="20dp"
@@ -75,7 +136,7 @@
 
     <TextView
         android:id="@+id/textViewDateTitle"
-        android:layout_marginTop="30px"
+        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Date:"
@@ -96,63 +157,15 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:background="#000"
-        app:layout_constraintDimensionRatio="1:.9"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDateTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/Dimensions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Desc: "
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/image_view"
-        app:layout_constraintTop_toBottomOf="@+id/image_view" />
-
     <Button
-        android:id="@+id/pickimage"
+        android:id="@+id/buttonSurvey"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Select Image"
+        android:text="Start Survey"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/image_view"
-        app:layout_constraintTop_toBottomOf="@+id/Dimensions"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toStartOf="@+id/buttonUploadImage"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        android:layout_marginEnd="8dp" />
-
-    <Button
-        android:id="@+id/buttonUploadImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Upload Image"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/pickimage"
-        app:layout_constraintTop_toTopOf="@+id/pickimage"
-        android:layout_marginStart="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/image_view" />
-
-
-    <ProgressBar
-        android:id="@+id/loader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminateTint="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/image_view"
-        app:layout_constraintEnd_toEndOf="@+id/image_view"
-        app:layout_constraintStart_toStartOf="@+id/image_view"
-        app:layout_constraintTop_toTopOf="@+id/image_view" />
+        app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
+        app:layout_constraintEnd_toEndOf="@+id/spinnerBuilding"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSelectedDate"
+        android:layout_marginTop="20dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
