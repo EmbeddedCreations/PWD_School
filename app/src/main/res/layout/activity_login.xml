@@ -9,10 +9,10 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/round_border">
+        android:background="@drawable/round_border"
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/logo"
@@ -57,21 +57,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/password"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginTop="8dp"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:padding="12dp"
+                android:layout_weight="1"
                 android:background="@drawable/background_drawing_view_layout"
                 android:drawableStart="@drawable/ic_baseline_password_24"
                 android:drawablePadding="8dp"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
@@ -79,11 +79,11 @@
                 android:id="@+id/eye_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:src="@drawable/ic_baseline_visibility_24"
-                android:contentDescription="Toggle Password Visibility"
                 android:clickable="true"
-                android:focusable="true" />
+                android:contentDescription="Toggle Password Visibility"
+                android:focusable="true"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_visibility_24" />
         </LinearLayout>
 
         <Button
@@ -91,8 +91,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Log In"
             android:background="@drawable/background_drawing_view_layout"
+            android:text="Log In"
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 

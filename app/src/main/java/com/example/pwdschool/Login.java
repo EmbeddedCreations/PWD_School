@@ -88,16 +88,14 @@ public class Login extends AppCompatActivity {
                     Toast.makeText(Login.this, "Please enter all details", Toast.LENGTH_SHORT).show();
                 } else {
                     // Check if the password matches the selected ATC office
-                    if (selectedAtcOffice.equals("ATC Office 1") && enteredPassword.equals(ATC_PASS_1)
-                            && selectedJuniorEngineer.equals("Abhishek")) {
-                        // Password, ATC office, and Junior Engineer match, proceed to the next activity
+                    if (selectedAtcOffice.equals("ATC Office 1") && enteredPassword.equals(ATC_PASS_1)) {
+                        // Password, ATC office match, proceed to the next activity
                         Intent intent = new Intent(Login.this, Home.class);
                         startActivity(intent);
                         finish(); // Optional: Finish the login activity so the user can't go back to it
                         Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
-                    } else if (selectedAtcOffice.equals("ATC Office 2") && enteredPassword.equals(ATC_PASS_2)
-                            && selectedJuniorEngineer.equals("Deepak")) {
-                        // Password, ATC office, and Junior Engineer match, proceed to the next activity
+                    } else if (selectedAtcOffice.equals("ATC Office 2") && enteredPassword.equals(ATC_PASS_2)) {
+                        // Password, ATC office match, proceed to the next activity
                         Intent intent = new Intent(Login.this, Home.class);
                         startActivity(intent);
                         finish(); // Optional: Finish the login activity so the user can't go back to it

@@ -1,105 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp"
     android:paddingTop="16dp"
+    android:paddingEnd="16dp"
     android:paddingBottom="16dp"
     tools:context=".Home">
 
     <!-- "Logged In" TextView -->
     <TextView
-        android:layout_marginTop="25dp"
         android:id="@+id/textViewLoggedIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:text=""
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- "Profile" ImageView -->
     <ImageView
-        android:layout_marginTop="25dp"
         android:id="@+id/imageViewProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_person_24"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
         android:contentDescription="Profile"
+        android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/atc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="ATC:"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLoggedIn"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewLoggedIn" />
 
     <TextView
         android:id="@+id/poOffice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
         android:text="PO:"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/atc"
-        app:layout_constraintTop_toBottomOf="@+id/atc"
-        android:layout_marginTop="14dp" />
+        app:layout_constraintTop_toBottomOf="@+id/atc" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/form"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/poOffice" />
 
     <TextView
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Fill in the details below"
-        android:textSize="15sp"
         android:textAlignment="center"
+        android:textSize="15sp"
         app:flow_horizontalAlign="center"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/poOffice"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <!-- TextView for "School:" -->
     <TextView
         android:id="@+id/textViewSchoolTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="School:"
+        android:layout_marginTop="26dp"
 
-        android:textStyle="bold"
+        android:text="School:"
         android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/start"
-        android:layout_marginTop="26dp" />
+        app:layout_constraintTop_toBottomOf="@+id/start" />
 
     <Spinner
         android:id="@+id/spinnerSchool"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
         android:layout_marginStart="8dp"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewSchoolTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewSchoolTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textViewSchoolTitle" />
 
     <TextView
         android:id="@+id/textViewWorkorderTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Visit Type:"
-        android:textStyle="bold"
-        android:textSize="22sp"
         android:layout_marginTop="20dp"
+        android:text="Visit Type:"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textViewDateTitle"
         app:layout_constraintTop_toBottomOf="@+id/textViewSchoolTitle" />
 
@@ -107,20 +117,20 @@
         android:id="@+id/spinnerWorkorder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
         android:layout_marginStart="8dp"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewWorkorderTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle" />
 
     <TextView
         android:id="@+id/textViewBuildingTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Building:"
-        android:textStyle="bold"
-        android:textSize="22sp"
         android:layout_marginTop="20dp"
+        android:text="Building:"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
         app:layout_constraintTop_toBottomOf="@+id/textViewWorkorderTitle" />
 
@@ -128,20 +138,20 @@
         android:id="@+id/spinnerBuilding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
         android:layout_marginStart="8dp"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textViewBuildingTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle" />
 
     <TextView
         android:id="@+id/textViewDateTitle"
-        android:layout_marginTop="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Date:"
-        android:textStyle="bold"
         android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
         app:layout_constraintTop_toBottomOf="@+id/spinnerBuilding" />
 
@@ -149,23 +159,23 @@
         android:id="@+id/textViewSelectedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:text=""
         android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/textViewDateTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewDateTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        android:clickable="true"
-        android:focusable="true" />
+        app:layout_constraintStart_toEndOf="@+id/textViewDateTitle"
+        app:layout_constraintTop_toTopOf="@+id/textViewDateTitle" />
 
     <Button
         android:id="@+id/buttonSurvey"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Start Survey"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
         app:layout_constraintEnd_toEndOf="@+id/spinnerBuilding"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSelectedDate"
-        android:layout_marginTop="20dp" />
+        app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSelectedDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
