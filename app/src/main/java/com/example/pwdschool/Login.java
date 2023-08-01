@@ -48,7 +48,7 @@ public class Login extends AppCompatActivity {
     public static String selectedAtcOffice;
     public static String selectedPoOffice;
     public static String selectedJuniorEngineer;
-    public static String Password;
+    public static String Password = null,inputPassword;
 
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
@@ -71,7 +71,6 @@ public class Login extends AppCompatActivity {
         selectJuniorEngineerSpinner = findViewById(R.id.select_junior_engineer);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
-
         ArrayList<String> uniqueList = new ArrayList<>();
         HashSet<String> uniqueSet = new HashSet<>();
         uniqueList.add("Select");
@@ -82,34 +81,31 @@ public class Login extends AppCompatActivity {
                 uniqueSet.add(element);
             }
         }
-
         ATC = uniqueList.toArray(new String[0]);
 
-        ATC = uniqueList.toArray(new  String[0]);
-        // Define the arrays directly in the code
-        //String[] atcOfficeArray = new String[]{"Select ATC Office", "ATC Office 1", "ATC Office 2"};
-        //String[] poOfficeArray = new String[]{"Select PO Office", "PO Office 1", "PO Office 2"};
-
         // Set up the adapters for the Spinners
-        ArrayAdapter<String> atcAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, ATC);
-
-
-
+        ArrayAdapter<String> atcAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ATC);
         // Specify the layout to use when the list of choices appears
         atcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
-
         // Apply the adapters to the Spinners
         selectAtcOfficeSpinner.setAdapter(atcAdapter);
-
-
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Handle Login Logic
+                // Handle Authentication Logic
+                inputPassword = passwordEditText.getText().toString();
+                if( Password == null){
+                    Toast.makeText(Login.this,"Incorrect Password or Incorrect Credentials",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this,"Temporary Login For Testing",Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Login.this, Home.class);
+                    startActivity(i);
+                } else if (Password.equals(inputPassword)) {
+                    Toast.makeText(Login.this,"SuccessFul Login",Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(Login.this, Home.class);
+                    startActivity(i);
+                }
+
             }
         });
 
@@ -138,7 +134,6 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         // Set an OnItemSelectedListener to handle the user selection
         selectPoOfficeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -165,7 +160,6 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         // Set an OnItemSelectedListener to handle the user selection
         selectJuniorEngineerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -175,8 +169,6 @@ public class Login extends AppCompatActivity {
                     if(selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
                     && selectedAtcOffice.equals(atc_array[i])){
                         Password = Pass[i];
-                    }else{
-                        Password = null;
                     }
                 }
                 if (position == 0) {
@@ -189,7 +181,6 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         // Eye button for password visibility
         ImageView eyeButton = findViewById(R.id.eye_button);
         eyeButton.setOnClickListener(new View.OnClickListener() {
