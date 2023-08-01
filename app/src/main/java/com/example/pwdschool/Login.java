@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class Login extends AppCompatActivity {
 
     // Hardcoded passwords for demonstration purposes
     private static final String ATC_PASS_1 = "atcpass1";
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
@@ -85,26 +85,26 @@ public class MainActivity extends AppCompatActivity {
                         || selectedPoOffice.equals("Select PO Office")
                         || selectedJuniorEngineer.equals("Select Junior Engineer")
                         || TextUtils.isEmpty(enteredPassword)) {
-                    Toast.makeText(MainActivity.this, "Please enter all details", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Please enter all details", Toast.LENGTH_SHORT).show();
                 } else {
                     // Check if the password matches the selected ATC office
                     if (selectedAtcOffice.equals("ATC Office 1") && enteredPassword.equals(ATC_PASS_1)
                             && selectedJuniorEngineer.equals("Abhishek")) {
                         // Password, ATC office, and Junior Engineer match, proceed to the next activity
-                        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                        Intent intent = new Intent(Login.this, Home.class);
                         startActivity(intent);
                         finish(); // Optional: Finish the login activity so the user can't go back to it
-                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
                     } else if (selectedAtcOffice.equals("ATC Office 2") && enteredPassword.equals(ATC_PASS_2)
                             && selectedJuniorEngineer.equals("Deepak")) {
                         // Password, ATC office, and Junior Engineer match, proceed to the next activity
-                        Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                        Intent intent = new Intent(Login.this, Home.class);
                         startActivity(intent);
                         finish(); // Optional: Finish the login activity so the user can't go back to it
-                        Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
                     } else {
                         // Incorrect password, ATC office, or Junior Engineer
-                        Toast.makeText(MainActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -175,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         }
         passwordEditText.setSelection(passwordEditText.getText().length()); // Move cursor to the end of the text
     }
+
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -184,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        MainActivity.super.onBackPressed();
+                        Login.super.onBackPressed();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
