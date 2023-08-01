@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,15 +28,22 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Locale;
 
 public class Upload extends AppCompatActivity {
 
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
+    public static String description;
     Uri targetUri = null;
     TextView textUri;
+    TextView textView;
+    boolean[] selectedIssues;
+    ArrayList<Integer> issueList = new ArrayList<>();
+    String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
     View.OnClickListener imageOnClickListener =
             new View.OnClickListener() {
 
@@ -44,6 +52,7 @@ public class Upload extends AppCompatActivity {
                     showExif(targetUri);
                 }
             };
+
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -67,6 +76,7 @@ public class Upload extends AppCompatActivity {
     private Button pickImageButton;
     private Button buttonUploadImage;
     private ProgressBar loader;
+    private EditText editTextDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,17 +87,39 @@ public class Upload extends AppCompatActivity {
         pickImageButton = findViewById(R.id.pickimage);
         buttonUploadImage = findViewById(R.id.buttonUploadImage);
         loader = findViewById(R.id.loader);
+        TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
+        ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         textUri = findViewById(R.id.Dimensions);
         textUri.setOnClickListener(textUriOnClickListener);
         iv_imgView.setOnClickListener(imageOnClickListener);
+        editTextDescription = findViewById(R.id.editTextDescription);
+//
+        //set junior engineer loggedin
+        String juniorEngineer = Login.selectedJuniorEngineer;
+        textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
 
-        // Set button click listener for image upload
+        // Set a click listener for the "Profile" ImageView
+        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Upload.this, Profile.class);
+                startActivity(intent);
+            }
+        });
+
+// Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (iv_imgView.getDrawable() == null) {
+                String description = editTextDescription.getText().toString().trim();
+                if (description.isEmpty()) {
+                    // User has not entered a description
+                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+                } else if (iv_imgView.getDrawable() == null) {
+                    // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
                 } else {
+                    // Both description and image are selected, start the upload process
                     showLoader();
                     // Simulate a 2-second delay for demonstration purposes
                     Handler handler = new Handler();
@@ -97,11 +129,129 @@ public class Upload extends AppCompatActivity {
                             hideLoader();
                             // Handle image upload after the delay
                             Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+
+                            // Save the description in a public static variable for further use
+                            String userDescription = editTextDescription.getText().toString();
+                            // Save the userDescription in a public static variable for further use
+                            Upload.description = userDescription;
                         }
                     }, 2000);
                 }
             }
         });
+        textView = findViewById(R.id.textViewTags);
+        selectedIssues = new boolean[issueArray.length];
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Initialize alert dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
+
+                // set title
+                builder.setTitle("Select Major Problems");
+
+                // set dialog non cancelable
+                builder.setCancelable(false);
+
+                builder.setMultiChoiceItems(issueArray, selectedIssues, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+                        // check condition
+                        if (b) {
+                            // when checkbox selected
+                            // Add position  in lang list
+                            issueList.add(i);
+                            // Sort array list
+                            Collections.sort(issueList);
+                        } else {
+                            // when checkbox unselected
+                            // Remove position from langList
+                            issueList.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Initialize string builder
+                        StringBuilder stringBuilder = new StringBuilder();
+                        // use for loop
+                        for (int j = 0; j < issueList.size(); j++) {
+                            // concat array value
+                            stringBuilder.append(issueArray[issueList.get(j)]);
+                            // check condition
+                            if (j != issueList.size() - 1) {
+                                // When j value  not equal
+                                // to lang list size - 1
+                                // add comma
+                                stringBuilder.append(", ");
+                            }
+                        }
+                        // set text on textView
+                        textView.setText(stringBuilder.toString());
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // dismiss dialog
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // use for loop
+                        for (int j = 0; j < selectedIssues.length; j++) {
+                            // remove all selection
+                            selectedIssues[j] = false;
+                            // clear language list
+                            issueList.clear();
+                            // clear text view value
+                            textView.setText("");
+                        }
+                    }
+                });
+                // show dialog
+                builder.show();
+            }
+        });
+// Set button click listener for image upload
+        buttonUploadImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String description = editTextDescription.getText().toString().trim();
+                if (description.isEmpty()) {
+                    // User has not entered a description
+                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+                } else if (iv_imgView.getDrawable() == null) {
+                    // User has not selected an image
+                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Both description and image are selected, start the upload process
+                    showLoader();
+                    // Simulate a 2-second delay for demonstration purposes
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            hideLoader();
+                            // Handle image upload after the delay
+                            Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+
+                            // Save the description in a public static variable for further use
+                            String userDescription = editTextDescription.getText().toString();
+                            // Save the userDescription in a public static variable for further use
+                            Upload.description = userDescription;
+                        }
+                    }, 2000);
+                }
+            }
+        });
+
 
         //For Getting Image From gallery
         pickImageButton.setOnClickListener(new View.OnClickListener() {
@@ -224,13 +374,13 @@ public class Upload extends AppCompatActivity {
         if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
             Uri uri = data.getData();
             targetUri = uri;
-            textUri.setText(uri.toString());
+//            textUri.setText(uri.toString());
             iv_imgView.setImageURI(uri);
 
             Uri dataUri = data.getData();
             if (requestCode == RQS_OPEN_IMAGE) {
                 targetUri = dataUri;
-                textUri.setText(dataUri.toString());
+//                textUri.setText(dataUri.toString());
                 iv_imgView.setImageURI(uri);
             }
             // Get the current date and time
@@ -259,5 +409,4 @@ public class Upload extends AppCompatActivity {
     private void hideLoader() {
         loader.setVisibility(View.GONE);
     }
-
 }

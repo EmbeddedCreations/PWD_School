@@ -1,18 +1,15 @@
 package com.example.pwdschool;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,21 +19,21 @@ import java.util.Locale;
 
 public class Home extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private static final int CAMERA_CODE = 101;
-    private static final int RQS_OPEN_IMAGE = 1;
-    Uri targetUri = null;
-    TextView textUri;
+    // Public variables to store user-selected data
+    public static String selectedSchool;
+    public static String selectedWorkorder;
+    public static String selectedBuilding;
+    public static String selectedDate;
+    // Sample data for school names, workorder names, and building names
+    private final String[] schoolNames = {"Select School", "School 1", "School 2", "School 3"};
+    private final String[] workorderNames = {"Select Workorder", "Workorder 1", "Workorder 2", "Workorder 3"};
+    private final String[] buildingNames = {"Select Building", "Building 1", "Building 2", "Building 3"};
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
     private Calendar calendar;
     private Button buttonSurvey;
-    private ProgressBar loader;
-    // Sample data for school names, workorder names, and building names
-    private final String[] schoolNames = {"Select School", "School 1", "School 2", "School 3"};
-    private final String[] workorderNames = {"Select Workorder", "Workorder 1", "Workorder 2", "Workorder 3"};
-    private final String[] buildingNames = {"Select Building", "Building 1", "Building 2", "Building 3"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +48,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         buttonSurvey = findViewById(R.id.buttonSurvey);
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
         TextView textViewAtc = findViewById(R.id.atc);
-        TextView textViewpoOffice = findViewById(R.id.poOffice);
-
+        TextView textViewPoOffice = findViewById(R.id.poOffice);
 
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         // Set spinner listeners
@@ -102,23 +98,32 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         // set po office
         String poOffice = Login.selectedPoOffice;
-        textViewpoOffice.setText("Atc: " + poOffice);
+        textViewPoOffice.setText("PO Office: " + poOffice);
 
-        // Set button click listener for image upload
+        // Set button click listener for changing screen
         buttonSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Home.this, Upload.class);
-                startActivity(intent);
-            }
-        });
-        textViewSelectedDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
+                // Get selected date
+                selectedDate = textViewSelectedDate.getText().toString();
 
+                if (selectedSchool.equals("Select School")) {
+                    showToast("Please select a school.");
+                } else if (selectedBuilding.equals("Select Building")) {
+                    showToast("Please select a building.");
+                } else if (selectedWorkorder.equals("Select Workorder")) {
+                    showToast("Please select a workorder.");
+                } else {
+                    // All items are selected, start the survey
+                    Intent intent = new Intent(Home.this, Upload.class);
+                    startActivity(intent);
+                }
+            }
+
+            private void showToast(String message) {
+                Toast.makeText(Home.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -127,16 +132,13 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         // Handle spinner item selection
         switch (parent.getId()) {
             case R.id.spinnerSchool:
-                String selectedSchool = parent.getItemAtPosition(position).toString();
-                // TODO: Handle selected school
+                selectedSchool = parent.getItemAtPosition(position).toString();
                 break;
             case R.id.spinnerBuilding:
-                String selectedBuilding = parent.getItemAtPosition(position).toString();
-                // TODO: Handle selected building
+                selectedBuilding = parent.getItemAtPosition(position).toString();
                 break;
             case R.id.spinnerWorkorder:
-                String selectedWorkorder = parent.getItemAtPosition(position).toString();
-                // TODO: Handle selected workorder
+                selectedWorkorder = parent.getItemAtPosition(position).toString();
                 break;
         }
     }
@@ -144,31 +146,5 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Handle case when no item is selected
-    }
-
-    private void showDatePickerDialog() {
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        // Update selected date
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                        String selectedDate = dateFormat.format(calendar.getTime());
-
-                        textViewSelectedDate.setText("Date: " + selectedDate);
-                    }
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
-        // Set the maximum date to prevent selecting future dates
-        datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        datePickerDialog.show();
     }
 }
