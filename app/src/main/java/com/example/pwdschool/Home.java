@@ -2,6 +2,7 @@ package com.example.pwdschool;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,9 +14,21 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+
+
 
 public class Home extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -24,14 +37,20 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     public static String selectedWorkorder;
     public static String selectedBuilding;
     public static String selectedDate;
+    public static String selectedSchoolId;
     // Sample data for school names, workorder names, and building names
-    private final String[] schoolNames = {"Select School", "School 1", "School 2", "School 3"};
+    private static String[] schoolNames = {"Select School"};
+    String [] schools,school_id,buildings,building_uniq_ids;
     private final String[] workorderNames = {"Select Workorder", "Workorder 1", "Workorder 2", "Workorder 3"};
-    private final String[] buildingNames = {"Select Building", "Building 1", "Building 2", "Building 3"};
+    private static String[] buildingNames = {"Select Building"};
+
     private Spinner spinnerSchool;
+    InputStream is_schoool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
+    private String school_Address = "http://192.168.1.4/school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
+
     private Calendar calendar;
     private Button buttonSurvey;
 
@@ -39,6 +58,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
+        getSchoolData();
 
         // Find views by their IDs
         spinnerSchool = findViewById(R.id.spinnerSchool);
@@ -56,6 +78,12 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         spinnerBuilding.setOnItemSelectedListener(this);
         spinnerWorkorder.setOnItemSelectedListener(this);
 
+        ArrayList<String> tempSchoolList = new ArrayList<>();
+        tempSchoolList.add("Select School");
+        for(int i =0;i<schools.length;i++){
+            tempSchoolList.add(schools[i]);
+        }
+        schoolNames = tempSchoolList.toArray(new String[0]);
         // Set up spinner adapters with the arrays
         ArrayAdapter<String> schoolAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, schoolNames);
@@ -67,10 +95,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         workorderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerWorkorder.setAdapter(workorderAdapter);
 
-        ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, buildingNames);
-        buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerBuilding.setAdapter(buildingAdapter);
+
         // Get current date
         calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -133,6 +158,25 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         switch (parent.getId()) {
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
+                int index = 0;
+                for(int i =0;i<schools.length;i++){
+                    if(selectedSchool.equals(schools[i])){
+                        index = i;
+                        break;
+                    }
+                }
+                String ID=school_id[index];
+                String building_address = "http://192.168.1.4/building_select.php?school_id="+ID;
+                getBuildings(building_address);
+                ArrayList<String> tempBuildings = new ArrayList<>();
+                tempBuildings.add("Select Building");
+                for(int i =0;i<buildings.length;i++){
+                    tempBuildings.add(buildings[i]);
+                }
+                buildingNames = tempBuildings.toArray(new String[0]);
+                ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, buildingNames);
+                buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerBuilding.setAdapter(buildingAdapter);
                 break;
             case R.id.spinnerBuilding:
                 selectedBuilding = parent.getItemAtPosition(position).toString();
@@ -146,5 +190,71 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Handle case when no item is selected
+    }
+
+    private  void getSchoolData(){
+        String result = null;
+        try{
+            URL url = new URL(school_Address);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            is_schoool = new BufferedInputStream(con.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(is_schoool));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while((line = br.readLine())!=null){
+                sb.append(line+"\n");
+            }
+            is_schoool.close();
+            result = sb.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            JSONArray js = new JSONArray(result);
+            JSONObject jo = null;
+            schools = new String[js.length()];
+            school_id = new String[js.length()];
+            for(int i =0;i<js.length();i++){
+                jo = js.getJSONObject(i);
+                schools[i] = jo.getString("school_name");
+                school_id[i] = jo.getString("id");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void getBuildings(String address){
+        String result = null;
+        try{
+            URL url = new URL(address);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            is_schoool = new BufferedInputStream(con.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(is_schoool));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while((line = br.readLine())!=null){
+                sb.append(line+"\n");
+            }
+            is_schoool.close();
+            result = sb.toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+            JSONArray js = new JSONArray(result);
+            JSONObject jo = null;
+            buildings = new String[js.length()];
+            building_uniq_ids = new String[js.length()];
+            for(int i =0;i<js.length();i++){
+                jo = js.getJSONObject(i);
+                buildings[i] = jo.getString("type_building");
+                building_uniq_ids[i] = jo.getString("building_unq_id");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

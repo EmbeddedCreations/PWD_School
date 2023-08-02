@@ -242,7 +242,6 @@ public class Login extends AppCompatActivity {
             }
             is.close();
             result = sb.toString();
-            Log.d("Result",result);
         }catch (Exception e){
             e.printStackTrace();
         }
