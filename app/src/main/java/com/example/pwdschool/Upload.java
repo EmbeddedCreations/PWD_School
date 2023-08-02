@@ -27,10 +27,11 @@ import com.github.dhaval2404.imagepicker.ImagePicker;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Locale;
 
 public class Upload extends AppCompatActivity {
@@ -38,20 +39,21 @@ public class Upload extends AppCompatActivity {
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
     public static String description;
+
+    // Define public static variables to store the EXIF information
+    public static Date dateTaken;
+    public static Date timeTaken;
+    public static double gpsLatitude;
+    public static double gpsLongitude;
+
+
     Uri targetUri = null;
     TextView textUri;
     TextView textView;
     boolean[] selectedIssues;
     ArrayList<Integer> issueList = new ArrayList<>();
     String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
-    View.OnClickListener imageOnClickListener =
-            new View.OnClickListener() {
-
-                @Override
-                public void onClick(View view) {
-                    showExif(targetUri);
-                }
-            };
+//
 
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
@@ -78,6 +80,28 @@ public class Upload extends AppCompatActivity {
     private ProgressBar loader;
     private EditText editTextDescription;
 
+    // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
+    private static double convertToDegree(String coordinate, String ref) {
+        try {
+            String[] parts = coordinate.split(",");
+
+            String[] degreesParts = parts[0].split("/");
+            double degrees = Double.parseDouble(degreesParts[0]) / Double.parseDouble(degreesParts[1]);
+
+            String[] minutesParts = parts[1].split("/");
+            double minutes = Double.parseDouble(minutesParts[0]) / Double.parseDouble(minutesParts[1]);
+
+            String[] secondsParts = parts[2].split("/");
+            double seconds = Double.parseDouble(secondsParts[0]) / Double.parseDouble(secondsParts[1]);
+
+            double result = degrees + minutes / 60.0 + seconds / 3600.0;
+            return ref.equals("N") || ref.equals("E") ? result : -result;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0.0;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +115,6 @@ public class Upload extends AppCompatActivity {
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         textUri = findViewById(R.id.Dimensions);
         textUri.setOnClickListener(textUriOnClickListener);
-        iv_imgView.setOnClickListener(imageOnClickListener);
         editTextDescription = findViewById(R.id.editTextDescription);
 //
         //set junior engineer loggedin
@@ -291,61 +314,50 @@ public class Upload extends AppCompatActivity {
 
     void showExif(Uri photoUri) {
         if (photoUri != null) {
-
             ParcelFileDescriptor parcelFileDescriptor = null;
 
-            /*
-            How to convert the Uri to FileDescriptor, refer to the example in the document:
-            https://developer.android.com/guide/topics/providers/document-provider.html
-             */
             try {
                 parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r");
                 FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
 
-                /*
-                ExifInterface (FileDescriptor fileDescriptor) added in API level 24
-                 */
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
-                String exif = "Exif: " + fileDescriptor.toString();
-                exif += "\nIMAGE_LENGTH: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH);
-                exif += "\nIMAGE_WIDTH: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH);
-                exif += "\n DATETIME: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
-                exif += "\n TAG_MAKE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_MAKE);
-                exif += "\n TAG_MODEL: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_MODEL);
-                exif += "\n TAG_ORIENTATION: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_ORIENTATION);
-                exif += "\n TAG_WHITE_BALANCE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_WHITE_BALANCE);
-                exif += "\n TAG_FOCAL_LENGTH: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
-                exif += "\n TAG_FLASH: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_FLASH);
-                exif += "\nGPS related:";
-                exif += "\n TAG_GPS_DATESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
-                exif += "\n TAG_GPS_TIMESTAMP: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
-                exif += "\n TAG_GPS_LATITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                exif += "\n TAG_GPS_LATITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-                exif += "\n TAG_GPS_LONGITUDE: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                exif += "\n TAG_GPS_LONGITUDE_REF: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-                exif += "\n TAG_GPS_PROCESSING_METHOD: " +
-                        exifInterface.getAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD);
+
+                // Extract and store the EXIF information in proper variables
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+                // Convert latitude and longitude to double values
+                if (latitude != null && latitudeRef != null && longitude != null && longitudeRef != null) {
+                    gpsLatitude = convertToDegree(latitude, latitudeRef);
+                    gpsLongitude = convertToDegree(longitude, longitudeRef);
+
+                    // Print the EXIF information
+                    System.out.println("GPS Latitude: " + latitude);
+                    System.out.println("GPS Longitude: " + longitude);
+                    System.out.println("Ref Latitude: " + latitudeRef);
+                    System.out.println("Ref Longitude: " + longitudeRef);
+                    System.out.println("GPS Latitude (Converted): " + gpsLatitude);
+                    System.out.println("GPS Longitude (Converted): " + gpsLongitude);
+                }
+
+                // Parse the datetime attribute to separate date and time variables
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                if (datetime != null) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+                    try {
+                        dateTaken = dateFormat.parse(datetime);
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                        timeTaken = timeFormat.parse(datetime.substring(11));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        dateTaken = null;
+                        timeTaken = null;
+                    }
+                }
 
                 parcelFileDescriptor.close();
-
-                Toast.makeText(getApplicationContext(),
-                        exif,
-                        Toast.LENGTH_LONG).show();
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -358,14 +370,17 @@ public class Upload extends AppCompatActivity {
                         "Something wrong:\n" + e,
                         Toast.LENGTH_LONG).show();
             }
-
-            String strPhotoPath = photoUri.getPath();
-
-        } else {
-            Toast.makeText(getApplicationContext(),
-                    "photoUri == null",
-                    Toast.LENGTH_LONG).show();
         }
+
+        // Call the printExifInfo() method here to print the converted values
+        printExifInfo();
+    }
+
+    void printExifInfo() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+        System.out.println("Date Taken: " + (dateTaken != null ? dateFormat.format(dateTaken) : "N/A"));
+        System.out.println("Time Taken: " + (timeTaken != null ? timeFormat.format(timeTaken) : "N/A"));
     }
 
     @Override
@@ -374,19 +389,15 @@ public class Upload extends AppCompatActivity {
         if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
             Uri uri = data.getData();
             targetUri = uri;
-//            textUri.setText(uri.toString());
             iv_imgView.setImageURI(uri);
+            showExif(targetUri);
 
             Uri dataUri = data.getData();
             if (requestCode == RQS_OPEN_IMAGE) {
                 targetUri = dataUri;
-//                textUri.setText(dataUri.toString());
                 iv_imgView.setImageURI(uri);
+                showExif(targetUri);
             }
-            // Get the current date and time
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-            String dateTime = sdf.format(Calendar.getInstance().getTime());
-            System.out.println(dateTime);
         }
     }
 
