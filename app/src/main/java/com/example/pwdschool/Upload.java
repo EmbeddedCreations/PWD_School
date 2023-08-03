@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,7 +47,11 @@ public class Upload extends AppCompatActivity {
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
-
+    public String encodedImage;
+    private Button pickImageButton;
+    private Button buttonUploadImage;
+    private ProgressBar loader;
+    private EditText editTextDescription;
 
     Uri targetUri = null;
     TextView textUri;
@@ -75,10 +81,7 @@ public class Upload extends AppCompatActivity {
                 }
 
             };
-    private Button pickImageButton;
-    private Button buttonUploadImage;
-    private ProgressBar loader;
-    private EditText editTextDescription;
+
 
     // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
     private static double convertToDegree(String coordinate, String ref) {
@@ -411,6 +414,25 @@ public class Upload extends AppCompatActivity {
                 Toast.makeText(this, "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void encodeBitmap(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+
+        byte[] byteOfImages = byteArrayOutputStream.toByteArray();
+        encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
+
+    }
+
+    private void uploadToServer(){
+        String time;
+        String location;
+        String school;
+        String building;
+        String Po_office;
+        String ATC_Office;
+        String [] Tags;
     }
 
     private void showLoader() {
