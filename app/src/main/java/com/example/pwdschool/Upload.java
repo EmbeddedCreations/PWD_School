@@ -20,9 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import java.io.ByteArrayOutputStream;
@@ -34,7 +42,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class Upload extends AppCompatActivity {
 
@@ -52,6 +62,7 @@ public class Upload extends AppCompatActivity {
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
+    private String url = "http://192.168.1.4/upload_Image.php";
 
     Uri targetUri = null;
     TextView textUri;
@@ -73,6 +84,7 @@ public class Upload extends AppCompatActivity {
                                     getContentResolver()
                                             .openInputStream(targetUri));
                             iv_imgView.setImageBitmap(bm);
+                            encodeBitmap(bm);
                         } catch (FileNotFoundException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -154,7 +166,7 @@ public class Upload extends AppCompatActivity {
                         public void run() {
                             hideLoader();
                             // Handle image upload after the delay
-                            Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
 
                             // Save the description in a public static variable for further use
                             String userDescription = editTextDescription.getText().toString();
@@ -266,8 +278,8 @@ public class Upload extends AppCompatActivity {
                         public void run() {
                             hideLoader();
                             // Handle image upload after the delay
-                            Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-
+                            //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+                            uploadToServer();
                             // Save the description in a public static variable for further use
                             String userDescription = editTextDescription.getText().toString();
                             // Save the userDescription in a public static variable for further use
@@ -393,6 +405,11 @@ public class Upload extends AppCompatActivity {
             Uri uri = data.getData();
             targetUri = uri;
             iv_imgView.setImageURI(uri);
+            try {
+                encodeBitmap(BitmapFactory.decodeStream(getApplicationContext().getContentResolver().openInputStream(uri)));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             showExif(targetUri);
 
             Uri dataUri = data.getData();
@@ -426,13 +443,45 @@ public class Upload extends AppCompatActivity {
     }
 
     private void uploadToServer(){
-        String time;
-        String location;
-        String school;
-        String building;
-        String Po_office;
-        String ATC_Office;
-        String [] Tags;
+        String school_Name = Home.selectedSchool.trim();
+        String po_office = Login.selectedPoOffice.trim();
+        String image_name = Home.selectedBuilding.trim();
+        String image_type = "jpg";
+        String image_pdf = encodedImage;
+        String upload_date = "";
+        String upload_time= "";
+        String EntryBy = Login.selectedJuniorEngineer.trim();
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(getApplicationContext(),response.toString(),Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<>();
+                map.put("school_Name",school_Name);
+                map.put("po_office",po_office);
+                map.put("image_name",image_name);
+                map.put("image_type",image_type);
+                map.put("image_pdf",image_pdf);
+                map.put("upload_date",upload_date);
+                map.put("upload_time",upload_time);
+                map.put("EntryBy",EntryBy);
+                return map;
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        queue.add(request);
     }
 
     private void showLoader() {
