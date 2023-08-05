@@ -40,11 +40,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class Upload extends AppCompatActivity {
 
@@ -282,6 +284,7 @@ public class Upload extends AppCompatActivity {
                             //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
                             uploadToServer();
                             // Save the description in a public static variable for further use
+
                             String userDescription = editTextDescription.getText().toString();
                             // Save the userDescription in a public static variable for further use
                             Upload.description = userDescription;
@@ -458,7 +461,7 @@ public class Upload extends AppCompatActivity {
         String Latitude = Double.toString(gpsLatitude);
         String user_upload_date = Home.selectedDate;
         String Description = description;
-        String Tags = selectedIssues.toString();
+        String Tags = Arrays.toString(issueList.toArray());
 
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
