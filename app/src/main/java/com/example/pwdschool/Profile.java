@@ -1,6 +1,9 @@
 package com.example.pwdschool;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,5 +29,15 @@ public class Profile extends AppCompatActivity {
         atcOfficeText.setText(atcOfficeValue);
         poOfficeText.setText(poOfficeValue);
         juniorEngineerNameText.setText(juniorEngineerValue);
+        Button viewHistoryButton = findViewById(R.id.view_history_button);
+
+        // Set a click listener for the button
+        viewHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Profile.this, ImageActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
