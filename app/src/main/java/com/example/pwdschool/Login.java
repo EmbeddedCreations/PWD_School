@@ -73,10 +73,10 @@ public class Login extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         ArrayList<String> uniqueList = new ArrayList<>();
         HashSet<String> uniqueSet = new HashSet<>();
-        uniqueList.add("Select");
+        uniqueList.add("Select ATC Office");
 
         for (String element : atc_array) {
-            if (!element.equals("Select") && !uniqueSet.contains(element)) {
+            if (!element.equals("Select ATC Office") && !uniqueSet.contains(element)) {
                 uniqueList.add(element);
                 uniqueSet.add(element);
             }
@@ -112,7 +112,7 @@ public class Login extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedAtcOffice = parent.getItemAtPosition(position).toString();
                 ArrayList<String> tempPOList = new ArrayList<>();
-                tempPOList.add("Select");
+                tempPOList.add("Select PO Office");
                 for(int i = 0;i<po_array.length;i++){
                     if(selectedAtcOffice.equals(atc_array[i])){
                         tempPOList.add(po_array[i]);
@@ -137,7 +137,7 @@ public class Login extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedPoOffice = parent.getItemAtPosition(position).toString();
                 ArrayList<String> tempJeList = new ArrayList<>();
-                tempJeList.add("Select");
+                tempJeList.add("Select JE");
                 for(int i = 0;i<je_array.length;i++){
                     if(selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])){
                         tempJeList.add(je_array[i]);

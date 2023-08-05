@@ -123,6 +123,31 @@
         app:layout_constraintStart_toEndOf="@+id/textViewWorkorderTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle" />
 
+    <!-- TextView for "Second Dropdown Title" (Initial visibility: gone) -->
+    <TextView
+        android:id="@+id/textViewSecondDropdownTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Workorder :"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerWorkorder" />
+
+    <!-- Second Spinner (Initial visibility: gone) -->
+    <Spinner
+        android:id="@+id/spinnerSecondDropdown"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="22sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewSecondDropdownTitle"
+        app:layout_constraintTop_toTopOf="@+id/textViewSecondDropdownTitle" />
+
     <TextView
         android:id="@+id/textViewBuildingTitle"
         android:layout_width="wrap_content"
@@ -132,7 +157,7 @@
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/textViewSchoolTitle"
-        app:layout_constraintTop_toBottomOf="@+id/textViewWorkorderTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/spinnerSecondDropdown" />
 
     <Spinner
         android:id="@+id/spinnerBuilding"
@@ -141,9 +166,10 @@
         android:layout_marginStart="8dp"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textViewBuildingTitle"
-        app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle" />
-
+        app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle"
+        app:layout_constraintVertical_chainStyle="packed" />
     <TextView
         android:id="@+id/textViewDateTitle"
         android:layout_width="wrap_content"
