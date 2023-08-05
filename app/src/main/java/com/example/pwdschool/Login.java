@@ -36,11 +36,11 @@ public class Login extends AppCompatActivity {
     InputStream is = null;
 
     // ATC Office initial Array before Reading data from DB
-    private static  String[] ATC = {"Select"};
+    private static  String[] ATC = {"Select ATC Office"};
     //Po-Office initial Array before Reading data from DB
-    private static String[] PO_OFFICE = {"Select"};
+    private static String[] PO_OFFICE = {"Select PO Office"};
     //Junior Engineer initial Array before Reading data from DB
-    private static String[] JUNIOR_ENGINEERS = {"Select"};
+    private static String[] JUNIOR_ENGINEERS = {"Select JE"};
     String[] atc_array,po_array,je_array,Pass;
     private String address ="http://192.168.137.121/app_login_pwd.php";
 
