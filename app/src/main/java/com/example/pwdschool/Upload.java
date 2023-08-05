@@ -456,7 +456,7 @@ public class Upload extends AppCompatActivity {
         String EntryBy = Login.selectedJuniorEngineer.trim();
         String Longitude = Double.toString(gpsLongitude);
         String Latitude = Double.toString(gpsLatitude);
-        String user_date = Home.selectedDate;
+        String user_upload_date = Home.selectedDate;
         String Description = description;
         String Tags = selectedIssues.toString();
 
@@ -498,7 +498,7 @@ public class Upload extends AppCompatActivity {
                 map.put("EntryBy",EntryBy);
                 map.put("Longitude",Longitude);
                 map.put("Latitude",Latitude);
-                map.put("user_date",user_date);
+                map.put("user_upload_date",user_upload_date);
                 map.put("Description",Description);
                 map.put("Tags",Tags);
                 return map;
