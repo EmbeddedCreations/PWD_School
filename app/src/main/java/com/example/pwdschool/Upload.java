@@ -40,11 +40,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class Upload extends AppCompatActivity {
 
@@ -63,7 +65,7 @@ public class Upload extends AppCompatActivity {
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
-    private String url = "http://192.168.137.121/app_upload_Image.php";
+    private String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
 
     Uri targetUri = null;
     TextView textUri;
@@ -165,10 +167,10 @@ public class Upload extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            hideLoader();
+                            showLoader();
                             // Handle image upload after the delay
                             //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-
+                            uploadToServer();
                             // Save the description in a public static variable for further use
                             String userDescription = editTextDescription.getText().toString();
                             // Save the userDescription in a public static variable for further use
@@ -259,40 +261,38 @@ public class Upload extends AppCompatActivity {
             }
         });
 // Set button click listener for image upload
-        buttonUploadImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String description = editTextDescription.getText().toString().trim();
-                if (description.isEmpty()) {
-                    // User has not entered a description
-                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
-                } else if (iv_imgView.getDrawable() == null) {
-                    // User has not selected an image
-                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Both description and image are selected, start the upload process
-                    showLoader();
-                    // Simulate a 2-second delay for demonstration purposes
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            hideLoader();
-                            // Handle image upload after the delay
-                            //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-                            uploadToServer();
-                            // Save the description in a public static variable for further use
-                            String userDescription = editTextDescription.getText().toString();
-                            // Save the userDescription in a public static variable for further use
-                            Upload.description = userDescription;
-                        }
-                    }, 2000);
-                }
-            }
-        });
+//        buttonUploadImage.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String description = editTextDescription.getText().toString().trim();
+//                if (description.isEmpty()) {
+//                    // User has not entered a description
+//                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+//                } else if (iv_imgView.getDrawable() == null) {
+//                    // User has not selected an image
+//                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    // Both description and image are selected, start the upload process
+//                    showLoader();
+//                    // Simulate a 2-second delay for demonstration purposes
+//                    Handler handler = new Handler();
+//                    handler.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+////
+//                            uploadToServer();
+//
+//                            String userDescription = editTextDescription.getText().toString();
+//                            // Save the userDescription in a public static variable for further use
+//                            Upload.description = userDescription;
+//                        }
+//                    }, 2000);
+//                }
+//            }
+//        });
 
 
-        //For Getting Image From gallery
+//        For Getting Image From gallery
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -456,9 +456,9 @@ public class Upload extends AppCompatActivity {
         String EntryBy = Login.selectedJuniorEngineer.trim();
         String Longitude = Double.toString(gpsLongitude);
         String Latitude = Double.toString(gpsLatitude);
-        String user_date = Home.selectedDate;
+        String user_upload_date = Home.selectedDate;
         String Description = description;
-        String Tags = selectedIssues.toString();
+        String Tags = Arrays.toString(issueList.toArray());
 
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -475,6 +475,7 @@ public class Upload extends AppCompatActivity {
                     selectedIssues[i] = false;
                 }
                 issueList.clear();
+                hideLoader();
                 Toast.makeText(getApplicationContext(),"Uploaded Sucesfully",Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
@@ -498,7 +499,7 @@ public class Upload extends AppCompatActivity {
                 map.put("EntryBy",EntryBy);
                 map.put("Longitude",Longitude);
                 map.put("Latitude",Latitude);
-                map.put("user_date",user_date);
+                map.put("user_upload_date",user_upload_date);
                 map.put("Description",Description);
                 map.put("Tags",Tags);
                 return map;
