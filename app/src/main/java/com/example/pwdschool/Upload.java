@@ -54,6 +54,7 @@ public class Upload extends AppCompatActivity {
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
+    public String date_today,time_today;
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
@@ -62,7 +63,7 @@ public class Upload extends AppCompatActivity {
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
-    private String url = "http://192.168.1.4/upload_Image.php";
+    private String url = "http://192.168.137.121/upload_Image.php";
 
     Uri targetUri = null;
     TextView textUri;
@@ -395,7 +396,9 @@ public class Upload extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         System.out.println("Date Taken: " + (dateTaken != null ? dateFormat.format(dateTaken) : "N/A"));
+        date_today = dateFormat.format(dateTaken).toString();
         System.out.println("Time Taken: " + (timeTaken != null ? timeFormat.format(timeTaken) : "N/A"));
+        time_today = timeFormat.format(timeTaken).toString();
     }
 
     @Override
@@ -448,14 +451,14 @@ public class Upload extends AppCompatActivity {
         String image_name = Home.selectedBuilding.trim();
         String image_type = "jpg";
         String image_pdf = encodedImage;
-        String upload_date = "";
-        String upload_time= "";
+        String upload_date = date_today;
+        String upload_time= time_today;
         String EntryBy = Login.selectedJuniorEngineer.trim();
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(getApplicationContext(),response.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Uploaded Sucesfully",Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override

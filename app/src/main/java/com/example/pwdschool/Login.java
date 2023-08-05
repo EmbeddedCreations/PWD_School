@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
     //Junior Engineer initial Array before Reading data from DB
     private static String[] JUNIOR_ENGINEERS = {"Select"};
     String[] atc_array,po_array,je_array,Pass;
-    private String address ="http://192.168.1.4/login_pwd.php";
+    private String address ="http://192.168.137.121/login_pwd.php";
 
     // Public variables to store user input
     public static String selectedAtcOffice;
@@ -95,11 +95,8 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 // Handle Authentication Logic
                 inputPassword = passwordEditText.getText().toString();
-                if( Password == null){
+                if( Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null){
                     Toast.makeText(Login.this,"Incorrect Password or Incorrect Credentials",Toast.LENGTH_SHORT).show();
-                    Toast.makeText(Login.this,"Temporary Login For Testing",Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(Login.this, Home.class);
-                    startActivity(i);
                 } else if (Password.equals(inputPassword)) {
                     Toast.makeText(Login.this,"SuccessFul Login",Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(Login.this, Home.class);
