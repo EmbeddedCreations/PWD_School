@@ -63,7 +63,7 @@ public class Upload extends AppCompatActivity {
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
-    private String url = "http://192.168.137.121/upload_Image.php";
+    private String url = "http://192.168.137.121/app_upload_Image.php";
 
     Uri targetUri = null;
     TextView textUri;
@@ -454,6 +454,12 @@ public class Upload extends AppCompatActivity {
         String upload_date = date_today;
         String upload_time= time_today;
         String EntryBy = Login.selectedJuniorEngineer.trim();
+        String Longitude = Double.toString(gpsLongitude);
+        String Latitude = Double.toString(gpsLatitude);
+        String user_date = Home.selectedDate;
+        String Description = description;
+        String Tags = selectedIssues.toString();
+
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -479,6 +485,11 @@ public class Upload extends AppCompatActivity {
                 map.put("upload_date",upload_date);
                 map.put("upload_time",upload_time);
                 map.put("EntryBy",EntryBy);
+                map.put("Longitude",Longitude);
+                map.put("Latitude",Latitude);
+                map.put("user_date",user_date);
+                map.put("Description",Description);
+                map.put("Tags",Tags);
                 return map;
             }
         };
