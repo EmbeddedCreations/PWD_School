@@ -49,7 +49,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
-    private String school_Address = "http://192.168.137.121/app_school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
+    private String school_Address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
 
     private Calendar calendar;
     private Button buttonSurvey;
@@ -157,7 +157,26 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         // Handle spinner item selection
         switch (parent.getId()) {
             case R.id.spinnerSchool:
-                // ... Existing code for handling school spinner ...
+                selectedSchool = parent.getItemAtPosition(position).toString();
+                int index = 0;
+                for(int i =0;i<schools.length;i++){
+                    if(selectedSchool.equals(schools[i])){
+                        index = i;
+                        break;
+                    }
+                }
+                String ID=school_id[index];
+                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id="+ID;
+                getBuildings(building_address);
+                ArrayList<String> tempBuildings = new ArrayList<>();
+                tempBuildings.add("Select Building");
+                for(int i =0;i<buildings.length;i++){
+                    tempBuildings.add(buildings[i]);
+                }
+                buildingNames = tempBuildings.toArray(new String[0]);
+                ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, buildingNames);
+                buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerBuilding.setAdapter(buildingAdapter);
                 break;
             case R.id.spinnerBuilding:
                 selectedBuilding = parent.getItemAtPosition(position).toString();
