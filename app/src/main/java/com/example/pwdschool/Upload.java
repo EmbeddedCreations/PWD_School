@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -41,12 +42,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.StringJoiner;
 
 public class Upload extends AppCompatActivity {
 
@@ -56,25 +56,22 @@ public class Upload extends AppCompatActivity {
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
-    public String date_today,time_today;
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
+    public String date_today, time_today;
     public String encodedImage;
+    Uri targetUri = null;
+    TextView textUri;
+    TextView textView;
+    List<String> selectedIssuesList = new ArrayList<>();
+    String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
     private Button pickImageButton;
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
-    private String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
-
-    Uri targetUri = null;
-    TextView textUri;
-    TextView textView;
-    boolean[] selectedIssues;
-    ArrayList<Integer> issueList = new ArrayList<>();
-    String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
+    private final String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
 //
-
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -160,55 +157,46 @@ public class Upload extends AppCompatActivity {
                     // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
                 } else {
+                    // Save the description in a public static variable for further use
+                    Upload.description = description; // Save the description here
+
                     // Both description and image are selected, start the upload process
                     showLoader();
-                    // Simulate a 2-second delay for demonstration purposes
+
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            showLoader();
-                            // Handle image upload after the delay
-                            //Toast.makeText(Upload.this, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
+
                             uploadToServer();
-                            // Save the description in a public static variable for further use
-                            String userDescription = editTextDescription.getText().toString();
-                            // Save the userDescription in a public static variable for further use
-                            Upload.description = userDescription;
                         }
                     }, 2000);
                 }
             }
         });
+
+
         textView = findViewById(R.id.textViewTags);
-        selectedIssues = new boolean[issueArray.length];
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // Initialize alert dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
 
                 // set title
                 builder.setTitle("Select Major Problems");
 
-                // set dialog non cancelable
+                // set dialog non-cancelable
                 builder.setCancelable(false);
 
-                builder.setMultiChoiceItems(issueArray, selectedIssues, new DialogInterface.OnMultiChoiceClickListener() {
+                builder.setMultiChoiceItems(issueArray, null, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                        // check condition
+                        // Update the selected issues list based on user selections
                         if (b) {
-                            // when checkbox selected
-                            // Add position  in lang list
-                            issueList.add(i);
-                            // Sort array list
-                            Collections.sort(issueList);
+                            selectedIssuesList.add(issueArray[i]);
                         } else {
-                            // when checkbox unselected
-                            // Remove position from langList
-                            issueList.remove(Integer.valueOf(i));
+                            selectedIssuesList.remove(issueArray[i]);
                         }
                     }
                 });
@@ -216,22 +204,8 @@ public class Upload extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // Initialize string builder
-                        StringBuilder stringBuilder = new StringBuilder();
-                        // use for loop
-                        for (int j = 0; j < issueList.size(); j++) {
-                            // concat array value
-                            stringBuilder.append(issueArray[issueList.get(j)]);
-                            // check condition
-                            if (j != issueList.size() - 1) {
-                                // When j value  not equal
-                                // to lang list size - 1
-                                // add comma
-                                stringBuilder.append(", ");
-                            }
-                        }
-                        // set text on textView
-                        textView.setText(stringBuilder.toString());
+                        // Update the text view with the selected issues
+                        textView.setText(TextUtils.join(", ", selectedIssuesList));
                     }
                 });
 
@@ -242,54 +216,20 @@ public class Upload extends AppCompatActivity {
                         dialogInterface.dismiss();
                     }
                 });
+
                 builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // use for loop
-                        for (int j = 0; j < selectedIssues.length; j++) {
-                            // remove all selection
-                            selectedIssues[j] = false;
-                            // clear language list
-                            issueList.clear();
-                            // clear text view value
-                            textView.setText("");
-                        }
+                        // Clear all selections
+                        selectedIssuesList.clear();
+                        textView.setText("");
                     }
                 });
+
                 // show dialog
                 builder.show();
             }
         });
-// Set button click listener for image upload
-//        buttonUploadImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String description = editTextDescription.getText().toString().trim();
-//                if (description.isEmpty()) {
-//                    // User has not entered a description
-//                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
-//                } else if (iv_imgView.getDrawable() == null) {
-//                    // User has not selected an image
-//                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    // Both description and image are selected, start the upload process
-//                    showLoader();
-//                    // Simulate a 2-second delay for demonstration purposes
-//                    Handler handler = new Handler();
-//                    handler.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-////
-//                            uploadToServer();
-//
-//                            String userDescription = editTextDescription.getText().toString();
-//                            // Save the userDescription in a public static variable for further use
-//                            Upload.description = userDescription;
-//                        }
-//                    }, 2000);
-//                }
-//            }
-//        });
 
 
 //        For Getting Image From gallery
@@ -330,12 +270,8 @@ public class Upload extends AppCompatActivity {
 
     void showExif(Uri photoUri) {
         if (photoUri != null) {
-            ParcelFileDescriptor parcelFileDescriptor = null;
-
-            try {
-                parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r");
+            try (ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r")) {
                 FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
 
                 // Extract and store the EXIF information in proper variables
@@ -348,14 +284,6 @@ public class Upload extends AppCompatActivity {
                 if (latitude != null && latitudeRef != null && longitude != null && longitudeRef != null) {
                     gpsLatitude = convertToDegree(latitude, latitudeRef);
                     gpsLongitude = convertToDegree(longitude, longitudeRef);
-
-                    // Print the EXIF information
-                    System.out.println("GPS Latitude: " + latitude);
-                    System.out.println("GPS Longitude: " + longitude);
-                    System.out.println("Ref Latitude: " + latitudeRef);
-                    System.out.println("Ref Longitude: " + longitudeRef);
-                    System.out.println("GPS Latitude (Converted): " + gpsLatitude);
-                    System.out.println("GPS Longitude (Converted): " + gpsLongitude);
                 }
 
                 // Parse the datetime attribute to separate date and time variables
@@ -366,20 +294,16 @@ public class Upload extends AppCompatActivity {
                         dateTaken = dateFormat.parse(datetime);
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
                         timeTaken = timeFormat.parse(datetime.substring(11));
+                        date_today = dateFormat.format(dateTaken);
+                        time_today = timeFormat.format(timeTaken);
                     } catch (ParseException e) {
                         e.printStackTrace();
                         dateTaken = null;
                         timeTaken = null;
+                        date_today = null;
+                        time_today = null;
                     }
                 }
-
-                parcelFileDescriptor.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(),
-                        "Something wrong:\n" + e,
-                        Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(getApplicationContext(),
@@ -387,19 +311,8 @@ public class Upload extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         }
-
-        // Call the printExifInfo() method here to print the converted values
-        printExifInfo();
     }
 
-    void printExifInfo() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        System.out.println("Date Taken: " + (dateTaken != null ? dateFormat.format(dateTaken) : "N/A"));
-        date_today = dateFormat.format(dateTaken).toString();
-        System.out.println("Time Taken: " + (timeTaken != null ? timeFormat.format(timeTaken) : "N/A"));
-        time_today = timeFormat.format(timeTaken).toString();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -436,31 +349,31 @@ public class Upload extends AppCompatActivity {
         }
     }
 
-    private void encodeBitmap(Bitmap bitmap){
+    private void encodeBitmap(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
 
         byte[] byteOfImages = byteArrayOutputStream.toByteArray();
         encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
 
     }
 
-    private void uploadToServer(){
+    private void uploadToServer() {
         String school_Name = Home.selectedSchool.trim();
         String po_office = Login.selectedPoOffice.trim();
         String image_name = Home.selectedBuilding.trim();
         String image_type = "jpg";
         String image_pdf = encodedImage;
         String upload_date = date_today;
-        String upload_time= time_today;
+        String upload_time = time_today;
         String EntryBy = Login.selectedJuniorEngineer.trim();
         String Longitude = Double.toString(gpsLongitude);
         String Latitude = Double.toString(gpsLatitude);
         String user_upload_date = Home.selectedDate;
         String Description = description;
-        String Tags = Arrays.toString(issueList.toArray());
+        String Tags = Arrays.toString(selectedIssuesList.toArray());
 
-
+        showLoader();
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -471,37 +384,35 @@ public class Upload extends AppCompatActivity {
                 iv_imgView.setImageDrawable(null);
 
                 // Clear the selected issues list
-                for (int i = 0; i < selectedIssues.length; i++) {
-                    selectedIssues[i] = false;
-                }
-                issueList.clear();
+
+                selectedIssuesList.clear();
                 hideLoader();
-                Toast.makeText(getApplicationContext(),"Uploaded Sucesfully",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 
             }
-        }){
+        }) {
 
             @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> map = new HashMap<>();
-                map.put("school_Name",school_Name);
-                map.put("po_office",po_office);
-                map.put("image_name",image_name);
-                map.put("image_type",image_type);
-                map.put("image_pdf",image_pdf);
-                map.put("upload_date",upload_date);
-                map.put("upload_time",upload_time);
-                map.put("EntryBy",EntryBy);
-                map.put("Longitude",Longitude);
-                map.put("Latitude",Latitude);
-                map.put("user_upload_date",user_upload_date);
-                map.put("Description",Description);
-                map.put("Tags",Tags);
+                Map<String, String> map = new HashMap<>();
+                map.put("school_Name", school_Name);
+                map.put("po_office", po_office);
+                map.put("image_name", image_name);
+                map.put("image_type", image_type);
+                map.put("image_pdf", image_pdf);
+                map.put("upload_date", upload_date);
+                map.put("upload_time", upload_time);
+                map.put("EntryBy", EntryBy);
+                map.put("Longitude", Longitude);
+                map.put("Latitude", Latitude);
+                map.put("user_upload_date", user_upload_date);
+                map.put("Description", Description);
+                map.put("Tags", Tags);
                 return map;
             }
         };
