@@ -37,7 +37,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     public static String selectedWorkorder;
     public static String selectedBuilding;
     public static String selectedDate;
-    public static String selectedSchoolId;
     // Sample data for school names, workorder names, and building names
     private static String[] schoolNames = {"Select School"};
     String [] schools,school_id,buildings,building_uniq_ids;
