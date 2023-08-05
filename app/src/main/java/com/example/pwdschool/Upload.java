@@ -1,5 +1,6 @@
 package com.example.pwdschool;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -59,6 +60,7 @@ public class Upload extends AppCompatActivity {
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
+    private final String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
     public String date_today, time_today;
     public String encodedImage;
     Uri targetUri = null;
@@ -70,8 +72,8 @@ public class Upload extends AppCompatActivity {
     private Button buttonUploadImage;
     private ProgressBar loader;
     private EditText editTextDescription;
-    private final String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
-//
+    private ProgressDialog progressDialog;
+    //
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -131,7 +133,13 @@ public class Upload extends AppCompatActivity {
         textUri = findViewById(R.id.Dimensions);
         textUri.setOnClickListener(textUriOnClickListener);
         editTextDescription = findViewById(R.id.editTextDescription);
-//
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading, please wait...");
+        progressDialog.setCancelable(false);
+
+        // Disable description and tags initially
+        editTextDescription.setEnabled(false);
         //set junior engineer loggedin
         String juniorEngineer = Login.selectedJuniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
@@ -160,8 +168,11 @@ public class Upload extends AppCompatActivity {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
 
-                    // Both description and image are selected, start the upload process
-                    showLoader();
+                    // Disable the upload button to prevent multiple clicks
+                    buttonUploadImage.setEnabled(false);
+
+                    // Show progress dialog to indicate the upload is in progress
+                    progressDialog.show();
 
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
@@ -268,6 +279,72 @@ public class Upload extends AppCompatActivity {
 
     }
 
+    private void uploadToServer() {
+        String school_Name = Home.selectedSchool.trim();
+        String po_office = Login.selectedPoOffice.trim();
+        String image_name = Home.selectedBuilding.trim();
+        String image_type = "jpg";
+        String image_pdf = encodedImage;
+        String upload_date = date_today;
+        String upload_time = time_today;
+        String EntryBy = Login.selectedJuniorEngineer.trim();
+        String Longitude = Double.toString(gpsLongitude);
+        String Latitude = Double.toString(gpsLatitude);
+        String user_upload_date = Home.selectedDate;
+        String Description = description;
+        String Tags = Arrays.toString(selectedIssuesList.toArray());
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                editTextDescription.setText("");
+                iv_imgView.setImageDrawable(null);
+                selectedIssuesList.clear();
+                textView.setText("");
+                // Re-enable the "Upload" button after the upload is completed
+                buttonUploadImage.setEnabled(true);
+
+                // Dismiss the progress dialog
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Re-enable the "Upload" button after the upload is completed
+                buttonUploadImage.setEnabled(true);
+
+                // Dismiss the progress dialog
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<>();
+                map.put("school_Name", school_Name);
+                map.put("po_office", po_office);
+                map.put("image_name", image_name);
+                map.put("image_type", image_type);
+                map.put("image_pdf", image_pdf);
+                map.put("upload_date", upload_date);
+                map.put("upload_time", upload_time);
+                map.put("EntryBy", EntryBy);
+                map.put("Longitude", Longitude);
+                map.put("Latitude", Latitude);
+                map.put("user_upload_date", user_upload_date);
+                map.put("Description", Description);
+                map.put("Tags", Tags);
+                return map;
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        queue.add(request);
+    }
+
     void showExif(Uri photoUri) {
         if (photoUri != null) {
             try (ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r")) {
@@ -313,12 +390,13 @@ public class Upload extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
             Uri uri = data.getData();
+            // Enable description and tags input fields after image selection
+            editTextDescription.setEnabled(true);
             targetUri = uri;
             iv_imgView.setImageURI(uri);
             try {
@@ -358,74 +436,4 @@ public class Upload extends AppCompatActivity {
 
     }
 
-    private void uploadToServer() {
-        String school_Name = Home.selectedSchool.trim();
-        String po_office = Login.selectedPoOffice.trim();
-        String image_name = Home.selectedBuilding.trim();
-        String image_type = "jpg";
-        String image_pdf = encodedImage;
-        String upload_date = date_today;
-        String upload_time = time_today;
-        String EntryBy = Login.selectedJuniorEngineer.trim();
-        String Longitude = Double.toString(gpsLongitude);
-        String Latitude = Double.toString(gpsLatitude);
-        String user_upload_date = Home.selectedDate;
-        String Description = description;
-        String Tags = Arrays.toString(selectedIssuesList.toArray());
-
-        showLoader();
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Clear the description field
-                editTextDescription.setText("");
-
-                // Clear the image view
-                iv_imgView.setImageDrawable(null);
-
-                // Clear the selected issues list
-
-                selectedIssuesList.clear();
-                hideLoader();
-                Toast.makeText(getApplicationContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("school_Name", school_Name);
-                map.put("po_office", po_office);
-                map.put("image_name", image_name);
-                map.put("image_type", image_type);
-                map.put("image_pdf", image_pdf);
-                map.put("upload_date", upload_date);
-                map.put("upload_time", upload_time);
-                map.put("EntryBy", EntryBy);
-                map.put("Longitude", Longitude);
-                map.put("Latitude", Latitude);
-                map.put("user_upload_date", user_upload_date);
-                map.put("Description", Description);
-                map.put("Tags", Tags);
-                return map;
-            }
-        };
-
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        queue.add(request);
-    }
-
-    private void showLoader() {
-        loader.setVisibility(View.VISIBLE);
-    }
-
-    private void hideLoader() {
-        loader.setVisibility(View.GONE);
-    }
 }
