@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
     //Junior Engineer initial Array before Reading data from DB
     private static String[] JUNIOR_ENGINEERS = {"Select"};
     String[] atc_array,po_array,je_array,Pass;
-    private String address ="http://192.168.137.121/login_pwd.php";
+    private String address ="http://192.168.137.121/app_login_pwd.php";
 
     // Public variables to store user input
     public static String selectedAtcOffice;

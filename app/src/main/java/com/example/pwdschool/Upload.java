@@ -54,23 +54,25 @@ public class Upload extends AppCompatActivity {
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
+    public String date_today,time_today;
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
-    private final String url = "http://192.168.137.121/upload_Image.php";
-    public String date_today, time_today;
     public String encodedImage;
+    private Button pickImageButton;
+    private Button buttonUploadImage;
+    private ProgressBar loader;
+    private EditText editTextDescription;
+    private String url = "http://192.168.137.121/app_upload_Image.php";
+
     Uri targetUri = null;
     TextView textUri;
     TextView textView;
     boolean[] selectedIssues;
     ArrayList<Integer> issueList = new ArrayList<>();
     String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
-    private Button pickImageButton;
-    private Button buttonUploadImage;
-    private ProgressBar loader;
-    private EditText editTextDescription;
-    //
+//
+
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -92,6 +94,7 @@ public class Upload extends AppCompatActivity {
                 }
 
             };
+
 
     // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
     private static double convertToDegree(String coordinate, String ref) {
@@ -325,103 +328,6 @@ public class Upload extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
-            Uri uri = data.getData();
-            targetUri = uri;
-            iv_imgView.setImageURI(uri);
-            try {
-                encodeBitmap(BitmapFactory.decodeStream(getApplicationContext().getContentResolver().openInputStream(uri)));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-            showExif(targetUri);
-
-            Uri dataUri = data.getData();
-            if (requestCode == RQS_OPEN_IMAGE) {
-                targetUri = dataUri;
-                iv_imgView.setImageURI(uri);
-                showExif(targetUri);
-            }
-        }
-    }
-
-    private void uploadToServer() {
-        String school_Name = Home.selectedSchool.trim();
-        String po_office = Login.selectedPoOffice.trim();
-        String image_name = Home.selectedBuilding.trim();
-        String image_type = "jpg";
-        String image_pdf = encodedImage;
-        String upload_date = date_today;
-        String upload_time = time_today;
-        String EntryBy = Login.selectedJuniorEngineer.trim();
-
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Clear the description field
-                editTextDescription.setText("");
-
-                // Clear the image view
-                iv_imgView.setImageDrawable(null);
-
-                // Clear the selected issues list
-                for (int i = 0; i < selectedIssues.length; i++) {
-                    selectedIssues[i] = false;
-                }
-                issueList.clear();
-                Toast.makeText(getApplicationContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        }) {
-
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("school_Name", school_Name);
-                map.put("po_office", po_office);
-                map.put("image_name", image_name);
-                map.put("image_type", image_type);
-                map.put("image_pdf", image_pdf);
-                map.put("upload_date", upload_date);
-                map.put("upload_time", upload_time);
-                map.put("EntryBy", EntryBy);
-                return map;
-            }
-        };
-
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        queue.add(request);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == CAMERA_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void encodeBitmap(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-
-        byte[] byteOfImages = byteArrayOutputStream.toByteArray();
-        encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
-
-    }
-
     void showExif(Uri photoUri) {
         if (photoUri != null) {
             ParcelFileDescriptor parcelFileDescriptor = null;
@@ -490,9 +396,106 @@ public class Upload extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         System.out.println("Date Taken: " + (dateTaken != null ? dateFormat.format(dateTaken) : "N/A"));
-        date_today = dateFormat.format(dateTaken);
+        date_today = dateFormat.format(dateTaken).toString();
         System.out.println("Time Taken: " + (timeTaken != null ? timeFormat.format(timeTaken) : "N/A"));
-        time_today = timeFormat.format(timeTaken);
+        time_today = timeFormat.format(timeTaken).toString();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
+            Uri uri = data.getData();
+            targetUri = uri;
+            iv_imgView.setImageURI(uri);
+            try {
+                encodeBitmap(BitmapFactory.decodeStream(getApplicationContext().getContentResolver().openInputStream(uri)));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            showExif(targetUri);
+
+            Uri dataUri = data.getData();
+            if (requestCode == RQS_OPEN_IMAGE) {
+                targetUri = dataUri;
+                iv_imgView.setImageURI(uri);
+                showExif(targetUri);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void encodeBitmap(Bitmap bitmap){
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+
+        byte[] byteOfImages = byteArrayOutputStream.toByteArray();
+        encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
+
+    }
+
+    private void uploadToServer(){
+        String school_Name = Home.selectedSchool.trim();
+        String po_office = Login.selectedPoOffice.trim();
+        String image_name = Home.selectedBuilding.trim();
+        String image_type = "jpg";
+        String image_pdf = encodedImage;
+        String upload_date = date_today;
+        String upload_time= time_today;
+        String EntryBy = Login.selectedJuniorEngineer.trim();
+        String Longitude = Double.toString(gpsLongitude);
+        String Latitude = Double.toString(gpsLatitude);
+        String user_date = Home.selectedDate;
+        String Description = description;
+        String Tags = selectedIssues.toString();
+
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(getApplicationContext(),"Uploaded Sucesfully",Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> map = new HashMap<>();
+                map.put("school_Name",school_Name);
+                map.put("po_office",po_office);
+                map.put("image_name",image_name);
+                map.put("image_type",image_type);
+                map.put("image_pdf",image_pdf);
+                map.put("upload_date",upload_date);
+                map.put("upload_time",upload_time);
+                map.put("EntryBy",EntryBy);
+                map.put("Longitude",Longitude);
+                map.put("Latitude",Latitude);
+                map.put("user_date",user_date);
+                map.put("Description",Description);
+                map.put("Tags",Tags);
+                return map;
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        queue.add(request);
     }
 
     private void showLoader() {
