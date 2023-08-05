@@ -49,7 +49,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
-    private String school_Address = "http://192.168.1.4/school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
+    private String school_Address = "http://192.168.137.121/school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
 
     private Calendar calendar;
     private Button buttonSurvey;
@@ -166,7 +166,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                     }
                 }
                 String ID=school_id[index];
-                String building_address = "http://192.168.1.4/building_select.php?school_id="+ID;
+                String building_address = "http://192.168.137.121/building_select.php?school_id="+ID;
                 getBuildings(building_address);
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
