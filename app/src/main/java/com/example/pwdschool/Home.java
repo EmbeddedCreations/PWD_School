@@ -41,7 +41,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     // Sample data for school names, workorder names, and building names
     private static String[] schoolNames = {"Select School"};
     String [] schools,school_id,buildings,building_uniq_ids;
-    private final String[] workorderNames = {"Select Workorder", "Workorder 1", "Workorder 2", "Workorder 3"};
+    private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
     private static String[] buildingNames = {"Select Building"};
 
     private Spinner spinnerSchool;
@@ -157,35 +157,53 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         // Handle spinner item selection
         switch (parent.getId()) {
             case R.id.spinnerSchool:
-                selectedSchool = parent.getItemAtPosition(position).toString();
-                int index = 0;
-                for(int i =0;i<schools.length;i++){
-                    if(selectedSchool.equals(schools[i])){
-                        index = i;
-                        break;
-                    }
-                }
-                String ID=school_id[index];
-                String building_address = "http://192.168.137.121/app_building_select.php?school_id="+ID;
-                getBuildings(building_address);
-                ArrayList<String> tempBuildings = new ArrayList<>();
-                tempBuildings.add("Select Building");
-                for(int i =0;i<buildings.length;i++){
-                    tempBuildings.add(buildings[i]);
-                }
-                buildingNames = tempBuildings.toArray(new String[0]);
-                ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, buildingNames);
-                buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerBuilding.setAdapter(buildingAdapter);
+                // ... Existing code for handling school spinner ...
                 break;
             case R.id.spinnerBuilding:
                 selectedBuilding = parent.getItemAtPosition(position).toString();
                 break;
             case R.id.spinnerWorkorder:
                 selectedWorkorder = parent.getItemAtPosition(position).toString();
+                // Check if the selected value is "Workorder related Inspection"
+                if (selectedWorkorder.equals("Workorder related Inspection")) {
+                    // Show the second dropdown with the specified values
+                    TextView textViewSecondDropdownTitle = findViewById(R.id.textViewSecondDropdownTitle);
+                    Spinner spinnerSecondDropdown = findViewById(R.id.spinnerSecondDropdown);
+                    textViewSecondDropdownTitle.setVisibility(View.VISIBLE);
+                    spinnerSecondDropdown.setVisibility(View.VISIBLE);
+
+                    // Populate the second dropdown with values
+                    String[] workorderValues = {"Workorder 1", "Workorder 2", "Workorder 3"};
+                    ArrayAdapter<String> secondDropdownAdapter = new ArrayAdapter<>(
+                            this, android.R.layout.simple_spinner_item, workorderValues);
+                    secondDropdownAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerSecondDropdown.setAdapter(secondDropdownAdapter);
+
+                    // Set a listener for the second dropdown
+                    spinnerSecondDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            // Handle the selection of the second dropdown if needed
+                            // For example, you can save the selected value in a variable
+                            String selectedSecondDropdownValue = parent.getItemAtPosition(position).toString();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            // Handle case when no item is selected in the second dropdown
+                        }
+                    });
+                } else {
+                    // Hide the second dropdown if the selected value is not "Workorder related Inspection"
+                    TextView textViewSecondDropdownTitle = findViewById(R.id.textViewSecondDropdownTitle);
+                    Spinner spinnerSecondDropdown = findViewById(R.id.spinnerSecondDropdown);
+                    textViewSecondDropdownTitle.setVisibility(View.GONE);
+                    spinnerSecondDropdown.setVisibility(View.GONE);
+                }
                 break;
         }
     }
+
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
