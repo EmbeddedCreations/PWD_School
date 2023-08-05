@@ -464,6 +464,17 @@ public class Upload extends AppCompatActivity {
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                // Clear the description field
+                editTextDescription.setText("");
+
+                // Clear the image view
+                iv_imgView.setImageDrawable(null);
+
+                // Clear the selected issues list
+                for (int i = 0; i < selectedIssues.length; i++) {
+                    selectedIssues[i] = false;
+                }
+                issueList.clear();
                 Toast.makeText(getApplicationContext(),"Uploaded Sucesfully",Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
