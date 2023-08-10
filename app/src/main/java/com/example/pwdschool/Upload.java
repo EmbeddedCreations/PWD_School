@@ -293,7 +293,8 @@ public class Upload extends AppCompatActivity {
         String user_upload_date = Home.selectedDate;
         String Description = description;
         String Tags = Arrays.toString(selectedIssuesList.toArray());
-
+        Tags = Tags.substring(1,Tags.length()-1);
+        String finalTags = Tags;
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -336,7 +337,7 @@ public class Upload extends AppCompatActivity {
                 map.put("Latitude", Latitude);
                 map.put("user_upload_date", user_upload_date);
                 map.put("Description", Description);
-                map.put("Tags", Tags);
+                map.put("Tags", finalTags);
                 return map;
             }
         };
