@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+//import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class ImageDescriptionAdapter extends RecyclerView.Adapter<ImageDescripti
         ImageDescriptionModel model = dataList.get(position);
 
         // Load image using Picasso or your preferred image-loading library
-        Picasso.get().load(model.getImageUrl()).into(holder.imageView);
+        //Picasso.get().load(model.getImageUrl()).into(holder.imageView);
         holder.descriptionTextView.setText(model.getDescription());
     }
 
