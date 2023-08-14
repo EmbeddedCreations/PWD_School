@@ -43,7 +43,7 @@ public class SchoolClassAdapter extends RecyclerView.Adapter<SchoolClassAdapter.
                 DisplaySchool.selectedSchoolHistory = school.getSchoolName();
                 Intent i = new Intent(context,ImageActivity.class);
                 context.startActivity(i);
-                Toast.makeText(context,"Hello konichiwa",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(context,"Hello konichiwa",Toast.LENGTH_SHORT).show();
             }
         });
     }

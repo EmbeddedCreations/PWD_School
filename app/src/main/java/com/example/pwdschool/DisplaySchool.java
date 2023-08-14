@@ -26,7 +26,7 @@ import java.util.Map;
 public class DisplaySchool extends AppCompatActivity {
 
 
-    String address = "http://192.168.1.2/appFetchSchools.php?user="+Login.selectedJuniorEngineer;
+    String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user="+Login.selectedJuniorEngineer;
 
     InputStream is;
     String line;
