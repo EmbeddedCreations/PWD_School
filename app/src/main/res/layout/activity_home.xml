@@ -170,6 +170,7 @@
         app:layout_constraintStart_toEndOf="@+id/textViewBuildingTitle"
         app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle"
         app:layout_constraintVertical_chainStyle="packed" />
+
     <TextView
         android:id="@+id/textViewDateTitle"
         android:layout_width="wrap_content"

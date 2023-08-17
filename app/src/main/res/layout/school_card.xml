@@ -1,53 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_margin="5dp"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/schoolCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
     android:background="@drawable/item_background"
-    android:elevation="4dp"
     android:clickable="true"
+    android:elevation="4dp"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground">
-    
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/iconImageView"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/baseline_school_24" />
+        <ImageView
+            android:id="@+id/iconImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/baseline_school_24" />
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginStart="16dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/SchoolNameTextView"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="School Name"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/SchoolNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="School Name"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
 
-        <TextView
-            android:id="@+id/BuildingNamesTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Building Names"
-            android:textSize="14sp" />
+            <TextView
+                android:id="@+id/BuildingNamesTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Building Names"
+                android:textSize="14sp" />
 
 
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </FrameLayout>

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,16 +16,17 @@ import java.util.List;
 
 public class SchoolClassAdapter extends RecyclerView.Adapter<SchoolClassAdapter.ViewHolder> {
 
-    private List<SchoolClass> SchoolList;
+    private final List<SchoolClass> SchoolList;
 
 
-    SchoolClassAdapter(List<SchoolClass> SchoolList){
+    SchoolClassAdapter(List<SchoolClass> SchoolList) {
         this.SchoolList = SchoolList;
     }
+
     @NonNull
     @Override
     public SchoolClassAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.school_card,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.school_card, parent, false);
         return new ViewHolder(view);
     }
 
@@ -41,9 +41,9 @@ public class SchoolClassAdapter extends RecyclerView.Adapter<SchoolClassAdapter.
             public void onClick(View view) {
                 Context context = view.getContext();
                 DisplaySchool.selectedSchoolHistory = school.getSchoolName();
-                Intent i = new Intent(context,ImageActivity.class);
+                Intent i = new Intent(context, ImageActivity.class);
                 context.startActivity(i);
-                Toast.makeText(context,"Hello konichiwa",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Hello konichiwa", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -53,11 +53,12 @@ public class SchoolClassAdapter extends RecyclerView.Adapter<SchoolClassAdapter.
         return SchoolList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView schoolName;
         TextView buildingNames;
         FrameLayout schoolCard;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             schoolName = itemView.findViewById(R.id.SchoolNameTextView);

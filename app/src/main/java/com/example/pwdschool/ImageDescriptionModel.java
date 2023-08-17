@@ -1,10 +1,10 @@
 package com.example.pwdschool;
 
 public class ImageDescriptionModel {
-    private String imageUrl;
-    private String buildingName;
-    private String date;
-    private String description;
+    private final String imageUrl;
+    private final String buildingName;
+    private final String date;
+    private final String description;
 
     public ImageDescriptionModel(String imageUrl, String buildingName, String date, String description) {
         this.imageUrl = imageUrl;
