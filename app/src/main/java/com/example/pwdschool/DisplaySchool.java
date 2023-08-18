@@ -2,7 +2,6 @@ package com.example.pwdschool;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,14 +27,14 @@ public class DisplaySchool extends AppCompatActivity {
 
     String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user="+Login.selectedJuniorEngineer;
 
+    public static String selectedSchoolHistory;
+
     InputStream is;
     String line;
     String result;
+    Map<String, String> schoolBuildingsMap = new HashMap<>();
     private RecyclerView recyclerView;
     private SchoolClassAdapter schoolClassAdapter;
-    public static String selectedSchoolHistory;
-    Map<String, String> schoolBuildingsMap = new HashMap<>();
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class DisplaySchool extends AppCompatActivity {
         List<SchoolClass> Schools = new ArrayList<>();
         for (Map.Entry<String, String> entry : schoolBuildingsMap.entrySet()) {
 
-            Schools.add(new SchoolClass(entry.getKey(),entry.getValue()));
+            Schools.add(new SchoolClass(entry.getKey(), entry.getValue()));
         }
         recyclerView = findViewById(R.id.schoolRecyclerView);
         schoolClassAdapter = new SchoolClassAdapter(Schools);
@@ -57,8 +56,8 @@ public class DisplaySchool extends AppCompatActivity {
 
     }
 
-    public void getData(){
-        try{
+    public void getData() {
+        try {
             URL url = new URL(address);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
@@ -66,29 +65,29 @@ public class DisplaySchool extends AppCompatActivity {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
-            while((line = br.readLine())!= null){
-                sb.append(line+"/n");
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "/n");
             }
             is.close();
             result = sb.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             JSONArray js = new JSONArray(result);
             JSONObject jo = null;
-            for(int i =0;i<js.length();i++){
+            for (int i = 0; i < js.length(); i++) {
                 jo = js.getJSONObject(i);
                 String school = jo.getString("school_name");
                 String building = jo.getString("image_name");
-                if(schoolBuildingsMap.containsKey(school)){
+                if (schoolBuildingsMap.containsKey(school)) {
                     String existingBuildings = schoolBuildingsMap.get(school);
                     schoolBuildingsMap.put(school, existingBuildings + ", " + building);
-                }else {
+                } else {
                     schoolBuildingsMap.put(school, building);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

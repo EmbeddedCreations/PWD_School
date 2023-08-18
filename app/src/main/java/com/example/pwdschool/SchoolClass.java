@@ -2,11 +2,11 @@ package com.example.pwdschool;
 
 public class SchoolClass {
 
-    private String schoolName;
-    private String buildingName;
+    private final String schoolName;
+    private final String buildingName;
 
-    SchoolClass(String schoolName,String buildingName){
-        this.schoolName =schoolName;
+    SchoolClass(String schoolName, String buildingName) {
+        this.schoolName = schoolName;
         this.buildingName = buildingName;
     }
 

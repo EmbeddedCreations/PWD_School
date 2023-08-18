@@ -293,7 +293,7 @@ public class Upload extends AppCompatActivity {
         String user_upload_date = Home.selectedDate;
         String Description = description;
         String Tags = Arrays.toString(selectedIssuesList.toArray());
-        Tags = Tags.substring(1,Tags.length()-1);
+        Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override

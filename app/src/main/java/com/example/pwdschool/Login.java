@@ -29,24 +29,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Login extends AppCompatActivity {
-    String line,result;
-    InputStream is = null;
-
-    // ATC Office initial Array before Reading data from DB
-    private static  String[] ATC = {"Select ATC Office"};
-    //Po-Office initial Array before Reading data from DB
-    private static String[] PO_OFFICE = {"Select PO Office"};
-    //Junior Engineer initial Array before Reading data from DB
-    private static String[] JUNIOR_ENGINEERS = {"Select JE"};
-    String[] atc_array,po_array,je_array,Pass;
-    private String address ="https://embeddedcreation.in/tribalpwd/admin_panel/app_login_pwd.php";
-
     // Public variables to store user input
     public static String selectedAtcOffice;
     public static String selectedPoOffice;
     public static String selectedJuniorEngineer;
-    public static String Password = null,inputPassword;
-
+    public static String Password = null, inputPassword;
+    // ATC Office initial Array before Reading data from DB
+    private static String[] ATC = {"Select ATC Office"};
+    //Po-Office initial Array before Reading data from DB
+    private static String[] PO_OFFICE = {"Select PO Office"};
+    //Junior Engineer initial Array before Reading data from DB
+    private static String[] JUNIOR_ENGINEERS = {"Select JE"};
+    String line, result;
+    InputStream is = null;
+    String[] atc_array, po_array, je_array, Pass;
+    private final String address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_login_pwd.php";
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
     private Spinner selectJuniorEngineerSpinner;
@@ -92,10 +89,10 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 // Handle Authentication Logic
                 inputPassword = passwordEditText.getText().toString();
-                if( Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null){
-                    Toast.makeText(Login.this,"Incorrect Password or Incorrect Credentials",Toast.LENGTH_SHORT).show();
+                if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
+                    Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
                 } else if (Password.equals(inputPassword)) {
-                    Toast.makeText(Login.this,"SuccessFul Login",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "SuccessFul Login", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(Login.this, Home.class);
                     startActivity(i);
                 }
@@ -110,8 +107,8 @@ public class Login extends AppCompatActivity {
                 selectedAtcOffice = parent.getItemAtPosition(position).toString();
                 ArrayList<String> tempPOList = new ArrayList<>();
                 tempPOList.add("Select PO Office");
-                for(int i = 0;i<po_array.length;i++){
-                    if(selectedAtcOffice.equals(atc_array[i])){
+                for (int i = 0; i < po_array.length; i++) {
+                    if (selectedAtcOffice.equals(atc_array[i])) {
                         tempPOList.add(po_array[i]);
                     }
                 }
@@ -124,6 +121,7 @@ public class Login extends AppCompatActivity {
                     selectAtcOfficeSpinner.setSelection(0, false);
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -135,8 +133,8 @@ public class Login extends AppCompatActivity {
                 selectedPoOffice = parent.getItemAtPosition(position).toString();
                 ArrayList<String> tempJeList = new ArrayList<>();
                 tempJeList.add("Select JE");
-                for(int i = 0;i<je_array.length;i++){
-                    if(selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])){
+                for (int i = 0; i < je_array.length; i++) {
+                    if (selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])) {
                         tempJeList.add(je_array[i]);
                     }
                 }
@@ -159,9 +157,9 @@ public class Login extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedJuniorEngineer = parent.getItemAtPosition(position).toString();
-                for(int i =0;i<Pass.length;i++){
-                    if(selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
-                    && selectedAtcOffice.equals(atc_array[i])){
+                for (int i = 0; i < Pass.length; i++) {
+                    if (selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
+                            && selectedAtcOffice.equals(atc_array[i])) {
                         Password = Pass[i];
                     }
                 }
@@ -221,9 +219,9 @@ public class Login extends AppCompatActivity {
     }
 
     //Function to get Data from php script which gets data from mysql database
-    public void getData(){
+    public void getData() {
 
-        try{
+        try {
             URL url = new URL(address);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
@@ -231,29 +229,29 @@ public class Login extends AppCompatActivity {
             //Reading it into a string
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             StringBuilder sb = new StringBuilder();
-            while((line = br.readLine())!= null){
-                sb.append(line+"\n");
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
             }
             is.close();
             result = sb.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            JSONArray js =new JSONArray(result);
+            JSONArray js = new JSONArray(result);
             JSONObject jo = null;
             atc_array = new String[js.length()];
             po_array = new String[js.length()];
             je_array = new String[js.length()];
             Pass = new String[js.length()];
-            for(int i =0;i<js.length();i++){
+            for (int i = 0; i < js.length(); i++) {
                 jo = js.getJSONObject(i);
                 atc_array[i] = jo.getString("atc_office");
                 po_array[i] = jo.getString("po_office");
                 je_array[i] = jo.getString("username");
                 Pass[i] = jo.getString("password");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
