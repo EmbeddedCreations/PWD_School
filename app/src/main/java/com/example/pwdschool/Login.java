@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -30,6 +32,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class Login extends AppCompatActivity {
@@ -38,6 +41,9 @@ public class Login extends AppCompatActivity {
     public static String selectedPoOffice;
     public static String selectedJuniorEngineer;
     public static String Password = null, inputPassword;
+    SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
+    String jsonArrayString = sharedPreferences.getString("array_key", null);
+
     // ATC Office initial Array before Reading data from DB
     private static String[] ATC = {"Select ATC Office"};
     //Po-Office initial Array before Reading data from DB
@@ -47,33 +53,47 @@ public class Login extends AppCompatActivity {
     String line, result;
     InputStream is = null;
     String[] atc_array, po_array, je_array, Pass;
+
     private final String address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_login_pwd.php";
+    private static String school_Address;
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
     private Button loginButton;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(!isNetworkAvailable()){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Cannot Connect To the Server")
-                    .setMessage("Please make Sure you have an Internet Connection at the time of Login")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-        }else{
-            getData();
+        if (jsonArrayString != null) {
+            try {
+                JSONArray jsonArray = new JSONArray(jsonArrayString);
+                String[] retrievedArray = new String[jsonArray.length()];
+                selectedAtcOffice = retrievedArray[0];
+                selectedPoOffice = retrievedArray[1];
+                selectedJuniorEngineer = retrievedArray[2];
+                school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if(!isNetworkAvailable()){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Cannot Connect To the Server")
+                        .setMessage("Please make Sure you have an Internet Connection at the time of Login")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+            }else{
+                getData();
+            }
         }
-
-
 
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
@@ -104,11 +124,23 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Handle Authentication Logic
+
                 inputPassword = passwordEditText.getText().toString();
+                if(jsonArrayString != null){
+                    Intent i = new Intent(Login.this, Home.class);
+                    startActivity(i);
+                }
                 if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
                     Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
                 } else if (Password.equals(inputPassword)) {
                     Toast.makeText(Login.this, "SuccessFul Login", Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String[] myArray = {selectedAtcOffice, selectedPoOffice, selectedJuniorEngineer};
+                    JSONArray jsonArray = new JSONArray(Arrays.asList(myArray));
+                    String jsonArrayString = jsonArray.toString();
+                    editor.putString("array_key", jsonArrayString);
+                    editor.apply();
+                    school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
                     Intent i = new Intent(Login.this, Home.class);
                     startActivity(i);
                 }
@@ -271,6 +303,7 @@ public class Login extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
     private boolean isNetworkAvailable(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
