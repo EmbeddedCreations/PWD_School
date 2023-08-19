@@ -11,12 +11,12 @@
         android:id="@+id/logOutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="25dp"
         android:text="Log out"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/junior_engineer_name_text" />
+        app:layout_constraintTop_toBottomOf="@+id/upload_db_button" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -121,4 +121,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/junior_engineer_name_text" />
+
+    <Button
+    android:id="@+id/upload_db_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="25dp"
+    android:text="Upload Local DB"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/view_history_button" />
 </androidx.constraintlayout.widget.ConstraintLayout>
