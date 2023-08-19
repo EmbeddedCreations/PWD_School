@@ -81,9 +81,12 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         ArrayList<String> tempSchoolList = new ArrayList<>();
         tempSchoolList.add("Select School");
-        for (int i = 0; i < schools.length; i++) {
-            tempSchoolList.add(schools[i]);
+        if(schools != null){
+            for (int i = 0; i < schools.length; i++) {
+                tempSchoolList.add(schools[i]);
+            }
         }
+
         schoolNames = tempSchoolList.toArray(new String[0]);
         // Set up spinner adapters with the arrays
         ArrayAdapter<String> schoolAdapter = new ArrayAdapter<>(
@@ -174,15 +177,20 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
                 int index = 0;
-                for (int i = 0; i < schools.length; i++) {
-                    if (selectedSchool.equals(schools[i])) {
-                        index = i;
-                        break;
+                String ID ="1";
+                if(schools != null){
+                    for (int i = 0; i < schools.length; i++) {
+                        if (selectedSchool.equals(schools[i])) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if(school_id.length > 0){
+                        ID = school_id[index];
                     }
                 }
-//                String ID = school_id[index];
-//                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id=" + ID;
-//                getBuildings(building_address);
+                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id=" + ID;
+                getBuildings(building_address);
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
                 if(buildings != null){
