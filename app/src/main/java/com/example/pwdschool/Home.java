@@ -3,8 +3,10 @@ package com.example.pwdschool;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -56,7 +59,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         getSchoolData();
 
@@ -118,6 +121,10 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             @Override
             public void onClick(View v) {
                 // Redirect the user back to the Login activity
+                SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("array_key"); // Remove the stored token
+                editor.apply();
                 Intent intent = new Intent(Home.this, Login.class);
                 startActivity(intent);
                 finish(); // Close the current activity
@@ -173,13 +180,15 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                         break;
                     }
                 }
-                String ID = school_id[index];
-                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id=" + ID;
-                getBuildings(building_address);
+//                String ID = school_id[index];
+//                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id=" + ID;
+//                getBuildings(building_address);
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
-                for (int i = 0; i < buildings.length; i++) {
-                    tempBuildings.add(buildings[i]);
+                if(buildings != null){
+                    for (int i = 0; i < buildings.length; i++) {
+                        tempBuildings.add(buildings[i]);
+                    }
                 }
                 buildingNames = tempBuildings.toArray(new String[0]);
                 ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, buildingNames);

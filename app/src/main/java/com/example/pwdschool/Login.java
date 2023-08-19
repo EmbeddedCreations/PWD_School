@@ -10,6 +10,7 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,8 +42,8 @@ public class Login extends AppCompatActivity {
     public static String selectedPoOffice;
     public static String selectedJuniorEngineer;
     public static String Password = null, inputPassword;
-    SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
-    String jsonArrayString = sharedPreferences.getString("array_key", null);
+    SharedPreferences sharedPreferences;
+
 
     // ATC Office initial Array before Reading data from DB
     private static String[] ATC = {"Select ATC Office"};
@@ -60,22 +61,29 @@ public class Login extends AppCompatActivity {
     private Spinner selectPoOfficeSpinner;
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
+    private static int flag =0;
     private Button loginButton;
+    private static String[] retrievedArray;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        if (jsonArrayString != null) {
+        sharedPreferences =getSharedPreferences("Auth_Token", MODE_PRIVATE);
+        String jsonArrayString = sharedPreferences.getString("array_key", "");
+        if (!jsonArrayString.equals("")) {
             try {
                 JSONArray jsonArray = new JSONArray(jsonArrayString);
-                String[] retrievedArray = new String[jsonArray.length()];
+                retrievedArray = new String[jsonArray.length()];
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    retrievedArray[i] = jsonArray.getString(i);
+                }
                 selectedAtcOffice = retrievedArray[0];
                 selectedPoOffice = retrievedArray[1];
                 selectedJuniorEngineer = retrievedArray[2];
-                school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+                flag =1;
+                //school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -91,6 +99,7 @@ public class Login extends AppCompatActivity {
                             }
                         });
             }else{
+                StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
                 getData();
             }
         }
@@ -104,11 +113,12 @@ public class Login extends AppCompatActivity {
         ArrayList<String> uniqueList = new ArrayList<>();
         HashSet<String> uniqueSet = new HashSet<>();
         uniqueList.add("Select ATC Office");
-
-        for (String element : atc_array) {
-            if (!element.equals("Select ATC Office") && !uniqueSet.contains(element)) {
-                uniqueList.add(element);
-                uniqueSet.add(element);
+        if(atc_array != null){
+            for (String element : atc_array) {
+                if (!element.equals("Select ATC Office") && !uniqueSet.contains(element)) {
+                    uniqueList.add(element);
+                    uniqueSet.add(element);
+                }
             }
         }
         ATC = uniqueList.toArray(new String[0]);
@@ -119,47 +129,23 @@ public class Login extends AppCompatActivity {
         atcAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapters to the Spinners
         selectAtcOfficeSpinner.setAdapter(atcAdapter);
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle Authentication Logic
-
-                inputPassword = passwordEditText.getText().toString();
-                if(jsonArrayString != null){
-                    Intent i = new Intent(Login.this, Home.class);
-                    startActivity(i);
-                }
-                if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
-                    Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
-                } else if (Password.equals(inputPassword)) {
-                    Toast.makeText(Login.this, "SuccessFul Login", Toast.LENGTH_SHORT).show();
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    String[] myArray = {selectedAtcOffice, selectedPoOffice, selectedJuniorEngineer};
-                    JSONArray jsonArray = new JSONArray(Arrays.asList(myArray));
-                    String jsonArrayString = jsonArray.toString();
-                    editor.putString("array_key", jsonArrayString);
-                    editor.apply();
-                    school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
-                    Intent i = new Intent(Login.this, Home.class);
-                    startActivity(i);
-                }
-
-            }
-        });
-
         // Set an OnItemSelectedListener to handle the user selection
         selectAtcOfficeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedAtcOffice = parent.getItemAtPosition(position).toString();
+                if(flag == 0){
+                    selectedAtcOffice = parent.getItemAtPosition(position).toString();
+                }
                 ArrayList<String> tempPOList = new ArrayList<>();
                 tempPOList.add("Select PO Office");
-                for (int i = 0; i < po_array.length; i++) {
-                    if (selectedAtcOffice.equals(atc_array[i])) {
-                        tempPOList.add(po_array[i]);
+                if(po_array != null){
+                    for (int i = 0; i < po_array.length; i++) {
+                        if (selectedAtcOffice.equals(atc_array[i])) {
+                            tempPOList.add(po_array[i]);
+                        }
                     }
                 }
+
                 PO_OFFICE = tempPOList.toArray(new String[0]);
                 ArrayAdapter<String> poAdapter = new ArrayAdapter<>(Login.this, android.R.layout.simple_spinner_item, PO_OFFICE);
                 poAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -178,12 +164,16 @@ public class Login extends AppCompatActivity {
         selectPoOfficeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedPoOffice = parent.getItemAtPosition(position).toString();
+                if(flag == 0){
+                    selectedPoOffice = parent.getItemAtPosition(position).toString();
+                }
                 ArrayList<String> tempJeList = new ArrayList<>();
                 tempJeList.add("Select JE");
-                for (int i = 0; i < je_array.length; i++) {
-                    if (selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])) {
-                        tempJeList.add(je_array[i]);
+                if(je_array != null){
+                    for (int i = 0; i < je_array.length; i++) {
+                        if (selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])) {
+                            tempJeList.add(je_array[i]);
+                        }
                     }
                 }
                 JUNIOR_ENGINEERS = tempJeList.toArray(new String[0]);
@@ -204,11 +194,15 @@ public class Login extends AppCompatActivity {
         selectJuniorEngineerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedJuniorEngineer = parent.getItemAtPosition(position).toString();
-                for (int i = 0; i < Pass.length; i++) {
-                    if (selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
-                            && selectedAtcOffice.equals(atc_array[i])) {
-                        Password = Pass[i];
+                if(flag == 0){
+                    selectedJuniorEngineer = parent.getItemAtPosition(position).toString();
+                }
+                if(Pass != null){
+                    for (int i = 0; i < Pass.length; i++) {
+                        if (selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
+                                && selectedAtcOffice.equals(atc_array[i])) {
+                            Password = Pass[i];
+                        }
                     }
                 }
                 if (position == 0) {
@@ -221,6 +215,37 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+        if(!jsonArrayString.equals("")){
+            Log.d("why",jsonArrayString);
+            Intent i = new Intent(Login.this, Home.class);
+            startActivity(i);
+        }
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Handle Authentication Logic
+
+                inputPassword = passwordEditText.getText().toString();
+
+                if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
+                    Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
+                } else if (Password.equals(inputPassword)) {
+                    Toast.makeText(Login.this, "SuccessFul Login", Toast.LENGTH_SHORT).show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    String[] myArray = {selectedAtcOffice, selectedPoOffice, selectedJuniorEngineer};
+                    JSONArray jsonArray2 = new JSONArray(Arrays.asList(myArray));
+                    String jsonArrayString2 = jsonArray2.toString();
+                    editor.putString("array_key", jsonArrayString2);
+                    editor.apply();
+                    school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+                    Intent i = new Intent(Login.this, Home.class);
+                    startActivity(i);
+                }
+
+            }
+        });
+
+
         // Eye button for password visibility
         ImageView eyeButton = findViewById(R.id.eye_button);
         eyeButton.setOnClickListener(new View.OnClickListener() {

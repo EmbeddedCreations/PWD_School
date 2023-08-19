@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -35,7 +36,20 @@ public class Profile extends AppCompatActivity {
         poOfficeText.setText(poOfficeValue);
         juniorEngineerNameText.setText(juniorEngineerValue);
         Button viewHistoryButton = findViewById(R.id.view_history_button);
+        Button logOutButton = findViewById(R.id.logOutButton);
 
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("array_key"); // Remove the stored token
+                editor.apply();
+                Intent intent = new Intent(Profile.this, Login.class);
+                startActivity(intent);
+                finish();
+            }
+        });
         // Set a click listener for the button
         viewHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
