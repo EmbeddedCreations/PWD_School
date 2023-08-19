@@ -40,14 +40,13 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private static String[] schoolNames = {"Select School"};
     private static String[] buildingNames = {"Select Building"};
     private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
+    private final String school_Address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
     String[] schools, school_id, buildings, building_uniq_ids;
     InputStream is_schoool;
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
     private TextView textViewSelectedDate;
-    private final String school_Address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
-
     private Calendar calendar;
     private Button buttonSurvey;
 
@@ -68,7 +67,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
         TextView textViewAtc = findViewById(R.id.atc);
         TextView textViewPoOffice = findViewById(R.id.poOffice);
-
+        ImageView imageViewLogout = findViewById(R.id.imageViewLogout);
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         // Set spinner listeners
         spinnerSchool.setOnItemSelectedListener(this);
@@ -113,6 +112,16 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 startActivity(intent);
             }
         });
+        imageViewLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Redirect the user back to the Login activity
+                Intent intent = new Intent(Home.this, Login.class);
+                startActivity(intent);
+                finish(); // Close the current activity
+            }
+        });
+
 
         // set atc office
         String atcOffice = Login.selectedAtcOffice;
@@ -291,4 +300,5 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             e.printStackTrace();
         }
     }
+
 }
