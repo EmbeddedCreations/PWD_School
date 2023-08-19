@@ -1,9 +1,11 @@
 package com.example.pwdschool;
 
+import android.app.Dialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +46,25 @@ public class ImageDescriptionAdapter extends RecyclerView.Adapter<ImageDescripti
         holder.descriptionTextView.setText("Description: " + model.getDescription());
         holder.Date.setText("Upload Date: " + model.getDate());
         holder.BuildingName.setText("Building Name: " + model.getBuildingName());
+
+        holder.imageView.setOnClickListener(v -> {
+            // Create a dialog to display the enlarged image
+            Dialog dialog = new Dialog(holder.itemView.getContext());
+            dialog.setContentView(R.layout.dialog_enlarged_image);
+
+            ImageView enlargedImageView = dialog.findViewById(R.id.enlargedImageView);
+            Picasso.get()
+                    .load(model.getImageUrl())
+                    .placeholder(R.drawable.upload)
+                    .error(R.drawable.imgnotfound)
+                    .into(enlargedImageView);
+
+            // Handle the close button click to dismiss the dialog
+            ImageButton closeButton = dialog.findViewById(R.id.closeImageButton);
+            closeButton.setOnClickListener(v1 -> dialog.dismiss());
+
+            dialog.show();
+        });
     }
 
     @Override

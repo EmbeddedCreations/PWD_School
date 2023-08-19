@@ -74,13 +74,6 @@
                             android:textSize="11dp" />
                     </LinearLayout>
                 </LinearLayout>
-
-                <!-- Second Set: Image, Name, Description, Date -->
-                <!-- Similar layout structure as the first set, adjust IDs accordingly -->
-
-                <!-- Third Set: Image, Name, Description, Date -->
-                <!-- Similar layout structure as the first set, adjust IDs accordingly -->
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.cardview.widget.CardView>
