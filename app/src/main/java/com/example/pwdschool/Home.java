@@ -67,7 +67,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
         TextView textViewAtc = findViewById(R.id.atc);
         TextView textViewPoOffice = findViewById(R.id.poOffice);
-        ImageView imageViewLogout = findViewById(R.id.imageViewlogout);
+        ImageView imageViewLogout = findViewById(R.id.imageViewLogout);
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         // Set spinner listeners
         spinnerSchool.setOnItemSelectedListener(this);
