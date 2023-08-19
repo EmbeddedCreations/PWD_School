@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <!-- Use a CardView to add shadow -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:elevation="4dp"
         app:cardCornerRadius="8dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- Use a MaterialCardView for the border and background -->
@@ -26,46 +24,111 @@
             app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="8dp">
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/imageLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                tools:ignore="MissingConstraints">
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
                 <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:id="@+id/imageView1"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
                     android:contentDescription="Image"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="fitCenter"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/buildingNameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/imageView"
-                    android:layout_marginTop="8dp"
-                    android:text="Building Name:"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="Image"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/dateTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/buildingNameTextView"
-                    android:layout_marginTop="8dp"
-                    android:text="Date:"
-                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="0dp"
+                    android:layout_height="150dp"
+                    android:layout_weight="1"
+                    android:contentDescription="Image"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/descriptionTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/dateTextView"
-                    android:gravity="center"
-                    android:paddingTop="8dp" />
+            <TextView
+                android:id="@+id/buildingNameTextView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Building Name 1:"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/imageView1" />
 
-            </RelativeLayout>
+            <TextView
+                android:id="@+id/buildingDescTextView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Description 1"
+                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView1" />
+
+            <TextView
+                android:id="@+id/buildingDateTextView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Date 1"
+                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView1" />
+
+            <TextView
+                android:id="@+id/buildingNameTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Building Name 2:"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/imageView2" />
+
+            <TextView
+                android:id="@+id/buildingDescTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Description 2"
+                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView2" />
+
+            <TextView
+                android:id="@+id/buildingDateTextView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Date 2"
+                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView2" />
+
+            <TextView
+                android:id="@+id/buildingNameTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Building Name 3:"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/imageView3" />
+
+            <TextView
+                android:id="@+id/buildingDescTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Description 3"
+                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView3" />
+
+            <TextView
+                android:id="@+id/buildingDateTextView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Building Date 3"
+                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView3" />
         </com.google.android.material.card.MaterialCardView>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

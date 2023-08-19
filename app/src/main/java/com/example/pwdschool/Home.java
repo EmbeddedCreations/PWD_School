@@ -1,5 +1,7 @@
 package com.example.pwdschool;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -299,6 +301,29 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Closing the PWD App")
+                .setMessage("Are you sure?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Home.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Do nothing or add specific handling for cancel
+                    }
+                })
+                .setCancelable(false);
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }
