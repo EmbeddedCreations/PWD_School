@@ -1,9 +1,11 @@
 package com.example.pwdschool;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
@@ -70,6 +72,7 @@ public class Upload extends AppCompatActivity {
     String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
     private Button pickImageButton;
     private Button buttonUploadImage;
+    private Button buttonSaveImage;
     private ProgressBar loader;
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
@@ -95,7 +98,7 @@ public class Upload extends AppCompatActivity {
                 }
 
             };
-
+    private UploadDatabaseHelper dbHelper;
 
     // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
     private static double convertToDegree(String coordinate, String ref) {
@@ -124,9 +127,15 @@ public class Upload extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
+
+        // Initialize the dbHelper
+        dbHelper = new UploadDatabaseHelper(this);
+
+
         iv_imgView = findViewById(R.id.image_view);
         pickImageButton = findViewById(R.id.pickimage);
         buttonUploadImage = findViewById(R.id.buttonUploadImage);
+        buttonSaveImage = findViewById(R.id.buttonSaveImage);
         loader = findViewById(R.id.loader);
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
@@ -186,6 +195,39 @@ public class Upload extends AppCompatActivity {
             }
         });
 
+        buttonSaveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String description = editTextDescription.getText().toString().trim();
+
+                if (description.isEmpty()) {
+                    // User has not entered a description
+                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (iv_imgView.getDrawable() == null) {
+                    // User has not selected an image
+                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Save the description in a variable
+                Upload.description = description;
+
+                // Disable the save button to prevent multiple clicks
+                buttonSaveImage.setEnabled(false);
+
+                // Insert data into the offline database
+                insertDataIntoDatabase();
+
+                // Show a message to indicate successful insertion
+                Toast.makeText(Upload.this, "Image saved to offline database.", Toast.LENGTH_SHORT).show();
+
+                // Re-enable the save button
+                buttonSaveImage.setEnabled(true);
+            }
+        });
 
         textView = findViewById(R.id.textViewTags);
         textView.setOnClickListener(new View.OnClickListener() {
@@ -435,6 +477,46 @@ public class Upload extends AppCompatActivity {
         byte[] byteOfImages = byteArrayOutputStream.toByteArray();
         encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
 
+    }
+
+    // Add this method to insert data into the offline database
+    private void insertDataIntoDatabase() {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        String Tags = Arrays.toString(selectedIssuesList.toArray());
+        Tags = Tags.substring(1, Tags.length() - 1);
+        String finalTags = Tags;
+        values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchool.trim());
+        values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Login.selectedPoOffice.trim());
+        values.put(UploadDatabaseHelper.COLUMN_ATC_OFFICE, Login.selectedAtcOffice.trim());
+        values.put(UploadDatabaseHelper.COLUMN_JE, Login.selectedJuniorEngineer.trim());
+        values.put(UploadDatabaseHelper.COLUMN_VISIT_TYPE, Home.selectedWorkorder);
+        values.put(UploadDatabaseHelper.COLUMN_BUILDING_NAME, Home.selectedBuilding.trim());
+        values.put(UploadDatabaseHelper.COLUMN_DATE_ADDED, Home.selectedDate);
+        values.put(UploadDatabaseHelper.COLUMN_DATE_EXCIF, date_today);
+        values.put(UploadDatabaseHelper.COLUMN_TIME_EXCIF, time_today);
+        values.put(UploadDatabaseHelper.COLUMN_LATI, Upload.gpsLatitude);
+        values.put(UploadDatabaseHelper.COLUMN_LONGI, Upload.gpsLongitude);
+        values.put(UploadDatabaseHelper.COLUMN_DESC, Upload.description);
+        values.put(UploadDatabaseHelper.COLUMN_TAGS, finalTags);
+        values.put(UploadDatabaseHelper.COLUMN_IMG, encodedImage);
+
+        // Insert the data
+        long newRowId = db.insert(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
+
+        if (newRowId != -1) {
+            Toast.makeText(getApplicationContext(), "Inserted in DB Sucesfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+        }
+
+        db.close();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dbHelper.close();
     }
 
 }
