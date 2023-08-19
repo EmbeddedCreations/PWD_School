@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -25,110 +23,65 @@
             app:cardCornerRadius="8dp">
 
             <LinearLayout
-                android:id="@+id/imageLayout"
+                android:id="@+id/containerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:orientation="vertical"
+                android:padding="8dp">
 
-                <ImageView
-                    android:id="@+id/imageView1"
-                    android:layout_width="0dp"
-                    android:layout_height="150dp"
-                    android:layout_weight="1"
-                    android:contentDescription="Image"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent" />
+                <!-- First Set: Image, Name, Description, Date -->
+                <LinearLayout
+                    android:id="@+id/set1Layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="0dp"
-                    android:layout_height="150dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="Image"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="0dp"
+                        android:layout_height="80dp"
+                        android:layout_weight="1"
+                        android:contentDescription="Image"
+                        android:scaleType="fitCenter" />
 
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="0dp"
-                    android:layout_height="150dp"
-                    android:layout_weight="1"
-                    android:contentDescription="Image"
-                    android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:orientation="vertical"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp">
+
+                        <TextView
+                            android:id="@+id/buildingNameTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="building:"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/buildingDateTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Date"
+                            android:textSize="12dp" />
+
+                        <TextView
+                            android:id="@+id/buildingDescTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Desc"
+                            android:textSize="11dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Second Set: Image, Name, Description, Date -->
+                <!-- Similar layout structure as the first set, adjust IDs accordingly -->
+
+                <!-- Third Set: Image, Name, Description, Date -->
+                <!-- Similar layout structure as the first set, adjust IDs accordingly -->
+
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/buildingNameTextView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Building Name 1:"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/imageView1" />
-
-            <TextView
-                android:id="@+id/buildingDescTextView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Description 1"
-                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView1" />
-
-            <TextView
-                android:id="@+id/buildingDateTextView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Date 1"
-                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView1" />
-
-            <TextView
-                android:id="@+id/buildingNameTextView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Building Name 2:"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/imageView2" />
-
-            <TextView
-                android:id="@+id/buildingDescTextView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Description 2"
-                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView2" />
-
-            <TextView
-                android:id="@+id/buildingDateTextView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Date 2"
-                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView2" />
-
-            <TextView
-                android:id="@+id/buildingNameTextView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Building Name 3:"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/imageView3" />
-
-            <TextView
-                android:id="@+id/buildingDescTextView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Description 3"
-                app:layout_constraintTop_toBottomOf="@id/buildingNameTextView3" />
-
-            <TextView
-                android:id="@+id/buildingDateTextView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Building Date 3"
-                app:layout_constraintTop_toBottomOf="@id/buildingDescTextView3" />
         </com.google.android.material.card.MaterialCardView>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -60,9 +60,9 @@ public class ImageDescriptionAdapter extends RecyclerView.Adapter<ImageDescripti
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            descriptionTextView = itemView.findViewById(R.id.buildingDescTextView);
             BuildingName = itemView.findViewById(R.id.buildingNameTextView);
-            Date = itemView.findViewById(R.id.dateTextView);
+            Date = itemView.findViewById(R.id.buildingDateTextView);
         }
     }
 }
