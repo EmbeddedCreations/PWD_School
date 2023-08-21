@@ -45,9 +45,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private static String[] schoolNames = {"Select School"};
     private static String[] buildingNames = {"Select Building"};
     private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
-    private final String school_Address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + Login.selectedAtcOffice + "&po_office=" + Login.selectedPoOffice;
-    String[] schools, school_id, buildings, building_uniq_ids;
-    InputStream is_schoool;
+    public static String[] schools;
+    public static String[] school_id;
+    public String[] buildings;
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
@@ -61,7 +61,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         setContentView(R.layout.activity_home);
         
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
-        getSchoolData();
+        //getSchoolData();
 
         // Find views by their IDs
         spinnerSchool = findViewById(R.id.spinnerSchool);
@@ -189,8 +189,21 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                         ID = school_id[index];
                     }
                 }
-                String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php?school_id=" + ID;
-                getBuildings(building_address);
+                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                String buildingJsonArrayString = sharedPreferences.getString("buildings", "");
+                try {
+                    JSONArray jsonArray = new JSONArray(buildingJsonArrayString);
+                    JSONObject jo = null;
+                    buildings = new String[jsonArray.length()];
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        jo = jsonArray.getJSONObject(i);
+                        if(jo.getString("unq_id").equals(ID)){
+                            buildings[i] = jo.getString("type_building");
+                        }
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
                 if(buildings != null){
@@ -254,71 +267,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         // Handle case when no item is selected
     }
 
-    private void getSchoolData() {
-        String result = null;
-        try {
-            URL url = new URL(school_Address);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            is_schoool = new BufferedInputStream(con.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(is_schoool));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is_schoool.close();
-            result = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            JSONArray js = new JSONArray(result);
-            JSONObject jo = null;
-            schools = new String[js.length()];
-            school_id = new String[js.length()];
-            for (int i = 0; i < js.length(); i++) {
-                jo = js.getJSONObject(i);
-                schools[i] = jo.getString("school_name");
-                school_id[i] = jo.getString("id");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getBuildings(String address) {
-        String result = null;
-        try {
-            URL url = new URL(address);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            is_schoool = new BufferedInputStream(con.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(is_schoool));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
-            }
-            is_schoool.close();
-            result = sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            JSONArray js = new JSONArray(result);
-            JSONObject jo = null;
-            buildings = new String[js.length()];
-            building_uniq_ids = new String[js.length()];
-            for (int i = 0; i < js.length(); i++) {
-                jo = js.getJSONObject(i);
-                buildings[i] = jo.getString("type_building");
-                building_uniq_ids[i] = jo.getString("building_unq_id");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
