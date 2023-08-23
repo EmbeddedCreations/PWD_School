@@ -30,6 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -47,7 +48,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
     public static String[] schools;
     public static String[] school_id;
-    public String[] buildings;
+    public static String[] all_buildings;
+    public static String[] schoolIDBuilding;
+    public ArrayList<String> buildings;
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
@@ -126,7 +129,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 // Redirect the user back to the Login activity
                 SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("array_key"); // Remove the stored token
+                editor.remove("array_key");
+                editor.remove("buildings");
+                editor.remove("schools");// Remove the stored token
                 editor.apply();
                 Intent intent = new Intent(Home.this, Login.class);
                 startActivity(intent);
@@ -177,7 +182,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
                 int index = 0;
-                String ID ="1";
+                String ID="";
                 if(schools != null){
                     for (int i = 0; i < schools.length; i++) {
                         if (selectedSchool.equals(schools[i])) {
@@ -189,26 +194,21 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                         ID = school_id[index];
                     }
                 }
-                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
-                String buildingJsonArrayString = sharedPreferences.getString("buildings", "");
-                try {
-                    JSONArray jsonArray = new JSONArray(buildingJsonArrayString);
-                    JSONObject jo = null;
-                    buildings = new String[jsonArray.length()];
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        jo = jsonArray.getJSONObject(i);
-                        if(jo.getString("unq_id").equals(ID)){
-                            buildings[i] = jo.getString("type_building");
+                Log.d("All the Buildings", Arrays.toString(Home.all_buildings));
+                Log.d("All the ID's", Arrays.toString(Home.schoolIDBuilding));
+                if(all_buildings.length > 0){
+                    buildings = new ArrayList<>();
+                    for(int i =0;i<all_buildings.length;i++){
+                        if(schoolIDBuilding[i].equals(ID)){
+                            buildings.add(all_buildings[i]);
                         }
                     }
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
                 }
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
                 if(buildings != null){
-                    for (int i = 0; i < buildings.length; i++) {
-                        tempBuildings.add(buildings[i]);
+                    for (int i = 0; i < buildings.size(); i++) {
+                        tempBuildings.add(buildings.get(i));
                     }
                 }
                 buildingNames = tempBuildings.toArray(new String[0]);
