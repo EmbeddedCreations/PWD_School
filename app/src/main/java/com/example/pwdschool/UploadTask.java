@@ -8,9 +8,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class UploadTask extends AsyncTask<Void, Integer, Void> {
-    private NotificationManagerCompat notificationManager;
-    private NotificationCompat.Builder notificationBuilder;
-    private UploadDatabaseHelper dbHelper;
+    private final NotificationManagerCompat notificationManager;
+    private final NotificationCompat.Builder notificationBuilder;
+    private final UploadDatabaseHelper dbHelper;
 
     public UploadTask(NotificationManagerCompat manager, NotificationCompat.Builder builder, UploadDatabaseHelper dbHelper) {
         this.notificationManager = manager;
