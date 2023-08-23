@@ -26,7 +26,7 @@ public class ImageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageDescriptionAdapter adapter;
     private List<ImageDescriptionModel> dataList;
-    private String Address ="https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchoolBuildings.php?user="+Login.selectedJuniorEngineer+"&school="+DisplaySchool.selectedSchoolHistory;
+    private final String Address ="https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchoolBuildings.php?user="+Login.selectedJuniorEngineer+"&school="+DisplaySchool.selectedSchoolHistory;
 
     private InputStream is;
     private String line, result;
