@@ -18,9 +18,9 @@ public class UploadDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TIME_EXCIF = "time_excif";
     public static final String COLUMN_LATI = "lati";
     public static final String COLUMN_LONGI = "longi";
-    public static final String COLUMN_DESC = "desc";
+    public static final String COLUMN_DESC = "description";
     public static final String COLUMN_TAGS = "tags";
-    public static final String COLUMN_IMG = "upload img";
+    public static final String COLUMN_IMG = "upload_img";
     private static final String DATABASE_NAME = "upload_data.db";
     private static final int DATABASE_VERSION = 1;
     private static final String COLUMN_ID = "id";
@@ -36,8 +36,8 @@ public class UploadDatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_DATE_ADDED + " TEXT, " +
                     COLUMN_DATE_EXCIF + " TEXT, " +
                     COLUMN_TIME_EXCIF + " TEXT, " +
-                    COLUMN_LATI + " REAL, " +
-                    COLUMN_LONGI + " REAL, " +
+                    COLUMN_LATI + " TEXT, " +
+                    COLUMN_LONGI + " TEXT, " +
                     COLUMN_DESC + " TEXT, " +
                     COLUMN_TAGS + " TEXT, " +
                     COLUMN_IMG + " TEXT" +

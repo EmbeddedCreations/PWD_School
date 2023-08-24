@@ -30,6 +30,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class Login extends AppCompatActivity {
 
     // ATC Office initial Array before Reading data from DB
     private static String[] ATC = {"Select ATC Office"};
-    private JSONArray js_Schools;
+    private static JSONArray js_Schools,js_Buildings;
     //Po-Office initial Array before Reading data from DB
     private static String[] PO_OFFICE = {"Select PO Office"};
     //Junior Engineer initial Array before Reading data from DB
@@ -58,8 +59,9 @@ public class Login extends AppCompatActivity {
     InputStream is = null;
     String[] atc_array, po_array, je_array, Pass;
 
-    private final String address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_login_pwd.php";
-    private final String building_address = "https://embeddedcreation.in/tribalpwd/admin_panel/app_building_select.php";
+    private final String address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_login_pwd.php";
+    private final String building_address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_building_select.php";
+
     private static String school_Address;
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
@@ -78,6 +80,7 @@ public class Login extends AppCompatActivity {
         sharedPreferences =getSharedPreferences("PWD_App", MODE_PRIVATE);
         String jsonArrayString = sharedPreferences.getString("array_key", "");
         String schoolArrayString = sharedPreferences.getString("schools", "");
+        String buildingArrayString = sharedPreferences.getString("buildings", "");
         if (!jsonArrayString.equals("")) {
             try {
                 JSONArray jsonArray = new JSONArray(jsonArrayString);
@@ -88,14 +91,27 @@ public class Login extends AppCompatActivity {
                 selectedAtcOffice = retrievedArray[0];
                 selectedPoOffice = retrievedArray[1];
                 selectedJuniorEngineer = retrievedArray[2];
-                JSONArray schoolJsonArray = new JSONArray(schoolArrayString);
-                JSONObject jo = null;
-                for (int i = 0; i < schoolJsonArray.length(); i++) {
-                    jo = schoolJsonArray.getJSONObject(i);
-                    Home.schools[i] = jo.getString("school_name");
-                    Home.school_id[i] = jo.getString("id");
+                if(!schoolArrayString.equals("")){
+                    JSONArray schoolJsonArray = new JSONArray(schoolArrayString);
+                    JSONObject jo = null;
+                    Home.schools = new String[schoolJsonArray.length()];
+                    Home.school_id = new String[schoolJsonArray.length()];
+                    for (int i = 0; i < schoolJsonArray.length(); i++) {
+                        jo = schoolJsonArray.getJSONObject(i);
+                        Home.schools[i] = jo.getString("school_name");
+                        Home.school_id[i] = jo.getString("id");
+                    }
+                    JSONArray buildingJsonArray = new JSONArray(buildingArrayString);
+                    JSONObject jso = null;
+                    Home.all_buildings = new String[buildingJsonArray.length()];
+                    Home.schoolIDBuilding = new String[buildingJsonArray.length()];
+                    for(int i=0;i< buildingJsonArray.length();i++){
+                        jso = buildingJsonArray.getJSONObject(i);
+                        Home.all_buildings[i] = jso.getString("type_building");
+                        Home.schoolIDBuilding[i] = jso.getString("unq_id");
+                    }
+
                 }
-                flag =1;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -249,11 +265,13 @@ public class Login extends AppCompatActivity {
                     String jsonArrayString2 = jsonArray2.toString();
                     editor.putString("array_key", jsonArrayString2);
                     editor.apply();
-                    school_Address =  "https://embeddedcreation.in/tribalpwd/admin_panel/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+                    school_Address =  "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
                     getSchoolData();
                     editor.putString("schools",js_Schools.toString());
                     editor.apply();
-                    editor.putString("buildings",getBuildings().toString());
+                    getBuildings();
+                    Log.d("js",js_Buildings.toString());
+                    editor.putString("buildings",js_Buildings.toString());
                     editor.apply();
                     Intent i = new Intent(Login.this, Home.class);
                     startActivity(i);
@@ -369,32 +387,47 @@ public class Login extends AppCompatActivity {
             is_school.close();
             result = sb.toString();
             js_Schools = new JSONArray(result);
+            JSONObject jo = null;
+            Home.schools = new String[js_Schools .length()];
+            Home.school_id = new String[js_Schools .length()];
+            for (int i = 0; i < js_Schools .length(); i++) {
+                jo = js_Schools .getJSONObject(i);
+                Home.schools[i] = jo.getString("school_name");
+                Home.school_id[i] = jo.getString("id");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-    private JSONArray getBuildings() {
+    private void getBuildings() {
         String result = null;
-        JSONArray js=null;
-        InputStream is_schoool;
         try {
             URL url = new URL(building_address);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-            is_schoool = new BufferedInputStream(con.getInputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(is_schoool));
+            is_school = new BufferedInputStream(con.getInputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(is_school));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line + "\n");
             }
-            is_schoool.close();
+            is_school.close();
             result = sb.toString();
-            js = new JSONArray(result);
+            js_Buildings = new JSONArray(result);
+            JSONObject jso = null;
+            Home.all_buildings = new String[js_Buildings.length()];
+            Home.schoolIDBuilding = new String[js_Buildings.length()];
+            for(int i=0;i< js_Buildings.length();i++){
+                jso = js_Buildings.getJSONObject(i);
+                Home.all_buildings[i] = jso.getString("type_building");
+                Home.schoolIDBuilding[i] = jso.getString("unq_id");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return js;
+
     }
 }
