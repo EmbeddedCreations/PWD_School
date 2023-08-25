@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -154,9 +155,9 @@ public class Upload extends AppCompatActivity {
         // Disable description and tags initially
         editTextDescription.setEnabled(false);
         //set junior engineer loggedin
-        String juniorEngineer = Login.selectedJuniorEngineer;
+        String juniorEngineer = Home.juniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-
+        Log.d("Upload",Home.atcOffice+','+Home.poOffice+","+Home.juniorEngineer);
         // Set a click listener for the "Profile" ImageView
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,13 +328,13 @@ public class Upload extends AppCompatActivity {
 
     private void uploadToServer() {
         String school_Name = Home.selectedSchool.trim();
-        String po_office = Login.selectedPoOffice.trim();
+        String po_office = Home.poOffice.trim();
         String image_name = Home.selectedBuilding.trim();
         String image_type = "jpg";
         String image_pdf = encodedImage;
         String upload_date = date_today;
         String upload_time = time_today;
-        String EntryBy = Login.selectedJuniorEngineer.trim();
+        String EntryBy = Home.juniorEngineer.trim();
         String Longitude = Double.toString(gpsLongitude);
         String Latitude = Double.toString(gpsLatitude);
         String user_upload_date = Home.selectedDate;
@@ -491,9 +492,9 @@ public class Upload extends AppCompatActivity {
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
         values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchool.trim());
-        values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Login.selectedPoOffice.trim());
+        values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Home.poOffice.trim());
         values.put(UploadDatabaseHelper.COLUMN_ATC_OFFICE, Login.selectedAtcOffice.trim());
-        values.put(UploadDatabaseHelper.COLUMN_JE, Login.selectedJuniorEngineer.trim());
+        values.put(UploadDatabaseHelper.COLUMN_JE, Home.juniorEngineer.trim());
         values.put(UploadDatabaseHelper.COLUMN_VISIT_TYPE, Home.selectedWorkorder);
         values.put(UploadDatabaseHelper.COLUMN_BUILDING_NAME, Home.selectedBuilding.trim());
         values.put(UploadDatabaseHelper.COLUMN_DATE_ADDED, Home.selectedDate);
