@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -30,7 +29,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,41 +41,34 @@ public class Login extends AppCompatActivity {
     public static String selectedPoOffice;
     public static String selectedJuniorEngineer;
     public static String Password = null, inputPassword;
-    SharedPreferences sharedPreferences;
-
-    InputStream is_school;
-
-
     // ATC Office initial Array before Reading data from DB
     private static String[] ATC = {"Select ATC Office"};
-    private static JSONArray js_Schools,js_Buildings;
+    private static JSONArray js_Schools, js_Buildings;
     //Po-Office initial Array before Reading data from DB
     private static String[] PO_OFFICE = {"Select PO Office"};
     //Junior Engineer initial Array before Reading data from DB
     private static String[] JUNIOR_ENGINEERS = {"Select JE"};
+    private static String school_Address;
+    private static final int flag = 0;
+    private static String[] retrievedArray;
+    private final String address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_login_pwd.php";
+    private final String building_address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_building_select.php";
+    SharedPreferences sharedPreferences;
+    InputStream is_school;
     String line, result;
     InputStream is = null;
     String[] atc_array, po_array, je_array, Pass;
-
-    private final String address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_login_pwd.php";
-    private final String building_address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_building_select.php";
-
-    private static String school_Address;
     private Spinner selectAtcOfficeSpinner;
     private Spinner selectPoOfficeSpinner;
-
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
-    private static int flag =0;
     private Button loginButton;
-    private static String[] retrievedArray;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        sharedPreferences =getSharedPreferences("PWD_App", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
         String jsonArrayString = sharedPreferences.getString("array_key", "");
         String schoolArrayString = sharedPreferences.getString("schools", "");
         String buildingArrayString = sharedPreferences.getString("buildings", "");
@@ -91,7 +82,7 @@ public class Login extends AppCompatActivity {
                 selectedAtcOffice = retrievedArray[0];
                 selectedPoOffice = retrievedArray[1];
                 selectedJuniorEngineer = retrievedArray[2];
-                if(!schoolArrayString.equals("")){
+                if (!schoolArrayString.equals("")) {
                     JSONArray schoolJsonArray = new JSONArray(schoolArrayString);
                     JSONObject jo = null;
                     Home.schools = new String[schoolJsonArray.length()];
@@ -105,7 +96,7 @@ public class Login extends AppCompatActivity {
                     JSONObject jso = null;
                     Home.all_buildings = new String[buildingJsonArray.length()];
                     Home.schoolIDBuilding = new String[buildingJsonArray.length()];
-                    for(int i=0;i< buildingJsonArray.length();i++){
+                    for (int i = 0; i < buildingJsonArray.length(); i++) {
                         jso = buildingJsonArray.getJSONObject(i);
                         Home.all_buildings[i] = jso.getString("type_building");
                         Home.schoolIDBuilding[i] = jso.getString("unq_id");
@@ -116,7 +107,7 @@ public class Login extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            if(!isNetworkAvailable()){
+            if (!isNetworkAvailable()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Cannot Connect To the Server")
                         .setMessage("Please make Sure you have an Internet Connection at the time of Login")
@@ -126,7 +117,7 @@ public class Login extends AppCompatActivity {
                                 dialogInterface.dismiss();
                             }
                         });
-            }else{
+            } else {
                 StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
                 getData();
             }
@@ -141,7 +132,7 @@ public class Login extends AppCompatActivity {
         ArrayList<String> uniqueList = new ArrayList<>();
         HashSet<String> uniqueSet = new HashSet<>();
         uniqueList.add("Select ATC Office");
-        if(atc_array != null){
+        if (atc_array != null) {
             for (String element : atc_array) {
                 if (!element.equals("Select ATC Office") && !uniqueSet.contains(element)) {
                     uniqueList.add(element);
@@ -161,12 +152,12 @@ public class Login extends AppCompatActivity {
         selectAtcOfficeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(flag == 0){
+                if (flag == 0) {
                     selectedAtcOffice = parent.getItemAtPosition(position).toString();
                 }
                 ArrayList<String> tempPOList = new ArrayList<>();
                 tempPOList.add("Select PO Office");
-                if(po_array != null){
+                if (po_array != null) {
                     for (int i = 0; i < po_array.length; i++) {
                         if (selectedAtcOffice.equals(atc_array[i])) {
                             tempPOList.add(po_array[i]);
@@ -192,12 +183,12 @@ public class Login extends AppCompatActivity {
         selectPoOfficeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(flag == 0){
+                if (flag == 0) {
                     selectedPoOffice = parent.getItemAtPosition(position).toString();
                 }
                 ArrayList<String> tempJeList = new ArrayList<>();
                 tempJeList.add("Select JE");
-                if(je_array != null){
+                if (je_array != null) {
                     for (int i = 0; i < je_array.length; i++) {
                         if (selectedAtcOffice.equals(atc_array[i]) && selectedPoOffice.equals(po_array[i])) {
                             tempJeList.add(je_array[i]);
@@ -222,10 +213,10 @@ public class Login extends AppCompatActivity {
         selectJuniorEngineerSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(flag == 0){
+                if (flag == 0) {
                     selectedJuniorEngineer = parent.getItemAtPosition(position).toString();
                 }
-                if(Pass != null){
+                if (Pass != null) {
                     for (int i = 0; i < Pass.length; i++) {
                         if (selectedJuniorEngineer.equals(je_array[i]) && selectedPoOffice.equals(po_array[i])
                                 && selectedAtcOffice.equals(atc_array[i])) {
@@ -243,8 +234,8 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        if(!jsonArrayString.equals("")){
-            Log.d("why",jsonArrayString);
+        if (!jsonArrayString.equals("")) {
+            Log.d("why", jsonArrayString);
             Intent i = new Intent(Login.this, Home.class);
             startActivity(i);
         }
@@ -265,13 +256,13 @@ public class Login extends AppCompatActivity {
                     String jsonArrayString2 = jsonArray2.toString();
                     editor.putString("array_key", jsonArrayString2);
                     editor.apply();
-                    school_Address =  "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+                    school_Address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
                     getSchoolData();
-                    editor.putString("schools",js_Schools.toString());
+                    editor.putString("schools", js_Schools.toString());
                     editor.apply();
                     getBuildings();
-                    Log.d("js",js_Buildings.toString());
-                    editor.putString("buildings",js_Buildings.toString());
+                    Log.d("js", js_Buildings.toString());
+                    editor.putString("buildings", js_Buildings.toString());
                     editor.apply();
                     Intent i = new Intent(Login.this, Home.class);
                     startActivity(i);
@@ -365,7 +356,7 @@ public class Login extends AppCompatActivity {
     }
 
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
@@ -388,10 +379,10 @@ public class Login extends AppCompatActivity {
             result = sb.toString();
             js_Schools = new JSONArray(result);
             JSONObject jo = null;
-            Home.schools = new String[js_Schools .length()];
-            Home.school_id = new String[js_Schools .length()];
-            for (int i = 0; i < js_Schools .length(); i++) {
-                jo = js_Schools .getJSONObject(i);
+            Home.schools = new String[js_Schools.length()];
+            Home.school_id = new String[js_Schools.length()];
+            for (int i = 0; i < js_Schools.length(); i++) {
+                jo = js_Schools.getJSONObject(i);
                 Home.schools[i] = jo.getString("school_name");
                 Home.school_id[i] = jo.getString("id");
             }
@@ -400,6 +391,7 @@ public class Login extends AppCompatActivity {
         }
 
     }
+
     private void getBuildings() {
         String result = null;
         try {
@@ -419,7 +411,7 @@ public class Login extends AppCompatActivity {
             JSONObject jso = null;
             Home.all_buildings = new String[js_Buildings.length()];
             Home.schoolIDBuilding = new String[js_Buildings.length()];
-            for(int i=0;i< js_Buildings.length();i++){
+            for (int i = 0; i < js_Buildings.length(); i++) {
                 jso = js_Buildings.getJSONObject(i);
                 Home.all_buildings[i] = jso.getString("type_building");
                 Home.schoolIDBuilding[i] = jso.getString("unq_id");

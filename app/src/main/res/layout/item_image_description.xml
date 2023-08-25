@@ -23,7 +23,6 @@
             app:cardCornerRadius="8dp">
 
             <LinearLayout
-                android:id="@+id/containerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -31,7 +30,6 @@
 
                 <!-- First Set: Image, Name, Description, Date -->
                 <LinearLayout
-                    android:id="@+id/set1Layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

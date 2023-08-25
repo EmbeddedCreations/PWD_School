@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -61,6 +62,8 @@ public class Upload extends AppCompatActivity {
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
     public static String description;
+    private static final int INITIAL_IMAGE_RESOURCE = R.drawable.upload;
+    ImageView imageViewLogout = findViewById(R.id.imageViewLogout);
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
@@ -71,6 +74,7 @@ public class Upload extends AppCompatActivity {
     public String date_today, time_today;
     public String encodedImage;
     Uri targetUri = null;
+    private boolean imageChanged = false;
     TextView textUri;
     TextView textView;
     List<String> selectedIssuesList = new ArrayList<>();
@@ -81,7 +85,7 @@ public class Upload extends AppCompatActivity {
     private ProgressBar loader;
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
-    //
+
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -166,19 +170,41 @@ public class Upload extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        imageViewLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
 
+            public void onClick(View view) {
+                // Clear the stored data from "PWD_App" SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("array_key");
+                editor.remove("buildings");
+                editor.remove("schools");
+                editor.apply();
+                System.out.println("logout is in process");
+
+                // Create and start the intent to the Login activity
+                Intent intent = new Intent(Upload.this, Login.class);
+                startActivity(intent);
+                finish(); // Finish the current activity to prevent going back
+            } });
 // Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String description = editTextDescription.getText().toString().trim();
-                if (description.isEmpty()) {
+                if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
                     Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
                 } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
-                } else {
+                }else if (!imageChanged) {
+                    // Display a message to the user indicating they need to select an image
+                    Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
 
@@ -204,33 +230,33 @@ public class Upload extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String description = editTextDescription.getText().toString().trim();
-
-                if (description.isEmpty()) {
+                if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
                     Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (iv_imgView.getDrawable() == null) {
+                } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                }else if (!imageChanged) {
+                    // Display a message to the user indicating they need to select an image
+                    Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
                     return;
+                }else{
+                    // Save the description in a variable
+                    Upload.description = description;
+
+                    // Disable the save button to prevent multiple clicks
+                    buttonSaveImage.setEnabled(false);
+
+                    // Insert data into the offline database
+                    insertDataIntoDatabase();
+
+                    // Show a message to indicate successful insertion
+                    Toast.makeText(Upload.this, "Image saved to offline database.", Toast.LENGTH_SHORT).show();
+
+                    // Re-enable the save button
+                    buttonSaveImage.setEnabled(true);
                 }
 
-                // Save the description in a variable
-                Upload.description = description;
-
-                // Disable the save button to prevent multiple clicks
-                buttonSaveImage.setEnabled(false);
-
-                // Insert data into the offline database
-                insertDataIntoDatabase();
-
-                // Show a message to indicate successful insertion
-                Toast.makeText(Upload.this, "Image saved to offline database.", Toast.LENGTH_SHORT).show();
-
-                // Re-enable the save button
-                buttonSaveImage.setEnabled(true);
             }
         });
 
@@ -346,9 +372,10 @@ public class Upload extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 editTextDescription.setText("");
-                iv_imgView.setImageDrawable(null);
+                iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
                 selectedIssuesList.clear();
                 textView.setText("");
+                imageChanged = false;
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
 
@@ -361,7 +388,7 @@ public class Upload extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
-
+                imageChanged = true;
                 // Dismiss the progress dialog
                 progressDialog.dismiss();
                 Toast.makeText(getApplicationContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
@@ -447,6 +474,7 @@ public class Upload extends AppCompatActivity {
             editTextDescription.setEnabled(true);
             targetUri = uri;
             iv_imgView.setImageURI(uri);
+            imageChanged = true;
             try {
                 encodeBitmap(BitmapFactory.decodeStream(getApplicationContext().getContentResolver().openInputStream(uri)));
             } catch (FileNotFoundException e) {
@@ -459,6 +487,7 @@ public class Upload extends AppCompatActivity {
                 targetUri = dataUri;
                 iv_imgView.setImageURI(uri);
                 showExif(targetUri);
+                imageChanged = true;
             }
         }
     }
@@ -511,6 +540,11 @@ public class Upload extends AppCompatActivity {
             long newRowId = db.insertOrThrow(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
 
             if (newRowId != -1) {
+                editTextDescription.setText("");
+                iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
+                imageChanged = false;
+                selectedIssuesList.clear();
+                textView.setText("");
                 Toast.makeText(getApplicationContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();

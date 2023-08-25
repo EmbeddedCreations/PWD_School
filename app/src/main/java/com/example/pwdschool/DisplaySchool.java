@@ -25,10 +25,8 @@ import java.util.Map;
 public class DisplaySchool extends AppCompatActivity {
 
 
-    String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user="+Home.juniorEngineer;
-
     public static String selectedSchoolHistory;
-
+    String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user=" + Home.juniorEngineer;
     InputStream is;
     String line;
     String result;
