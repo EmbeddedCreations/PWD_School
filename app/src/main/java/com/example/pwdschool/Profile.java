@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -50,9 +51,9 @@ public class Profile extends AppCompatActivity {
         TextView juniorEngineerNameText = findViewById(R.id.junior_engineer_name_text);
 
         // Get the values from the MainActivity (or any other class where you have stored these values)
-        String atcOfficeValue = Login.selectedAtcOffice;
-        String poOfficeValue = Login.selectedPoOffice;
-        String juniorEngineerValue = Login.selectedJuniorEngineer;
+        String atcOfficeValue = Home.atcOffice;
+        String poOfficeValue = Home.poOffice;
+        String juniorEngineerValue = Home.juniorEngineer;
 
         // Set the values for the TextView elements
         atcOfficeText.setText(atcOfficeValue);
@@ -62,7 +63,7 @@ public class Profile extends AppCompatActivity {
         Button logOutButton = findViewById(R.id.logOutButton);
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-
+        Log.d("Profile",Home.atcOffice+','+Home.poOffice+","+Home.juniorEngineer);
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

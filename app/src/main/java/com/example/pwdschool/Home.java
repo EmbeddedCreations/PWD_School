@@ -32,6 +32,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     public static String selectedWorkorder;
     public static String selectedBuilding;
     public static String selectedDate;
+    public static String juniorEngineer;
+    public static String atcOffice;
+    public static String poOffice;
     // Sample data for school names, workorder names, and building names
     private static String[] schoolNames = {"Select School"};
     private static String[] buildingNames = {"Select Building"};
@@ -102,9 +105,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         textViewSelectedDate.setText(currentDate);
 
         //set junior engineer loggedin
-        String juniorEngineer = Login.selectedJuniorEngineer;
+        juniorEngineer = Login.selectedJuniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-
+        Log.d("Home",Login.selectedAtcOffice+','+Login.selectedPoOffice+","+Login.selectedJuniorEngineer);
         // Set a click listener for the "Profile" ImageView
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,11 +137,11 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
 
         // set atc office
-        String atcOffice = Login.selectedAtcOffice;
+        atcOffice = Login.selectedAtcOffice;
         textViewAtc.setText("Atc: " + atcOffice);
 
         // set po office
-        String poOffice = Login.selectedPoOffice;
+        poOffice = Login.selectedPoOffice;
         textViewPoOffice.setText("PO Office: " + poOffice);
 
         // Set button click listener for changing screen
