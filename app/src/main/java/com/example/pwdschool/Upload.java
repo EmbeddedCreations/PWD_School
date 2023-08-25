@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -504,16 +505,21 @@ public class Upload extends AppCompatActivity {
         values.put(UploadDatabaseHelper.COLUMN_TAGS, finalTags);
         values.put(UploadDatabaseHelper.COLUMN_IMG, encodedImage);
 
-        // Insert the data
-        long newRowId = db.insert(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
+        try {
+            // Insert the data
+            long newRowId = db.insertOrThrow(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
 
-        if (newRowId != -1) {
-            Toast.makeText(getApplicationContext(), "Inserted in DB Sucesfully", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+            if (newRowId != -1) {
+                Toast.makeText(getApplicationContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+            }
+        } catch (SQLException e) {
+            // Handle the exception here, you can log it or show a specific error message
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        } finally {
+            db.close();
         }
-
-        db.close();
     }
 
     @Override

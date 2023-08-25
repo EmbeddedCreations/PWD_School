@@ -42,7 +42,7 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(this);
+//        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(this);
 
         // Find the TextView elements by their IDs
         TextView atcOfficeText = findViewById(R.id.atc_office_text);
@@ -66,15 +66,24 @@ public class Profile extends AppCompatActivity {
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
+                // Clear the stored data from "PWD_App" SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("array_key"); // Remove the stored token
+                editor.remove("array_key");
+                editor.remove("buildings");
+                editor.remove("schools");
                 editor.apply();
+                System.out.println("logout is in process");
+
+                // Create and start the intent to the Login activity
                 Intent intent = new Intent(Profile.this, Login.class);
                 startActivity(intent);
-                finish();
+                finish(); // Finish the current activity to prevent going back
             }
         });
+
+
+
 
         Button uploadDbButton = findViewById(R.id.upload_db_button);
         uploadDbButton.setOnClickListener(new View.OnClickListener() {
