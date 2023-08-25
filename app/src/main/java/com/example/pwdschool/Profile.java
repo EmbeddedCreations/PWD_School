@@ -42,6 +42,7 @@ public class Profile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(this);
 
         // Find the TextView elements by their IDs
         TextView atcOfficeText = findViewById(R.id.atc_office_text);
@@ -124,14 +125,15 @@ public class Profile extends AppCompatActivity {
                 NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(Profile.this, "upload_channel_id")
                         .setSmallIcon(R.drawable.ic_baseline_cloud_upload_24)
                         .setContentTitle("Uploading Local Database")
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setOnlyAlertOnce(true);
 
                 // Show the initial notification
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(Profile.this);
                 notificationManager.notify(0, notificationBuilder.build());
                 // Start an AsyncTask or a service for the database upload process
-                new UploadTask(notificationManager, notificationBuilder).execute();
+                new UploadTask(notificationManager, notificationBuilder, dbHelper).execute();
+
             }
         });
 

@@ -1,17 +1,21 @@
 package com.example.pwdschool;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class UploadTask extends AsyncTask<Void, Integer, Void> {
-    private NotificationManagerCompat notificationManager;
-    private NotificationCompat.Builder notificationBuilder;
+    private final NotificationManagerCompat notificationManager;
+    private final NotificationCompat.Builder notificationBuilder;
+    private final UploadDatabaseHelper dbHelper;
 
-    public UploadTask(NotificationManagerCompat manager, NotificationCompat.Builder builder) {
+    public UploadTask(NotificationManagerCompat manager, NotificationCompat.Builder builder, UploadDatabaseHelper dbHelper) {
         this.notificationManager = manager;
         this.notificationBuilder = builder;
+        this.dbHelper = dbHelper;
     }
 
     @Override
@@ -19,14 +23,25 @@ public class UploadTask extends AsyncTask<Void, Integer, Void> {
         super.onPreExecute();
     }
 
+    public int getRowCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + UploadDatabaseHelper.TABLE_UPLOAD, null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        db.close();
+        return count;
+    }
+
     @Override
     protected Void doInBackground(Void... voids) {
-        for (int i = 0; i <= 26; i++) {
+        int rowCount = getRowCount();
+        for (int i = 0; i <= rowCount; i++) {
             // Upload logic for each element
             // Update progress and notify
             publishProgress(i);
             try {
-                Thread.sleep(1000); // Simulating upload time
+                Thread.sleep(500); // Simulating upload time
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -38,8 +53,9 @@ public class UploadTask extends AsyncTask<Void, Integer, Void> {
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
         int uploadedCount = values[0];
-        notificationBuilder.setProgress(26, uploadedCount, false)
-                .setContentText(uploadedCount + " out of 26 uploaded");
+        int totalRowCount = getRowCount(); // Get the total row count
+        notificationBuilder.setProgress(totalRowCount, uploadedCount, false)
+                .setContentText(uploadedCount + " out of " + totalRowCount + " uploaded");
         notificationManager.notify(0, notificationBuilder.build());
     }
 
