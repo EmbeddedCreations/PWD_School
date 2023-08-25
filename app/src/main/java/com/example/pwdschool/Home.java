@@ -18,16 +18,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,19 +115,22 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         });
         imageViewLogout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // Redirect the user back to the Login activity
-                SharedPreferences sharedPreferences = getSharedPreferences("Auth_Token", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("array_key");
-                editor.remove("buildings");
-                editor.remove("schools");// Remove the stored token
-                editor.apply();
-                Intent intent = new Intent(Home.this, Login.class);
-                startActivity(intent);
-                finish(); // Close the current activity
-            }
-        });
+
+    public void onClick(View view) {
+        // Clear the stored data from "PWD_App" SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("array_key");
+        editor.remove("buildings");
+        editor.remove("schools");
+        editor.apply();
+        System.out.println("logout is in process");
+
+        // Create and start the intent to the Login activity
+        Intent intent = new Intent(Home.this, Login.class);
+        startActivity(intent);
+        finish(); // Finish the current activity to prevent going back
+    } });
 
 
         // set atc office
