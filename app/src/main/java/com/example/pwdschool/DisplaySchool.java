@@ -25,7 +25,7 @@ import java.util.Map;
 public class DisplaySchool extends AppCompatActivity {
 
 
-    String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user="+Login.selectedJuniorEngineer;
+    String address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchools.php?user="+Home.juniorEngineer;
 
     public static String selectedSchoolHistory;
 
