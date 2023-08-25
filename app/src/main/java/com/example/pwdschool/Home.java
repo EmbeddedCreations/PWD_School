@@ -35,14 +35,14 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     public static String juniorEngineer;
     public static String atcOffice;
     public static String poOffice;
-    // Sample data for school names, workorder names, and building names
-    private static String[] schoolNames = {"Select School"};
-    private static String[] buildingNames = {"Select Building"};
-    private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
     public static String[] schools;
     public static String[] school_id;
     public static String[] all_buildings;
     public static String[] schoolIDBuilding;
+    // Sample data for school names, workorder names, and building names
+    private static String[] schoolNames = {"Select School"};
+    private static String[] buildingNames = {"Select Building"};
+    private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
     public ArrayList<String> buildings;
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
@@ -55,7 +55,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        
+
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         //getSchoolData();
 
@@ -77,7 +77,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         ArrayList<String> tempSchoolList = new ArrayList<>();
         tempSchoolList.add("Select School");
-        if(schools != null){
+        if (schools != null) {
             for (int i = 0; i < schools.length; i++) {
                 tempSchoolList.add(schools[i]);
             }
@@ -107,7 +107,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         //set junior engineer loggedin
         juniorEngineer = Login.selectedJuniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-        Log.d("Home",Login.selectedAtcOffice+','+Login.selectedPoOffice+","+Login.selectedJuniorEngineer);
+        Log.d("Home", Login.selectedAtcOffice + ',' + Login.selectedPoOffice + "," + Login.selectedJuniorEngineer);
         // Set a click listener for the "Profile" ImageView
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,21 +119,22 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         imageViewLogout.setOnClickListener(new View.OnClickListener() {
             @Override
 
-    public void onClick(View view) {
-        // Clear the stored data from "PWD_App" SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("array_key");
-        editor.remove("buildings");
-        editor.remove("schools");
-        editor.apply();
-        System.out.println("logout is in process");
+            public void onClick(View view) {
+                // Clear the stored data from "PWD_App" SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("array_key");
+                editor.remove("buildings");
+                editor.remove("schools");
+                editor.apply();
+                System.out.println("logout is in process");
 
-        // Create and start the intent to the Login activity
-        Intent intent = new Intent(Home.this, Login.class);
-        startActivity(intent);
-        finish(); // Finish the current activity to prevent going back
-    } });
+                // Create and start the intent to the Login activity
+                Intent intent = new Intent(Home.this, Login.class);
+                startActivity(intent);
+                finish(); // Finish the current activity to prevent going back
+            }
+        });
 
 
         // set atc office
@@ -178,31 +179,31 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
                 int index = 0;
-                String ID="";
-                if(schools != null){
+                String ID = "";
+                if (schools != null) {
                     for (int i = 0; i < schools.length; i++) {
                         if (selectedSchool.equals(schools[i])) {
                             index = i;
                             break;
                         }
                     }
-                    if(school_id.length > 0){
+                    if (school_id.length > 0) {
                         ID = school_id[index];
                     }
                 }
                 Log.d("All the Buildings", Arrays.toString(Home.all_buildings));
                 Log.d("All the ID's", Arrays.toString(Home.schoolIDBuilding));
-                if(all_buildings.length > 0){
+                if (all_buildings.length > 0) {
                     buildings = new ArrayList<>();
-                    for(int i =0;i<all_buildings.length;i++){
-                        if(schoolIDBuilding[i].equals(ID)){
+                    for (int i = 0; i < all_buildings.length; i++) {
+                        if (schoolIDBuilding[i].equals(ID)) {
                             buildings.add(all_buildings[i]);
                         }
                     }
                 }
                 ArrayList<String> tempBuildings = new ArrayList<>();
                 tempBuildings.add("Select Building");
-                if(buildings != null){
+                if (buildings != null) {
                     for (int i = 0; i < buildings.size(); i++) {
                         tempBuildings.add(buildings.get(i));
                     }

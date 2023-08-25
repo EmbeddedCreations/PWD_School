@@ -31,7 +31,7 @@
         android:contentDescription="Profile"
         android:src="@drawable/ic_baseline_person_24"
         app:layout_constraintEnd_toStartOf="@+id/imageViewLogout"
-    app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Logout ImageView -->
     <ImageView
@@ -39,11 +39,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="10dp"
         android:contentDescription="Logout"
         android:src="@drawable/ic_baseline_logout_24"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView

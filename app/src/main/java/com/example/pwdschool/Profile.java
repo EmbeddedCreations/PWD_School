@@ -13,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -63,7 +62,7 @@ public class Profile extends AppCompatActivity {
         Button logOutButton = findViewById(R.id.logOutButton);
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Log.d("Profile",Home.atcOffice+','+Home.poOffice+","+Home.juniorEngineer);
+        Log.d("Profile", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,8 +83,6 @@ public class Profile extends AppCompatActivity {
         });
 
 
-
-
         Button uploadDbButton = findViewById(R.id.upload_db_button);
         uploadDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,21 +94,19 @@ public class Profile extends AppCompatActivity {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
 
 
-
-
                 // Perform the query
-                String query = "SELECT "+UploadDatabaseHelper.COLUMN_SCHOOL_NAME+","
-                        +UploadDatabaseHelper.COLUMN_PO_OFFICE +","
-                        +UploadDatabaseHelper.COLUMN_JE+","
-                        +UploadDatabaseHelper.COLUMN_BUILDING_NAME+","
-                        +UploadDatabaseHelper.COLUMN_DATE_ADDED+","
-                        +UploadDatabaseHelper.COLUMN_DATE_EXCIF+","
-                        +UploadDatabaseHelper.COLUMN_TIME_EXCIF+","
-                        +UploadDatabaseHelper.COLUMN_LATI+","
-                        +UploadDatabaseHelper.COLUMN_LONGI+","
-                        +UploadDatabaseHelper.COLUMN_DESC+","
-                        +UploadDatabaseHelper.COLUMN_TAGS+","
-                        +UploadDatabaseHelper.COLUMN_IMG + " FROM uploads";
+                String query = "SELECT " + UploadDatabaseHelper.COLUMN_SCHOOL_NAME + ","
+                        + UploadDatabaseHelper.COLUMN_PO_OFFICE + ","
+                        + UploadDatabaseHelper.COLUMN_JE + ","
+                        + UploadDatabaseHelper.COLUMN_BUILDING_NAME + ","
+                        + UploadDatabaseHelper.COLUMN_DATE_ADDED + ","
+                        + UploadDatabaseHelper.COLUMN_DATE_EXCIF + ","
+                        + UploadDatabaseHelper.COLUMN_TIME_EXCIF + ","
+                        + UploadDatabaseHelper.COLUMN_LATI + ","
+                        + UploadDatabaseHelper.COLUMN_LONGI + ","
+                        + UploadDatabaseHelper.COLUMN_DESC + ","
+                        + UploadDatabaseHelper.COLUMN_TAGS + ","
+                        + UploadDatabaseHelper.COLUMN_IMG + " FROM uploads";
                 Cursor cursor = db.rawQuery(query, null);
                 // Iterate through the cursor to retrieve the data and upload it to the server
                 while (cursor.moveToNext()) {
@@ -151,7 +146,7 @@ public class Profile extends AppCompatActivity {
         viewHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isNetworkAvailable()){
+                if (!isNetworkAvailable()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
                     builder.setTitle("Cannot Connect To the Server")
                             .setMessage("Please make Sure you have an Internet Connection to View History")
@@ -161,7 +156,7 @@ public class Profile extends AppCompatActivity {
                                     dialogInterface.dismiss();
                                 }
                             });
-                }else{
+                } else {
                     Intent intent = new Intent(Profile.this, DisplaySchool.class);
                     startActivity(intent);
                 }
@@ -170,7 +165,7 @@ public class Profile extends AppCompatActivity {
         });
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
@@ -195,13 +190,13 @@ public class Profile extends AppCompatActivity {
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-              //TODO Write Code for response.
+                //TODO Write Code for response.
                 deleteEntry(image);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               //TODO Write Code For Error From Server.
+                //TODO Write Code For Error From Server.
 
             }
         }) {
@@ -230,6 +225,7 @@ public class Profile extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(request);
     }
+
     private void deleteEntry(String img) {
         // Create a DatabaseHelper instance and get a writable database
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
