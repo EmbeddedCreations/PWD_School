@@ -67,7 +67,7 @@ public class Upload extends AppCompatActivity {
     public static Date timeTaken;
     public static double gpsLatitude;
     public static double gpsLongitude;
-    private final String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
+    private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
     public String date_today, time_today;
     public String encodedImage;
     Uri targetUri = null;

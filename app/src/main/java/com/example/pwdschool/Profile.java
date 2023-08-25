@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class Profile extends AppCompatActivity {
 
-    private final String url = "https://embeddedcreation.in/tribalpwd/admin_panel/app_upload_Image.php";
+    private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,39 +96,23 @@ public class Profile extends AppCompatActivity {
                 UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-                // Define the columns you want to retrieve
-                String[] projection = {
-                        UploadDatabaseHelper.COLUMN_SCHOOL_NAME,
-                        UploadDatabaseHelper.COLUMN_PO_OFFICE,
-                        UploadDatabaseHelper.COLUMN_ATC_OFFICE,
-                        UploadDatabaseHelper.COLUMN_JE,
-                        UploadDatabaseHelper.COLUMN_VISIT_TYPE,
-                        UploadDatabaseHelper.COLUMN_BUILDING_NAME,
-                        UploadDatabaseHelper.COLUMN_DATE_ADDED,
-                        UploadDatabaseHelper.COLUMN_DATE_EXCIF,
-                        UploadDatabaseHelper.COLUMN_TIME_EXCIF,
-                        UploadDatabaseHelper.COLUMN_LATI,
-                        UploadDatabaseHelper.COLUMN_LONGI,
-                        UploadDatabaseHelper.COLUMN_DESC,
-                        UploadDatabaseHelper.COLUMN_TAGS,
-                        UploadDatabaseHelper.COLUMN_IMG
-                };
 
-                // Define a selection (optional) and selectionArgs (optional)
-                String selection = "your_column = ?"; // Replace with the column you want to filter on
-                String[] selectionArgs = {"some_value"}; // Replace with the value you want to filter on
+
 
                 // Perform the query
-                Cursor cursor = db.query(
-                        UploadDatabaseHelper.TABLE_UPLOAD,  // The table to query
-                        projection,                       // The columns to return
-                        selection,                        // The columns for the WHERE clause
-                        selectionArgs,                    // The values for the WHERE clause
-                        null,                             // Don't group the rows
-                        null,                             // Don't filter by row groups
-                        null                              // The sort order
-                );
-
+                String query = "SELECT "+UploadDatabaseHelper.COLUMN_SCHOOL_NAME+","
+                        +UploadDatabaseHelper.COLUMN_PO_OFFICE +","
+                        +UploadDatabaseHelper.COLUMN_JE+","
+                        +UploadDatabaseHelper.COLUMN_BUILDING_NAME+","
+                        +UploadDatabaseHelper.COLUMN_DATE_ADDED+","
+                        +UploadDatabaseHelper.COLUMN_DATE_EXCIF+","
+                        +UploadDatabaseHelper.COLUMN_TIME_EXCIF+","
+                        +UploadDatabaseHelper.COLUMN_LATI+","
+                        +UploadDatabaseHelper.COLUMN_LONGI+","
+                        +UploadDatabaseHelper.COLUMN_DESC+","
+                        +UploadDatabaseHelper.COLUMN_TAGS+","
+                        +UploadDatabaseHelper.COLUMN_IMG + " FROM uploads";
+                Cursor cursor = db.rawQuery(query, null);
                 // Iterate through the cursor to retrieve the data and upload it to the server
                 while (cursor.moveToNext()) {
                     uploadToServer(cursor);
@@ -212,7 +196,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
               //TODO Write Code for response.
-                deleteEntry(cursor.getLong(cursor.getColumnIndexOrThrow("id")));
+                deleteEntry(image);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -246,23 +230,17 @@ public class Profile extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(request);
     }
-    private void deleteEntry(long idToDelete) {
+    private void deleteEntry(String img) {
         // Create a DatabaseHelper instance and get a writable database
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Define the selection and selectionArgs to specify the row to delete
-        String selection = "id = ?";
-        String[] selectionArgs = {String.valueOf(idToDelete)};
+        String selection = "upload_img = ?";
+        String[] selectionArgs = {img};
 
         // Perform the delete operation
         int rowsDeleted = db.delete(UploadDatabaseHelper.TABLE_UPLOAD, selection, selectionArgs);
-
-        if (rowsDeleted > 0) {
-            // Row deleted successfully
-        } else {
-            // No rows were deleted (maybe the row didn't exist)
-        }
 
         // Close the database
         db.close();
