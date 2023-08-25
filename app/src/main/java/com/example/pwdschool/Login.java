@@ -1,6 +1,7 @@
 package com.example.pwdschool;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 public class Login extends AppCompatActivity {
+    private static final int flag = 0;
     // Public variables to store user input
     public static String selectedAtcOffice;
     public static String selectedPoOffice;
@@ -49,7 +52,6 @@ public class Login extends AppCompatActivity {
     //Junior Engineer initial Array before Reading data from DB
     private static String[] JUNIOR_ENGINEERS = {"Select JE"};
     private static String school_Address;
-    private static final int flag = 0;
     private static String[] retrievedArray;
     private final String address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_login_pwd.php";
     private final String building_address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_building_select.php";
@@ -63,6 +65,9 @@ public class Login extends AppCompatActivity {
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
     private Button loginButton;
+    private ProgressBar loader;
+    private ProgressDialog progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,11 +122,14 @@ public class Login extends AppCompatActivity {
                                 dialogInterface.dismiss();
                             }
                         });
+                AlertDialog alert = builder.create();
+                alert.show();
             } else {
                 StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
                 getData();
             }
         }
+
 
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
@@ -129,6 +137,10 @@ public class Login extends AppCompatActivity {
         selectJuniorEngineerSpinner = findViewById(R.id.select_junior_engineer);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
+        loader = findViewById(R.id.loader);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Logging in...");
+        progressDialog.setCancelable(false);
         ArrayList<String> uniqueList = new ArrayList<>();
         HashSet<String> uniqueSet = new HashSet<>();
         uniqueList.add("Select ATC Office");
@@ -234,6 +246,8 @@ public class Login extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        // ye kis liye daala?
         if (!jsonArrayString.equals("")) {
             Log.d("why", jsonArrayString);
             Intent i = new Intent(Login.this, Home.class);
@@ -249,25 +263,47 @@ public class Login extends AppCompatActivity {
                 if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
                     Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
                 } else if (Password.equals(inputPassword)) {
-                    Toast.makeText(Login.this, "SuccessFul Login", Toast.LENGTH_SHORT).show();
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    String[] myArray = {selectedAtcOffice, selectedPoOffice, selectedJuniorEngineer};
-                    JSONArray jsonArray2 = new JSONArray(Arrays.asList(myArray));
-                    String jsonArrayString2 = jsonArray2.toString();
-                    editor.putString("array_key", jsonArrayString2);
-                    editor.apply();
-                    school_Address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
-                    getSchoolData();
-                    editor.putString("schools", js_Schools.toString());
-                    editor.apply();
-                    getBuildings();
-                    Log.d("js", js_Buildings.toString());
-                    editor.putString("buildings", js_Buildings.toString());
-                    editor.apply();
-                    Intent i = new Intent(Login.this, Home.class);
-                    startActivity(i);
-                }
+                    progressDialog.show(); // Show the progress dialog
 
+                    // Perform tasks and network operations here
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Update shared preferences
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            String[] myArray = {selectedAtcOffice, selectedPoOffice, selectedJuniorEngineer};
+                            JSONArray jsonArray2 = new JSONArray(Arrays.asList(myArray));
+                            String jsonArrayString2 = jsonArray2.toString();
+                            editor.putString("array_key", jsonArrayString2);
+                            editor.apply();
+
+                            // Fetch school data
+                            school_Address = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_school_select.php?atc_office=" + selectedAtcOffice + "&po_office=" + selectedPoOffice;
+                            getSchoolData();
+                            editor.putString("schools", js_Schools.toString());
+                            editor.apply();
+
+                            // Fetch building data
+                            getBuildings();
+                            Log.d("js", js_Buildings.toString());
+                            editor.putString("buildings", js_Buildings.toString());
+                            editor.apply();
+
+                            // After tasks are complete, hide the progress dialog
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(Login.this, "Successful Login", Toast.LENGTH_SHORT).show();
+
+                                    // Start the Home activity after successful login and tasks completion
+                                    Intent i = new Intent(Login.this, Home.class);
+                                    startActivity(i);
+                                }
+                            });
+                        }
+                    }).start();
+                }
             }
         });
 

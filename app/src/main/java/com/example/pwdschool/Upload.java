@@ -63,7 +63,6 @@ public class Upload extends AppCompatActivity {
     private static final int RQS_OPEN_IMAGE = 1;
     public static String description;
     private static final int INITIAL_IMAGE_RESOURCE = R.drawable.upload;
-    ImageView imageViewLogout = findViewById(R.id.imageViewLogout);
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
@@ -170,24 +169,6 @@ public class Upload extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        imageViewLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-
-            public void onClick(View view) {
-                // Clear the stored data from "PWD_App" SharedPreferences
-                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("array_key");
-                editor.remove("buildings");
-                editor.remove("schools");
-                editor.apply();
-                System.out.println("logout is in process");
-
-                // Create and start the intent to the Login activity
-                Intent intent = new Intent(Upload.this, Login.class);
-                startActivity(intent);
-                finish(); // Finish the current activity to prevent going back
-            } });
 // Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
