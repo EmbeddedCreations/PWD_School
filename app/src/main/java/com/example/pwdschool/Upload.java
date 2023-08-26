@@ -70,7 +70,7 @@ public class Upload extends AppCompatActivity {
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
     public static String description;
-    private static final int INITIAL_IMAGE_RESOURCE = R.drawable.upload;
+    private static final int INITIAL_IMAGE_RESOURCE = R.drawable.uploadfile;
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
@@ -352,39 +352,23 @@ public class Upload extends AppCompatActivity {
         });
 
 
-//        For Getting Image From gallery
+
+// OnClickListener for pickImageButton
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an AlertDialog with two options
-                AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
-                builder.setTitle("Choose an option")
-                        .setItems(new String[]{"Capture from Camera", "Select from Gallery"}, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case 0:
-                                        // "Capture from Camera" option is selected
-                                        ImagePicker.with(Upload.this)
-                                                .cameraOnly()
-                                                .crop()
-                                                .compress(1024)
-                                                .maxResultSize(720, 720)
-                                                .start();
-                                        break;
-                                    case 1:
-                                        // "Select from Gallery" option is selected
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                        intent.setType("image/*"); // Allow all types of images (png, jpg, jpeg)
-                                        startActivityForResult(intent, RQS_OPEN_IMAGE);
-                                        break;
-                                }
-                            }
-                        });
-                builder.show();
+                showImageOptionsDialog();
             }
         });
+
+// OnClickListener for img_view
+        iv_imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageOptionsDialog();
+            }
+        });
+
 
     }
 
@@ -604,6 +588,35 @@ public class Upload extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }
 
+    // Method to show the options dialog for capturing or selecting an image
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
+        builder.setTitle("Choose an option")
+                .setItems(new String[]{"Capture from Camera", "Select from Gallery"}, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                // "Capture from Camera" option is selected
+                                ImagePicker.with(Upload.this)
+                                        .cameraOnly()
+                                        .crop()
+                                        .compress(1024)
+                                        .maxResultSize(720, 720)
+                                        .start();
+                                break;
+                            case 1:
+                                // "Select from Gallery" option is selected
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent.setType("image/*"); // Allow all types of images (png, jpg, jpeg)
+                                startActivityForResult(intent, RQS_OPEN_IMAGE);
+                                break;
+                        }
+                    }
+                });
+        builder.show();
+    }
 
     @Override
     protected void onDestroy() {
