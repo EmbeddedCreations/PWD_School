@@ -93,8 +93,7 @@ public class Upload extends AppCompatActivity {
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
     private ImageView status;
-    private ConnectivityManager.NetworkCallback networkCallback; // Declare the network callback
-
+    private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -183,51 +182,40 @@ public class Upload extends AppCompatActivity {
         buttonUploadImage.setEnabled(false);
         buttonUploadImage.setAlpha(0.5f); // Set the alpha value to make it appear faded
 
-ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            networkCallback = new ConnectivityManager.NetworkCallback() {
-                @Override
-                public void onAvailable(@NonNull Network network) {
-                    // Enable the "Upload" button when internet connection is available
-                    runOnUiThread(new Runnable() {
+        status = findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(this);
+
+        networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
+            @Override
+            public void onNetworkAvailable() {
+                runOnUiThread(() -> {
+                    status.setImageResource(R.drawable.online);
+                    buttonUploadImage.setEnabled(true);
+                    buttonUploadImage.setAlpha(1.0f);
+                    status.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void run() {
-                            status.setImageResource(R.drawable.online);
-                            buttonUploadImage.setEnabled(true);
-                            buttonUploadImage.setAlpha(1.0f);
-                            status.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    showToast("Online");
-                                }
-                            });
+                        public void onClick(View view) {
+                            showToast("Online");
                         }
                     });
-                }
+                });
+            }
 
-                @Override
-                public void onLost(@NonNull Network network) {
-                    // Disable the "Upload" button when internet connection is lost
-                    runOnUiThread(new Runnable() {
+            @Override
+            public void onNetworkLost() {
+                runOnUiThread(() -> {
+                    status.setImageResource(R.drawable.offline);
+                    buttonUploadImage.setEnabled(false);
+                    buttonUploadImage.setAlpha(0.5f);
+                    status.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void run() {
-                            status.setImageResource(R.drawable.offline);
-                            buttonUploadImage.setEnabled(false);
-                            buttonUploadImage.setAlpha(0.5f);
-                            status.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    showToast("Offline");
-                                }
-                            });
+                        public void onClick(View view) {
+                            showToast("Offline");
                         }
                     });
-                }
-            };
-        }
-
-// Register the network callback
-        connectivityManager.registerDefaultNetworkCallback(networkCallback);
+                });
+            }
+        });
 
 // Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
@@ -621,11 +609,7 @@ ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService
     protected void onDestroy() {
         super.onDestroy();
         dbHelper.close();
-        // Unregister the network callback to avoid memory leaks
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            connectivityManager.unregisterNetworkCallback(networkCallback);
-        }
+        networkStatusUtility.stopMonitoringNetworkStatus();
     }
 
 }

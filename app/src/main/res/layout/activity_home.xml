@@ -10,6 +10,16 @@
     android:paddingBottom="16dp"
     tools:context=".Home">
 
+    <ImageView
+        android:id="@+id/statusIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="14dp"
+        android:contentDescription="Status"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewProfile"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/online" />
     <!-- "Logged In" TextView -->
     <TextView
         android:id="@+id/textViewLoggedIn"

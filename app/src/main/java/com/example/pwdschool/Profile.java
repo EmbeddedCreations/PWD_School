@@ -16,7 +16,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,12 +39,39 @@ import java.util.Map;
 public class Profile extends AppCompatActivity {
 
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
-
+    private ImageView status;
+    private NetworkStatusUtility networkStatusUtility;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-//        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(this);
+
+        status = findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(this);
+
+        networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
+            @Override
+            public void onNetworkAvailable() {
+                status.setImageResource(R.drawable.online);
+                status.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showToast("Online");
+                    }
+                });
+            }
+
+            @Override
+            public void onNetworkLost() {
+                status.setImageResource(R.drawable.offline);
+                status.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showToast("Offline");
+                    }
+                });
+            }
+        });
 
         // Find the TextView elements by their IDs
         TextView atcOfficeText = findViewById(R.id.atc_office_text);
@@ -240,5 +269,13 @@ public class Profile extends AppCompatActivity {
 
         // Close the database
         db.close();
+    }
+    private void showToast(String statusText) {
+        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        networkStatusUtility.stopMonitoringNetworkStatus();
     }
 }
