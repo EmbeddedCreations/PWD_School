@@ -55,6 +55,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.27" />
+
+<!--    <androidx.constraintlayout.widget.Guideline-->
+<!--        android:id="@+id/guideline_end"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintGuide_percent="0.99" />-->
 
     <TextView
         android:id="@+id/atc"
@@ -108,7 +121,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
-
         android:text="School:"
         android:textSize="22sp"
         android:textStyle="bold"
@@ -122,7 +134,7 @@
         android:layout_marginStart="8dp"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewSchoolTitle"
+        app:layout_constraintStart_toStartOf="@+id/guideline_start"
         app:layout_constraintTop_toTopOf="@+id/textViewSchoolTitle" />
 
     <TextView
@@ -143,7 +155,7 @@
         android:layout_marginStart="8dp"
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewWorkorderTitle"
+        app:layout_constraintStart_toStartOf="@+id/guideline_start"
         app:layout_constraintTop_toTopOf="@+id/textViewWorkorderTitle" />
 
     <!-- TextView for "Second Dropdown Title" (Initial visibility: gone) -->
@@ -168,7 +180,7 @@
         android:textSize="22sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewSecondDropdownTitle"
+        app:layout_constraintStart_toStartOf="@+id/guideline_start"
         app:layout_constraintTop_toTopOf="@+id/textViewSecondDropdownTitle" />
 
     <TextView
@@ -190,7 +202,7 @@
         android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textViewBuildingTitle"
+        app:layout_constraintStart_toStartOf="@+id/guideline_start"
         app:layout_constraintTop_toTopOf="@+id/textViewBuildingTitle"
         app:layout_constraintVertical_chainStyle="packed" />
 
@@ -209,12 +221,10 @@
         android:id="@+id/textViewSelectedDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
         android:text=""
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textViewDateTitle"
+        app:layout_constraintStart_toEndOf="@+id/guideline_start"
         app:layout_constraintTop_toTopOf="@+id/textViewDateTitle" />
 
     <Button
