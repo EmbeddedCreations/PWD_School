@@ -2,14 +2,17 @@ package com.example.pwdschool;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -73,6 +76,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
         String jsonArrayString = sharedPreferences.getString("array_key", "");
         String schoolArrayString = sharedPreferences.getString("schools", "");
@@ -112,24 +116,14 @@ public class Login extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
+            // Check for internet connection and show alert dialog if not available
             if (!isNetworkAvailable()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Cannot Connect To the Server")
-                        .setMessage("Please make Sure you have an Internet Connection at the time of Login")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
+                showNoInternetDialog();
             } else {
                 StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
                 getData();
             }
         }
-
 
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
@@ -317,6 +311,16 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isNetworkAvailable()) {
+            showNoInternetDialog();
+        } else {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
+            getData();
+        }
+    }
 
     // Method to toggle password visibility
     private void togglePasswordVisibility() {
@@ -458,4 +462,24 @@ public class Login extends AppCompatActivity {
         }
 
     }
+    // Method to show the no-internet alert dialog
+    private void showNoInternetDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("No Internet Connection")
+                .setMessage("Please make sure you have an active internet connection.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish(); // Close the app
+                    }
+                })
+                .setCancelable(false);
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
 }

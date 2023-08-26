@@ -2,6 +2,7 @@ package com.example.pwdschool;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,10 +23,13 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +40,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -84,6 +92,8 @@ public class Upload extends AppCompatActivity {
     private ProgressBar loader;
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
+    private ImageView status;
+    private ConnectivityManager.NetworkCallback networkCallback; // Declare the network callback
 
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
@@ -135,14 +145,12 @@ public class Upload extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload);
 
-
         // Initialize the dbHelper
         dbHelper = new UploadDatabaseHelper(this);
 
-
+        status = findViewById(R.id.statusIcon);
         iv_imgView = findViewById(R.id.image_view);
         pickImageButton = findViewById(R.id.pickimage);
-        buttonUploadImage = findViewById(R.id.buttonUploadImage);
         buttonSaveImage = findViewById(R.id.buttonSaveImage);
         loader = findViewById(R.id.loader);
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
@@ -169,10 +177,66 @@ public class Upload extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+// Find the Upload button and set it initially disabled and faded;
+        buttonUploadImage = findViewById(R.id.buttonUploadImage);
+        buttonUploadImage.setEnabled(false);
+        buttonUploadImage.setAlpha(0.5f); // Set the alpha value to make it appear faded
+
+ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            networkCallback = new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    // Enable the "Upload" button when internet connection is available
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            status.setImageResource(R.drawable.online);
+                            buttonUploadImage.setEnabled(true);
+                            buttonUploadImage.setAlpha(1.0f);
+                            status.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    showToast("Online");
+                                }
+                            });
+                        }
+                    });
+                }
+
+                @Override
+                public void onLost(@NonNull Network network) {
+                    // Disable the "Upload" button when internet connection is lost
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            status.setImageResource(R.drawable.offline);
+                            buttonUploadImage.setEnabled(false);
+                            buttonUploadImage.setAlpha(0.5f);
+                            status.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    showToast("Offline");
+                                }
+                            });
+                        }
+                    });
+                }
+            };
+        }
+
+// Register the network callback
+        connectivityManager.registerDefaultNetworkCallback(networkCallback);
+
 // Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!isNetworkAvailable()) {
+                    Toast.makeText(Upload.this, "No internet connection available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String description = editTextDescription.getText().toString().trim();
                 if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
@@ -201,6 +265,9 @@ public class Upload extends AppCompatActivity {
                         public void run() {
 
                             uploadToServer();
+                            // Enable the button and reset its alpha after upload
+                            buttonUploadImage.setEnabled(true);
+                            buttonUploadImage.setAlpha(1.0f);
                         }
                     }, 2000);
                 }
@@ -537,11 +604,28 @@ public class Upload extends AppCompatActivity {
             db.close();
         }
     }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
+    }
+    private void showToast(String statusText) {
+        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
+    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         dbHelper.close();
+        // Unregister the network callback to avoid memory leaks
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            connectivityManager.unregisterNetworkCallback(networkCallback);
+        }
     }
 
 }
