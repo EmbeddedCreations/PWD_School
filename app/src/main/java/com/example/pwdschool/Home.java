@@ -50,6 +50,9 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private TextView textViewSelectedDate;
     private Calendar calendar;
     private Button buttonSurvey;
+    private ImageView status;
+    private NetworkStatusUtility networkStatusUtility;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,32 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         //getSchoolData();
+        status = findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(this);
 
+        networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
+            @Override
+            public void onNetworkAvailable() {
+                status.setImageResource(R.drawable.online);
+                status.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showToast("Online");
+                    }
+                });
+            }
+
+            @Override
+            public void onNetworkLost() {
+                status.setImageResource(R.drawable.offline);
+                status.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showToast("Offline");
+                    }
+                });
+            }
+        });
         // Find views by their IDs
         spinnerSchool = findViewById(R.id.spinnerSchool);
         spinnerBuilding = findViewById(R.id.spinnerBuilding);
@@ -287,5 +315,12 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         AlertDialog alert = builder.create();
         alert.show();
     }
-
+    private void showToast(String statusText) {
+        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        networkStatusUtility.stopMonitoringNetworkStatus();
+    }
 }

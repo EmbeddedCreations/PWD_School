@@ -70,7 +70,7 @@ public class Upload extends AppCompatActivity {
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
     public static String description;
-    private static final int INITIAL_IMAGE_RESOURCE = R.drawable.upload;
+    private static final int INITIAL_IMAGE_RESOURCE = R.drawable.uploadfile;
 
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
@@ -93,8 +93,7 @@ public class Upload extends AppCompatActivity {
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
     private ImageView status;
-    private ConnectivityManager.NetworkCallback networkCallback; // Declare the network callback
-
+    private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
@@ -183,51 +182,40 @@ public class Upload extends AppCompatActivity {
         buttonUploadImage.setEnabled(false);
         buttonUploadImage.setAlpha(0.5f); // Set the alpha value to make it appear faded
 
-ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            networkCallback = new ConnectivityManager.NetworkCallback() {
-                @Override
-                public void onAvailable(@NonNull Network network) {
-                    // Enable the "Upload" button when internet connection is available
-                    runOnUiThread(new Runnable() {
+        status = findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(this);
+
+        networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
+            @Override
+            public void onNetworkAvailable() {
+                runOnUiThread(() -> {
+                    status.setImageResource(R.drawable.online);
+                    buttonUploadImage.setEnabled(true);
+                    buttonUploadImage.setAlpha(1.0f);
+                    status.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void run() {
-                            status.setImageResource(R.drawable.online);
-                            buttonUploadImage.setEnabled(true);
-                            buttonUploadImage.setAlpha(1.0f);
-                            status.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    showToast("Online");
-                                }
-                            });
+                        public void onClick(View view) {
+                            showToast("Online");
                         }
                     });
-                }
+                });
+            }
 
-                @Override
-                public void onLost(@NonNull Network network) {
-                    // Disable the "Upload" button when internet connection is lost
-                    runOnUiThread(new Runnable() {
+            @Override
+            public void onNetworkLost() {
+                runOnUiThread(() -> {
+                    status.setImageResource(R.drawable.offline);
+                    buttonUploadImage.setEnabled(false);
+                    buttonUploadImage.setAlpha(0.5f);
+                    status.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void run() {
-                            status.setImageResource(R.drawable.offline);
-                            buttonUploadImage.setEnabled(false);
-                            buttonUploadImage.setAlpha(0.5f);
-                            status.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    showToast("Offline");
-                                }
-                            });
+                        public void onClick(View view) {
+                            showToast("Offline");
                         }
                     });
-                }
-            };
-        }
-
-// Register the network callback
-        connectivityManager.registerDefaultNetworkCallback(networkCallback);
+                });
+            }
+        });
 
 // Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
@@ -364,39 +352,23 @@ ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService
         });
 
 
-//        For Getting Image From gallery
+
+// OnClickListener for pickImageButton
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an AlertDialog with two options
-                AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
-                builder.setTitle("Choose an option")
-                        .setItems(new String[]{"Capture from Camera", "Select from Gallery"}, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case 0:
-                                        // "Capture from Camera" option is selected
-                                        ImagePicker.with(Upload.this)
-                                                .cameraOnly()
-                                                .crop()
-                                                .compress(1024)
-                                                .maxResultSize(720, 720)
-                                                .start();
-                                        break;
-                                    case 1:
-                                        // "Select from Gallery" option is selected
-                                        Intent intent = new Intent();
-                                        intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                        intent.setType("image/*"); // Allow all types of images (png, jpg, jpeg)
-                                        startActivityForResult(intent, RQS_OPEN_IMAGE);
-                                        break;
-                                }
-                            }
-                        });
-                builder.show();
+                showImageOptionsDialog();
             }
         });
+
+// OnClickListener for img_view
+        iv_imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageOptionsDialog();
+            }
+        });
+
 
     }
 
@@ -616,16 +588,41 @@ ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }
 
+    // Method to show the options dialog for capturing or selecting an image
+    private void showImageOptionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
+        builder.setTitle("Choose an option")
+                .setItems(new String[]{"Capture from Camera", "Select from Gallery"}, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                // "Capture from Camera" option is selected
+                                ImagePicker.with(Upload.this)
+                                        .cameraOnly()
+                                        .crop()
+                                        .compress(1024)
+                                        .maxResultSize(720, 720)
+                                        .start();
+                                break;
+                            case 1:
+                                // "Select from Gallery" option is selected
+                                Intent intent = new Intent();
+                                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+                                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent.setType("image/*"); // Allow all types of images (png, jpg, jpeg)
+                                startActivityForResult(intent, RQS_OPEN_IMAGE);
+                                break;
+                        }
+                    }
+                });
+        builder.show();
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         dbHelper.close();
-        // Unregister the network callback to avoid memory leaks
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager != null) {
-            connectivityManager.unregisterNetworkCallback(networkCallback);
-        }
+        networkStatusUtility.stopMonitoringNetworkStatus();
     }
 
 }
