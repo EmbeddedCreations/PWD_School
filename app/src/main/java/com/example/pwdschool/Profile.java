@@ -1,10 +1,8 @@
 package com.example.pwdschool;
 
-import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -41,17 +39,27 @@ public class Profile extends AppCompatActivity {
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // Find the TextView elements by their IDs
+        TextView atcOfficeText = findViewById(R.id.atc_office_text);
+        TextView poOfficeText = findViewById(R.id.po_office_text);
+        TextView juniorEngineerNameText = findViewById(R.id.junior_engineer_name_text);
+        Button viewHistoryButton = findViewById(R.id.view_history_button);
+        Button logOutButton = findViewById(R.id.logOutButton);
         status = findViewById(R.id.statusIcon);
-        networkStatusUtility = new NetworkStatusUtility(this);
+        Button uploadDbButton = findViewById(R.id.upload_db_button);
 
+        networkStatusUtility = new NetworkStatusUtility(this);
+        updateButtonStatus(isNetworkAvailable());
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {
+                updateButtonStatus(true);  // Update buttons to be visible and clickable
                 status.setImageResource(R.drawable.online);
                 status.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -63,6 +71,7 @@ public class Profile extends AppCompatActivity {
 
             @Override
             public void onNetworkLost() {
+                updateButtonStatus(false);  // Update buttons to be visible and clickable
                 status.setImageResource(R.drawable.offline);
                 status.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -73,10 +82,6 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        // Find the TextView elements by their IDs
-        TextView atcOfficeText = findViewById(R.id.atc_office_text);
-        TextView poOfficeText = findViewById(R.id.po_office_text);
-        TextView juniorEngineerNameText = findViewById(R.id.junior_engineer_name_text);
 
         // Get the values from the MainActivity (or any other class where you have stored these values)
         String atcOfficeValue = Home.atcOffice;
@@ -87,8 +92,7 @@ public class Profile extends AppCompatActivity {
         atcOfficeText.setText(atcOfficeValue);
         poOfficeText.setText(poOfficeValue);
         juniorEngineerNameText.setText(juniorEngineerValue);
-        Button viewHistoryButton = findViewById(R.id.view_history_button);
-        Button logOutButton = findViewById(R.id.logOutButton);
+
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Log.d("Profile", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
@@ -112,7 +116,6 @@ public class Profile extends AppCompatActivity {
         });
 
 
-        Button uploadDbButton = findViewById(R.id.upload_db_button);
         uploadDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,28 +173,6 @@ public class Profile extends AppCompatActivity {
 
             }
         });
-
-        // Set a click listener for the button
-        viewHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isNetworkAvailable()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-                    builder.setTitle("Cannot Connect To the Server")
-                            .setMessage("Please make Sure you have an Internet Connection to View History")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                } else {
-                    Intent intent = new Intent(Profile.this, DisplaySchool.class);
-                    startActivity(intent);
-                }
-
-            }
-        });
     }
 
     private boolean isNetworkAvailable() {
@@ -203,9 +184,7 @@ public class Profile extends AppCompatActivity {
     private void uploadToServer(Cursor cursor) {
         String schoolName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_SCHOOL_NAME));
         String poOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_PO_OFFICE));
-        //String atcOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_ATC_OFFICE));
         String je = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_JE));
-        //String visitType = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_VISIT_TYPE));
         String buildingName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_BUILDING_NAME));
         String dateAdded = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_DATE_ADDED));
         String dateExcif = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_DATE_EXCIF));
@@ -270,9 +249,28 @@ public class Profile extends AppCompatActivity {
         // Close the database
         db.close();
     }
+
+    private void updateButtonStatus(boolean isNetworkAvailable) {
+        Button uploadDbButton = findViewById(R.id.upload_db_button);
+        Button viewHistoryButton = findViewById(R.id.view_history_button);
+
+        if (isNetworkAvailable) {
+            uploadDbButton.setAlpha(1f);
+            uploadDbButton.setEnabled(true);
+            viewHistoryButton.setAlpha(1f);
+            viewHistoryButton.setEnabled(true);
+        } else {
+            uploadDbButton.setAlpha(0.5f);
+            uploadDbButton.setEnabled(false);
+            viewHistoryButton.setAlpha(0.5f);
+            viewHistoryButton.setEnabled(false);
+        }
+    }
+
     private void showToast(String statusText) {
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

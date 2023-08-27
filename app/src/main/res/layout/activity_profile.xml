@@ -7,7 +7,6 @@
     tools:context=".Profile">
 
     <TextView
-        android:id="@+id/items_to_be_uploaded"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="items in Local DB : 5"

@@ -10,8 +10,8 @@ public class NetworkStatusUtility {
 
     private final Context context;
     private final ConnectivityManager connectivityManager;
-    private ConnectivityManager.NetworkCallback networkCallback;
     private final Handler mainHandler;
+    private ConnectivityManager.NetworkCallback networkCallback;
 
     public NetworkStatusUtility(Context context) {
         this.context = context;

@@ -2,17 +2,14 @@ package com.example.pwdschool;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -311,6 +308,7 @@ public class Login extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -462,6 +460,7 @@ public class Login extends AppCompatActivity {
         }
 
     }
+
     // Method to show the no-internet alert dialog
     private void showNoInternetDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -477,6 +476,7 @@ public class Login extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
