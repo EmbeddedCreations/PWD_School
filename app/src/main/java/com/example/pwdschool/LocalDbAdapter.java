@@ -56,11 +56,7 @@ public class LocalDbAdapter extends RecyclerView.Adapter<ImageDescriptionAdapter
             dialog.setContentView(R.layout.dialog_enlarged_image);
 
             ImageView enlargedImageView = dialog.findViewById(R.id.enlargedImageView);
-            Picasso.get()
-                    .load(model.getImageUrl())
-                    .placeholder(R.drawable.upload)
-                    .error(R.drawable.imgnotfound)
-                    .into(enlargedImageView);
+            enlargedImageView.setImageBitmap(decodedBitmap);
 
             // Handle the close button click to dismiss the dialog
             ImageButton closeButton = dialog.findViewById(R.id.closeImageButton);

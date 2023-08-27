@@ -293,6 +293,7 @@ public class Profile extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(request);
+        deleteEntry(image);
     }
 
     private void deleteEntry(String img) {
