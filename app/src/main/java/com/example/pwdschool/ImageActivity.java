@@ -2,6 +2,7 @@ package com.example.pwdschool;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class ImageActivity extends AppCompatActivity {
 
-    private final String Address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchoolBuildings.php?user=" + Login.selectedJuniorEngineer + "&school=" + DisplaySchool.selectedSchoolHistory;
+    private final String Address = "https://www.embeddedcreation.in/tribalpwd/adminPanelNewVer2/appFetchSchoolBuildings.php?user=" + Home.juniorEngineer + "&school=" + DisplaySchool.selectedSchoolHistory;
     String[] f_imgurl, f_buildingName, f_date, f_description;
     private RecyclerView recyclerView;
     private ImageDescriptionAdapter adapter;
@@ -37,7 +38,7 @@ public class ImageActivity extends AppCompatActivity {
 
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         getData();
-
+        Log.d("Address",Address);
         // Find views by their IDs
         TextView schoolNameTextView = findViewById(R.id.schoolNameTextView);
         recyclerView = findViewById(R.id.recyclerView);
@@ -48,6 +49,7 @@ public class ImageActivity extends AppCompatActivity {
         //Add Fetched Data to the data list
         for (int i = 0; i < f_buildingName.length; i++) {
             dataList.add(new ImageDescriptionModel(f_imgurl[i], f_buildingName[i], f_date[i], f_description[i]));
+            Log.d("data",dataList.toString());
         }
 
 
@@ -56,8 +58,6 @@ public class ImageActivity extends AppCompatActivity {
 
         adapter = new ImageDescriptionAdapter(dataList);
         recyclerView.setAdapter(adapter);
-
-
         // Notify the adapter that the data has changed
         adapter.notifyDataSetChanged();
 

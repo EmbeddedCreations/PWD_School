@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -53,6 +55,8 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
 
+    public static int dbCount;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,16 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
 
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         //getSchoolData();
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+        Cursor countCursor = db.rawQuery(query, null);
+
+        if (countCursor .moveToFirst()) {
+            dbCount = countCursor.getInt(0); // Get the count from the first column
+        }
+
+        countCursor.close();
         status = findViewById(R.id.statusIcon);
         networkStatusUtility = new NetworkStatusUtility(this);
 
@@ -219,8 +233,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                         ID = school_id[index];
                     }
                 }
-                Log.d("All the Buildings", Arrays.toString(Home.all_buildings));
-                Log.d("All the ID's", Arrays.toString(Home.schoolIDBuilding));
                 if (all_buildings.length > 0) {
                     buildings = new ArrayList<>();
                     for (int i = 0; i < all_buildings.length; i++) {

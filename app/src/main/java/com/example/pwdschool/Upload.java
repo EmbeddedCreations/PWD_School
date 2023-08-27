@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -553,6 +554,15 @@ public class Upload extends AppCompatActivity {
                 imageChanged = false;
                 selectedIssuesList.clear();
                 textView.setText("");
+                db = dbHelper.getReadableDatabase();
+                String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+                Cursor countCursor = db.rawQuery(query, null);
+
+                if (countCursor .moveToFirst()) {
+                    Home.dbCount = countCursor.getInt(0); // Get the count from the first column
+                }
+
+                countCursor.close();
                 Toast.makeText(getApplicationContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
