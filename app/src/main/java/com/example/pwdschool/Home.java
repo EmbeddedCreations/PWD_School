@@ -315,9 +315,11 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         AlertDialog alert = builder.create();
         alert.show();
     }
+
     private void showToast(String statusText) {
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

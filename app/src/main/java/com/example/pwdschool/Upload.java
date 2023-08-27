@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,23 +12,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,9 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -69,9 +60,8 @@ public class Upload extends AppCompatActivity {
 
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
-    public static String description;
     private static final int INITIAL_IMAGE_RESOURCE = R.drawable.uploadfile;
-
+    public static String description;
     // Define public static variables to store the EXIF information
     public static Date dateTaken;
     public static Date timeTaken;
@@ -81,11 +71,11 @@ public class Upload extends AppCompatActivity {
     public String date_today, time_today;
     public String encodedImage;
     Uri targetUri = null;
-    private boolean imageChanged = false;
     TextView textUri;
     TextView textView;
     List<String> selectedIssuesList = new ArrayList<>();
     String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
+    private boolean imageChanged = false;
     private Button pickImageButton;
     private Button buttonUploadImage;
     private Button buttonSaveImage;
@@ -167,7 +157,7 @@ public class Upload extends AppCompatActivity {
         //set junior engineer loggedin
         String juniorEngineer = Home.juniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-        Log.d("Upload",Home.atcOffice+','+Home.poOffice+","+Home.juniorEngineer);
+        Log.d("Upload", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
         // Set a click listener for the "Profile" ImageView
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,12 +222,11 @@ public class Upload extends AppCompatActivity {
                 } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
-                }else if (!imageChanged) {
+                } else if (!imageChanged) {
                     // Display a message to the user indicating they need to select an image
                     Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                else {
+                } else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
 
@@ -272,11 +261,11 @@ public class Upload extends AppCompatActivity {
                 } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
                     Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
-                }else if (!imageChanged) {
+                } else if (!imageChanged) {
                     // Display a message to the user indicating they need to select an image
                     Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
                     return;
-                }else{
+                } else {
                     // Save the description in a variable
                     Upload.description = description;
 
@@ -350,7 +339,6 @@ public class Upload extends AppCompatActivity {
                 builder.show();
             }
         });
-
 
 
 // OnClickListener for pickImageButton
@@ -576,6 +564,7 @@ public class Upload extends AppCompatActivity {
             db.close();
         }
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
@@ -584,6 +573,7 @@ public class Upload extends AppCompatActivity {
         }
         return false;
     }
+
     private void showToast(String statusText) {
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }

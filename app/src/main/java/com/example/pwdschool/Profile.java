@@ -1,10 +1,8 @@
 package com.example.pwdschool;
 
-import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -41,6 +39,7 @@ public class Profile extends AppCompatActivity {
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +81,6 @@ public class Profile extends AppCompatActivity {
                 });
             }
         });
-
 
 
         // Get the values from the MainActivity (or any other class where you have stored these values)
@@ -251,6 +249,7 @@ public class Profile extends AppCompatActivity {
         // Close the database
         db.close();
     }
+
     private void updateButtonStatus(boolean isNetworkAvailable) {
         Button uploadDbButton = findViewById(R.id.upload_db_button);
         Button viewHistoryButton = findViewById(R.id.view_history_button);
@@ -267,9 +266,11 @@ public class Profile extends AppCompatActivity {
             viewHistoryButton.setEnabled(false);
         }
     }
+
     private void showToast(String statusText) {
         Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
