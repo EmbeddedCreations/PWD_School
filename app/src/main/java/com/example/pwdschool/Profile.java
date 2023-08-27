@@ -175,28 +175,6 @@ public class Profile extends AppCompatActivity {
 
             }
         });
-
-        // Set a click listener for the button
-        viewHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isNetworkAvailable()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-                    builder.setTitle("Cannot Connect To the Server")
-                            .setMessage("Please make Sure you have an Internet Connection to View History")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                } else {
-                    Intent intent = new Intent(Profile.this, DisplaySchool.class);
-                    startActivity(intent);
-                }
-
-            }
-        });
     }
 
     private boolean isNetworkAvailable() {
@@ -208,9 +186,7 @@ public class Profile extends AppCompatActivity {
     private void uploadToServer(Cursor cursor) {
         String schoolName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_SCHOOL_NAME));
         String poOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_PO_OFFICE));
-        //String atcOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_ATC_OFFICE));
         String je = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_JE));
-        //String visitType = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_VISIT_TYPE));
         String buildingName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_BUILDING_NAME));
         String dateAdded = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_DATE_ADDED));
         String dateExcif = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_DATE_EXCIF));
@@ -280,14 +256,14 @@ public class Profile extends AppCompatActivity {
         Button viewHistoryButton = findViewById(R.id.view_history_button);
 
         if (isNetworkAvailable) {
-            uploadDbButton.setVisibility(View.VISIBLE);
+            uploadDbButton.setAlpha(1f);
             uploadDbButton.setEnabled(true);
-            viewHistoryButton.setVisibility(View.VISIBLE);
+            viewHistoryButton.setAlpha(1f);
             viewHistoryButton.setEnabled(true);
         } else {
-            uploadDbButton.setVisibility(View.INVISIBLE);
+            uploadDbButton.setAlpha(0.5f);
             uploadDbButton.setEnabled(false);
-            viewHistoryButton.setVisibility(View.INVISIBLE);
+            viewHistoryButton.setAlpha(0.5f);
             viewHistoryButton.setEnabled(false);
         }
     }
