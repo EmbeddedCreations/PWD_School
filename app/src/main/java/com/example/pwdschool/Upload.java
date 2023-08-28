@@ -80,7 +80,6 @@ public class Upload extends AppCompatActivity {
     private Button pickImageButton;
     private Button buttonUploadImage;
     private Button buttonSaveImage;
-    private ProgressBar loader;
     private EditText editTextDescription;
     private ProgressDialog progressDialog;
     private ImageView status;
@@ -142,7 +141,6 @@ public class Upload extends AppCompatActivity {
         iv_imgView = findViewById(R.id.image_view);
         pickImageButton = findViewById(R.id.pickimage);
         buttonSaveImage = findViewById(R.id.buttonSaveImage);
-        loader = findViewById(R.id.loader);
         TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
         ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
         textUri = findViewById(R.id.Dimensions);

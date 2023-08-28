@@ -65,7 +65,7 @@ public class Login extends AppCompatActivity {
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
     private Button loginButton;
-    private ProgressBar loader;
+//    private ProgressBar loader;
     private ProgressDialog progressDialog;
 
 
@@ -128,7 +128,6 @@ public class Login extends AppCompatActivity {
         selectJuniorEngineerSpinner = findViewById(R.id.select_junior_engineer);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
-        loader = findViewById(R.id.loader);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging in...");
         progressDialog.setCancelable(false);

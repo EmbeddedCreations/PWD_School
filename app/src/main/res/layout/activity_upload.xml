@@ -147,7 +147,6 @@
         app:layout_constraintTop_toBottomOf="@+id/buttonUploadImage" />
 
     <ProgressBar
-        android:id="@+id/loader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
