@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.os.Handler;
 import android.os.Looper;
-
 public class NetworkStatusUtility {
 
     private final Context context;

@@ -156,7 +156,7 @@
         android:id="@+id/view_history_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
         android:text="View History"
         app:layout_constraintEnd_toEndOf="@+id/buttonMaxWidthGuideline"
     app:layout_constraintStart_toStartOf="@+id/buttonWidthGuideline"
@@ -167,7 +167,7 @@
         android:id="@+id/upload_db_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="Upload Local DB"
         app:layout_constraintEnd_toEndOf="@+id/buttonMaxWidthGuideline"
     app:layout_constraintStart_toStartOf="@+id/buttonWidthGuideline"
@@ -176,7 +176,7 @@
         android:id="@+id/view_db_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="View Local DB"
         app:layout_constraintEnd_toEndOf="@+id/buttonMaxWidthGuideline"
         app:layout_constraintStart_toStartOf="@+id/buttonWidthGuideline"
@@ -185,10 +185,11 @@
         android:id="@+id/logOutButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="Log out"
         app:layout_constraintEnd_toEndOf="@+id/buttonMaxWidthGuideline"
         app:layout_constraintStart_toStartOf="@+id/buttonWidthGuideline"
         app:layout_constraintTop_toBottomOf="@+id/view_db_button" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

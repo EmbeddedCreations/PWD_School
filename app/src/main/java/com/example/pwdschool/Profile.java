@@ -3,6 +3,7 @@ package com.example.pwdschool;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,27 +112,51 @@ public class Profile extends AppCompatActivity {
         poOfficeText.setText(poOfficeValue);
         juniorEngineerNameText.setText(juniorEngineerValue);
 
-        dbHelper = new UploadDatabaseHelper(getApplicationContext());
-        db = dbHelper.getReadableDatabase();
-
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Clear the stored data from "PWD_App" SharedPreferences
-                SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove("array_key");
-                editor.remove("buildings");
-                editor.remove("schools");
-                editor.apply();
-                System.out.println("logout is in process");
+                // Show the progress dialog
+                ProgressDialog progressDialog = new ProgressDialog(Profile.this);
+                progressDialog.setMessage("Logging out...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
 
-                // Create and start the intent to the Login activity
-                Intent intent = new Intent(Profile.this, Login.class);
-                startActivity(intent);
-                finish(); // Finish the current activity to prevent going back
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Clear the stored data from "PWD_App" SharedPreferences
+                        SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove("array_key");
+                        editor.remove("buildings");
+                        editor.remove("schools");
+                        editor.apply();
+
+                        // Simulate some tasks being done
+                        try {
+                            Thread.sleep(1500); // Simulate tasks taking 1 second
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        // After tasks are complete, hide the progress dialog
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progressDialog.dismiss();
+                                Toast.makeText(Profile.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
+
+                                // Start the Login activity after successful logout and tasks completion
+                                Intent i = new Intent(Profile.this, Login.class);
+                                startActivity(i);
+                            }
+                        });
+                    }
+                }).start();
             }
         });
+
+
 
 
         uploadDbButton.setOnClickListener(new View.OnClickListener() {
