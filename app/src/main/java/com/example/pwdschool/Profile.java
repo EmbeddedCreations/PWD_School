@@ -1,8 +1,10 @@
 package com.example.pwdschool;
 
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -40,6 +42,7 @@ public class Profile extends AppCompatActivity {
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,8 @@ public class Profile extends AppCompatActivity {
         Button logOutButton = findViewById(R.id.logOutButton);
         status = findViewById(R.id.statusIcon);
         Button uploadDbButton = findViewById(R.id.upload_db_button);
-
+        Button viewLocalDBButton = findViewById(R.id.view_db_button);
+        TextView localDbCount = findViewById(R.id.local_dbCount);
         networkStatusUtility = new NetworkStatusUtility(this);
         updateButtonStatus(isNetworkAvailable());
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
@@ -82,7 +86,18 @@ public class Profile extends AppCompatActivity {
             }
         });
 
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+        Cursor countCursor = db.rawQuery(query, null);
 
+        if (countCursor .moveToFirst()) {
+            Home.dbCount = countCursor.getInt(0); // Get the count from the first column
+            localDbCount.setText("items in Local DB : "+ Home.dbCount);
+            // Do something with the count, e.g., display it or use it in your code
+        }
+
+        countCursor.close();
         // Get the values from the MainActivity (or any other class where you have stored these values)
         String atcOfficeValue = Home.atcOffice;
         String poOfficeValue = Home.poOffice;
@@ -93,9 +108,9 @@ public class Profile extends AppCompatActivity {
         poOfficeText.setText(poOfficeValue);
         juniorEngineerNameText.setText(juniorEngineerValue);
 
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Log.d("Profile", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
+        dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        db = dbHelper.getReadableDatabase();
+
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,28 +141,41 @@ public class Profile extends AppCompatActivity {
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
 
 
-                // Perform the query
-                String query = "SELECT " + UploadDatabaseHelper.COLUMN_SCHOOL_NAME + ","
-                        + UploadDatabaseHelper.COLUMN_PO_OFFICE + ","
-                        + UploadDatabaseHelper.COLUMN_JE + ","
-                        + UploadDatabaseHelper.COLUMN_BUILDING_NAME + ","
-                        + UploadDatabaseHelper.COLUMN_DATE_ADDED + ","
-                        + UploadDatabaseHelper.COLUMN_DATE_EXCIF + ","
-                        + UploadDatabaseHelper.COLUMN_TIME_EXCIF + ","
-                        + UploadDatabaseHelper.COLUMN_LATI + ","
-                        + UploadDatabaseHelper.COLUMN_LONGI + ","
-                        + UploadDatabaseHelper.COLUMN_DESC + ","
-                        + UploadDatabaseHelper.COLUMN_TAGS + ","
-                        + UploadDatabaseHelper.COLUMN_IMG + " FROM uploads";
-                Cursor cursor = db.rawQuery(query, null);
-                // Iterate through the cursor to retrieve the data and upload it to the server
-                while (cursor.moveToNext()) {
-                    uploadToServer(cursor);
+                if(Home.dbCount >0){
+                    // Perform the query
+                    String query2 = "SELECT " + UploadDatabaseHelper.COLUMN_SCHOOL_NAME + ","
+                            + UploadDatabaseHelper.COLUMN_PO_OFFICE + ","
+                            + UploadDatabaseHelper.COLUMN_JE + ","
+                            + UploadDatabaseHelper.COLUMN_BUILDING_NAME + ","
+                            + UploadDatabaseHelper.COLUMN_DATE_ADDED + ","
+                            + UploadDatabaseHelper.COLUMN_DATE_EXCIF + ","
+                            + UploadDatabaseHelper.COLUMN_TIME_EXCIF + ","
+                            + UploadDatabaseHelper.COLUMN_LATI + ","
+                            + UploadDatabaseHelper.COLUMN_LONGI + ","
+                            + UploadDatabaseHelper.COLUMN_DESC + ","
+                            + UploadDatabaseHelper.COLUMN_TAGS + ","
+                            + UploadDatabaseHelper.COLUMN_IMG + " FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+                    Cursor cursor = db.rawQuery(query2, null);
+                    // Iterate through the cursor to retrieve the data and upload it to the server
+                    while (cursor.moveToNext()) {
+                        uploadToServer(cursor);
+                    }
+                    String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+                    Cursor countCursor = db.rawQuery(query, null);
 
+                    if (countCursor .moveToFirst()) {
+                        Home.dbCount = countCursor.getInt(0); // Get the count from the first column
+                        localDbCount.setText("items in Local DB : "+ Home.dbCount);
+                        // Do something with the count, e.g., display it or use it in your code
+                    }
+                    // Close the cursor and the database
+                    countCursor.close();
+                    cursor.close();
+                    db.close();
+                }else{
+                    Toast.makeText(Profile.this, "There is no data in the local database", Toast.LENGTH_SHORT).show();
                 }
-                // Close the cursor and the database
-                cursor.close();
-                db.close();
+
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(
@@ -173,6 +201,40 @@ public class Profile extends AppCompatActivity {
 
             }
         });
+
+        viewLocalDBButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Home.dbCount >0){
+                    Intent intent = new Intent(Profile.this,DbImageActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(Profile.this,"There is No Data in the local database",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        viewHistoryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isNetworkAvailable()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
+                    builder.setTitle("Cannot Connect To the Server")
+                            .setMessage("Please make Sure you have an Internet Connection to View History")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                } else {
+                    Intent intent = new Intent(Profile.this, DisplaySchool.class);
+                    startActivity(intent);
+                }
+
+            }
+        });
     }
 
     private boolean isNetworkAvailable() {
@@ -194,7 +256,6 @@ public class Profile extends AppCompatActivity {
         String description = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_DESC));
         String tags = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_TAGS));
         String image = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_IMG));
-
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -232,6 +293,7 @@ public class Profile extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         queue.add(request);
+        deleteEntry(image);
     }
 
     private void deleteEntry(String img) {
