@@ -70,18 +70,4 @@ public class LocalDbAdapter extends RecyclerView.Adapter<ImageDescriptionAdapter
     public int getItemCount() {
         return dataList.size();
     }
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
-        TextView descriptionTextView;
-        TextView BuildingName;
-        TextView Date;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-            descriptionTextView = itemView.findViewById(R.id.buildingDescTextView);
-            BuildingName = itemView.findViewById(R.id.buildingNameTextView);
-            Date = itemView.findViewById(R.id.buildingDateTextView);
-        }
-    }
 }

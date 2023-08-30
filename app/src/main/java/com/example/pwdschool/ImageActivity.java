@@ -96,7 +96,6 @@ public class ImageActivity extends AppCompatActivity {
                 f_date[i] = jo.getString("user_upload_date");
                 f_buildingName[i] = jo.getString("image_name");
                 f_description[i] = jo.getString("Description");
-//                Log.d("info",f_imgurl[i]+","f_date[i]='')
             }
         } catch (Exception e) {
 

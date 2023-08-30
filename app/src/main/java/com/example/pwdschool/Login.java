@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -36,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+
 
 public class Login extends AppCompatActivity {
     private static final int flag = 0;
@@ -65,15 +65,15 @@ public class Login extends AppCompatActivity {
     private Spinner selectJuniorEngineerSpinner;
     private EditText passwordEditText;
     private Button loginButton;
-//    private ProgressBar loader;
     private ProgressDialog progressDialog;
+    private NetworkStatusUtility networkStatusUtility;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        networkStatusUtility = new NetworkStatusUtility(this);
         sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
         String jsonArrayString = sharedPreferences.getString("array_key", "");
         String schoolArrayString = sharedPreferences.getString("schools", "");
@@ -114,7 +114,7 @@ public class Login extends AppCompatActivity {
             }
         } else {
             // Check for internet connection and show alert dialog if not available
-            if (!isNetworkAvailable()) {
+            if (!networkStatusUtility.isNetworkAvailable()) {
                 showNoInternetDialog();
             } else {
                 StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
@@ -237,7 +237,6 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        // ye kis liye daala?
         if (!jsonArrayString.equals("")) {
             Log.d("why", jsonArrayString);
             Intent i = new Intent(Login.this, Home.class);
@@ -311,7 +310,7 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isNetworkAvailable()) {
+        if (!networkStatusUtility.isNetworkAvailable()) {
             showNoInternetDialog();
         } else {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
@@ -392,12 +391,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     private void getSchoolData() {
         String result = null;
