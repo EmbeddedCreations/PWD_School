@@ -4,17 +4,13 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,10 +29,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,7 +55,7 @@ public class Profile extends AppCompatActivity {
         Button viewLocalDBButton = findViewById(R.id.view_db_button);
         TextView localDbCount = findViewById(R.id.local_dbCount);
         networkStatusUtility = new NetworkStatusUtility(this);
-        updateButtonStatus(isNetworkAvailable());
+        updateButtonStatus(networkStatusUtility.isNetworkAvailable());
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {
@@ -246,7 +238,7 @@ public class Profile extends AppCompatActivity {
         viewHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isNetworkAvailable()) {
+                if (!networkStatusUtility.isNetworkAvailable()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
                     builder.setTitle("Cannot Connect To the Server")
                             .setMessage("Please make Sure you have an Internet Connection to View History")
@@ -264,13 +256,6 @@ public class Profile extends AppCompatActivity {
             }
         });
     }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
     private void uploadToServer(Cursor cursor) {
         String schoolName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_SCHOOL_NAME));
         String poOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_PO_OFFICE));
