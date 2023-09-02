@@ -75,6 +75,17 @@ public class Login extends AppCompatActivity {
         String jsonArrayString = sharedPreferences.getString("array_key", "");
         String schoolArrayString = sharedPreferences.getString("schools", "");
         String buildingArrayString = sharedPreferences.getString("buildings", "");
+
+//        idhar data set krde vo jo pass krra home isme
+        Home homeFragment = new Home();
+        homeFragment.setDataForHome(Home.schools, Home.school_id, Home.all_buildings,Home.schoolIDBuilding);
+
+// Add the fragment to the activity
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, homeFragment)
+                .commit();
+
         if (!jsonArrayString.equals("")) {
             try {
                 JSONArray jsonArray = new JSONArray(jsonArrayString);
@@ -118,6 +129,7 @@ public class Login extends AppCompatActivity {
                 getData();
             }
         }
+
 
         // Find the views by their IDs
         selectAtcOfficeSpinner = findViewById(R.id.select_atc_office);
@@ -236,7 +248,7 @@ public class Login extends AppCompatActivity {
 
         if (!jsonArrayString.equals("")) {
             Log.d("why", jsonArrayString);
-            Intent i = new Intent(Login.this, Home.class);
+            Intent i = new Intent(Login.this, MainActivity.class);
             startActivity(i);
         }
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -283,7 +295,7 @@ public class Login extends AppCompatActivity {
                                     Toast.makeText(Login.this, "Successful Login", Toast.LENGTH_SHORT).show();
 
                                     // Start the Home activity after successful login and tasks completion
-                                    Intent i = new Intent(Login.this, Home.class);
+                                    Intent i = new Intent(Login.this, MainActivity.class);
                                     startActivity(i);
                                 }
                             });

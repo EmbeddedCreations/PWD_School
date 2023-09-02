@@ -10,7 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,18 +20,16 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
+public class Home extends Fragment implements AdapterView.OnItemSelectedListener {
 
-public class Home extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-
-    // Public variables to store user-selected data
     public static String selectedSchool;
     public static String selectedWorkorder;
     public static String selectedBuilding;
@@ -41,7 +41,6 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     public static String[] school_id;
     public static String[] all_buildings;
     public static String[] schoolIDBuilding;
-    // Sample data for school names, workorder names, and building names
     private static String[] schoolNames = {"Select School"};
     private static String[] buildingNames = {"Select Building"};
     private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
@@ -54,29 +53,46 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
     private Button buttonSurvey;
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
-
     public static int dbCount;
 
+    public Home() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_home, container, false);
+        return view;
+    }
+
+    // Method to set the data for HomeFragment
+    public void setDataForHome(String[] schools, String[] schoolIds, String[] buildings, String[] schoolBuildingIds) {
+        // Set the data received from the Login activity to your fragment's variables
+        Home.schools = schools;
+        Home.school_id = schoolIds;
+        Home.all_buildings = buildings;
+        Home.schoolIDBuilding = schoolBuildingIds;
+
+        // Now you can use this data to update your UI elements in the fragment
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
-        //getSchoolData();
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
         Cursor countCursor = db.rawQuery(query, null);
 
-        if (countCursor .moveToFirst()) {
-            dbCount = countCursor.getInt(0); // Get the count from the first column
+        if (countCursor.moveToFirst()) {
+            dbCount = countCursor.getInt(0);
         }
 
         countCursor.close();
-        status = findViewById(R.id.statusIcon);
-        networkStatusUtility = new NetworkStatusUtility(this);
+        status = requireView().findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(requireContext());
 
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
@@ -101,18 +117,18 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 });
             }
         });
-        // Find views by their IDs
-        spinnerSchool = findViewById(R.id.spinnerSchool);
-        spinnerBuilding = findViewById(R.id.spinnerBuilding);
-        spinnerWorkorder = findViewById(R.id.spinnerWorkorder);
-        textViewSelectedDate = findViewById(R.id.textViewSelectedDate);
-        buttonSurvey = findViewById(R.id.buttonSurvey);
-        TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
-        TextView textViewAtc = findViewById(R.id.atc);
-        TextView textViewPoOffice = findViewById(R.id.poOffice);
-        ImageView imageViewLogout = findViewById(R.id.imageViewLogout);
-        ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
-        // Set spinner listeners
+
+        spinnerSchool = requireView().findViewById(R.id.spinnerSchool);
+        spinnerBuilding = requireView().findViewById(R.id.spinnerBuilding);
+        spinnerWorkorder = requireView().findViewById(R.id.spinnerWorkorder);
+        textViewSelectedDate = requireView().findViewById(R.id.textViewSelectedDate);
+        buttonSurvey = requireView().findViewById(R.id.buttonSurvey);
+        TextView textViewLoggedIn = requireView().findViewById(R.id.textViewLoggedIn);
+        TextView textViewAtc = requireView().findViewById(R.id.atc);
+        TextView textViewPoOffice = requireView().findViewById(R.id.poOffice);
+        ImageView imageViewLogout = requireView().findViewById(R.id.imageViewLogout);
+        ImageView imageViewProfile = requireView().findViewById(R.id.imageViewProfile);
+
         spinnerSchool.setOnItemSelectedListener(this);
         spinnerBuilding.setOnItemSelectedListener(this);
         spinnerWorkorder.setOnItemSelectedListener(this);
@@ -126,43 +142,37 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         }
 
         schoolNames = tempSchoolList.toArray(new String[0]);
-        // Set up spinner adapters with the arrays
+
         ArrayAdapter<String> schoolAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, schoolNames);
+                requireContext(), android.R.layout.simple_spinner_item, schoolNames);
         schoolAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSchool.setAdapter(schoolAdapter);
 
         ArrayAdapter<String> workorderAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, workorderNames);
+                requireContext(), android.R.layout.simple_spinner_item, workorderNames);
         workorderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerWorkorder.setAdapter(workorderAdapter);
 
-
-        // Get current date
         calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         String currentDate = dateFormat.format(calendar.getTime());
-
-        // Set current date as the selected date
         textViewSelectedDate.setText(currentDate);
 
-        //set junior engineer loggedin
         juniorEngineer = Login.selectedJuniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-        Log.d("Home", Login.selectedAtcOffice + ',' + Login.selectedPoOffice + "," + Login.selectedJuniorEngineer);
-        // Set a click listener for the "Profile" ImageView
+
         imageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Home.this, Profile.class);
+                Intent intent = new Intent(requireActivity(), Profile.class);
                 startActivity(intent);
             }
         });
+
         imageViewLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Show the progress dialog
-                ProgressDialog progressDialog = new ProgressDialog(Home.this);
+                ProgressDialog progressDialog = new ProgressDialog(requireContext());
                 progressDialog.setMessage("Logging out...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -170,30 +180,25 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        // Clear the stored data from "PWD_App" SharedPreferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("PWD_App", requireActivity().MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.remove("array_key");
                         editor.remove("buildings");
                         editor.remove("schools");
                         editor.apply();
 
-                        // Simulate some tasks being done
                         try {
-                            Thread.sleep(1500); // Simulate tasks taking 1 second
+                            Thread.sleep(1500);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
 
-                        // After tasks are complete, hide the progress dialog
-                        runOnUiThread(new Runnable() {
+                        requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.dismiss();
-                                Toast.makeText(Home.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
-
-                                // Start the Login activity after successful logout and tasks completion
-                                Intent i = new Intent(Home.this, Login.class);
+                                Toast.makeText(requireContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(requireActivity(), Login.class);
                                 startActivity(i);
                             }
                         });
@@ -202,20 +207,15 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
             }
         });
 
-
-        // set atc office
         atcOffice = Login.selectedAtcOffice;
         textViewAtc.setText("Atc: " + atcOffice);
 
-        // set po office
         poOffice = Login.selectedPoOffice;
         textViewPoOffice.setText("PO Office: " + poOffice);
 
-        // Set button click listener for changing screen
         buttonSurvey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get selected date
                 selectedDate = textViewSelectedDate.getText().toString();
 
                 if (selectedSchool.equals("Select School")) {
@@ -225,22 +225,19 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 } else if (selectedWorkorder.equals("Select Workorder")) {
                     showToast("Please select a workorder.");
                 } else {
-                    // All items are selected, start the survey
-                    Intent intent = new Intent(Home.this, Upload.class);
+                    Intent intent = new Intent(requireActivity(), Upload.class);
                     startActivity(intent);
                 }
             }
 
             private void showToast(String message) {
-                Toast.makeText(Home.this, message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // Handle spinner item selection
         switch (parent.getId()) {
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
@@ -273,7 +270,7 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                     }
                 }
                 buildingNames = tempBuildings.toArray(new String[0]);
-                ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, buildingNames);
+                ArrayAdapter<String> buildingAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, buildingNames);
                 buildingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerBuilding.setAdapter(buildingAdapter);
                 break;
@@ -282,39 +279,30 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
                 break;
             case R.id.spinnerWorkorder:
                 selectedWorkorder = parent.getItemAtPosition(position).toString();
-                // Check if the selected value is "Workorder related Inspection"
                 if (selectedWorkorder.equals("Workorder related Inspection")) {
-                    // Show the second dropdown with the specified values
-                    TextView textViewSecondDropdownTitle = findViewById(R.id.textViewSecondDropdownTitle);
-                    Spinner spinnerSecondDropdown = findViewById(R.id.spinnerSecondDropdown);
+                    TextView textViewSecondDropdownTitle = requireView().findViewById(R.id.textViewSecondDropdownTitle);
+                    Spinner spinnerSecondDropdown = requireView().findViewById(R.id.spinnerSecondDropdown);
                     textViewSecondDropdownTitle.setVisibility(View.VISIBLE);
                     spinnerSecondDropdown.setVisibility(View.VISIBLE);
-
-                    // Populate the second dropdown with values
                     String[] workorderValues = {"Workorder 1", "Workorder 2", "Workorder 3"};
                     ArrayAdapter<String> secondDropdownAdapter = new ArrayAdapter<>(
-                            this, android.R.layout.simple_spinner_item, workorderValues);
+                            requireContext(), android.R.layout.simple_spinner_item, workorderValues);
                     secondDropdownAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerSecondDropdown.setAdapter(secondDropdownAdapter);
 
-                    // Set a listener for the second dropdown
                     spinnerSecondDropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                            // Handle the selection of the second dropdown if needed
-                            // For example, you can save the selected value in a variable
                             String selectedSecondDropdownValue = parent.getItemAtPosition(position).toString();
                         }
 
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
-                            // Handle case when no item is selected in the second dropdown
                         }
                     });
                 } else {
-                    // Hide the second dropdown if the selected value is not "Workorder related Inspection"
-                    TextView textViewSecondDropdownTitle = findViewById(R.id.textViewSecondDropdownTitle);
-                    Spinner spinnerSecondDropdown = findViewById(R.id.spinnerSecondDropdown);
+                    TextView textViewSecondDropdownTitle = requireView().findViewById(R.id.textViewSecondDropdownTitle);
+                    Spinner spinnerSecondDropdown = requireView().findViewById(R.id.spinnerSecondDropdown);
                     textViewSecondDropdownTitle.setVisibility(View.GONE);
                     spinnerSecondDropdown.setVisibility(View.GONE);
                 }
@@ -322,43 +310,17 @@ public class Home extends AppCompatActivity implements AdapterView.OnItemSelecte
         }
     }
 
-
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        // Handle case when no item is selected
     }
 
     @Override
-    public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Closing the PWD App")
-                .setMessage("Are you sure?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Home.super.onBackPressed();
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // Do nothing or add specific handling for cancel
-                    }
-                })
-                .setCancelable(false);
-
-        AlertDialog alert = builder.create();
-        alert.show();
+    public void onDestroy() {
+        super.onDestroy();
+        networkStatusUtility.stopMonitoringNetworkStatus();
     }
 
     private void showToast(String statusText) {
-        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        networkStatusUtility.stopMonitoringNetworkStatus();
+        Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
     }
 }
