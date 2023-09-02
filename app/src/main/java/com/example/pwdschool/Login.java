@@ -76,15 +76,15 @@ public class Login extends AppCompatActivity {
         String schoolArrayString = sharedPreferences.getString("schools", "");
         String buildingArrayString = sharedPreferences.getString("buildings", "");
 
-//        idhar data set krde vo jo pass krra home isme
-        Home homeFragment = new Home();
-        homeFragment.setDataForHome(Home.schools, Home.school_id, Home.all_buildings,Home.schoolIDBuilding);
-
-// Add the fragment to the activity
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, homeFragment)
-                .commit();
+////        idhar data set krde vo jo pass krra home isme
+//        Home homeFragment = new Home();
+//        homeFragment.setDataForHome(Home.schools, Home.school_id, Home.all_buildings,Home.schoolIDBuilding);
+//
+//// Add the fragment to the activity
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.container, homeFragment)
+//                .commit();
 
         if (!jsonArrayString.equals("")) {
             try {

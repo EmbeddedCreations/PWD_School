@@ -65,16 +65,16 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         return view;
     }
 
-    // Method to set the data for HomeFragment
-    public void setDataForHome(String[] schools, String[] schoolIds, String[] buildings, String[] schoolBuildingIds) {
-        // Set the data received from the Login activity to your fragment's variables
-        Home.schools = schools;
-        Home.school_id = schoolIds;
-        Home.all_buildings = buildings;
-        Home.schoolIDBuilding = schoolBuildingIds;
+//    // Method to set the data for HomeFragment
+//    public void setDataForHome(String[] schools, String[] schoolIds, String[] buildings, String[] schoolBuildingIds) {
+//        // Set the data received from the Login activity to your fragment's variables
+//        Home.schools = schools;
+//        Home.school_id = schoolIds;
+//        Home.all_buildings = buildings;
+//        Home.schoolIDBuilding = schoolBuildingIds;
 
         // Now you can use this data to update your UI elements in the fragment
-    }
+//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -254,7 +254,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                         ID = school_id[index];
                     }
                 }
-                if (all_buildings.length > 0) {
+                if (all_buildings != null) {
                     buildings = new ArrayList<>();
                     for (int i = 0; i < all_buildings.length; i++) {
                         if (schoolIDBuilding[i].equals(ID)) {
