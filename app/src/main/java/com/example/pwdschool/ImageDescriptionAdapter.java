@@ -39,7 +39,7 @@ public class ImageDescriptionAdapter extends RecyclerView.Adapter<ImageDescripti
         Log.d("url", model.getImageUrl());
         Picasso.get()
                 .load(model.getImageUrl())
-                .placeholder(R.drawable.upload) // Placeholder image from drawable
+                .placeholder(R.drawable.uploadfile) // Placeholder image from drawable
                 .error(R.drawable.imgnotfound) // Image to show if loading from URL fails
                 .into(holder.imageView);
         // holder.Picasso.get().load(model.getImageUrl()).into(holder.imageView);
@@ -55,7 +55,7 @@ public class ImageDescriptionAdapter extends RecyclerView.Adapter<ImageDescripti
             ImageView enlargedImageView = dialog.findViewById(R.id.enlargedImageView);
             Picasso.get()
                     .load(model.getImageUrl())
-                    .placeholder(R.drawable.upload)
+                    .placeholder(R.drawable.uploadfile)
                     .error(R.drawable.imgnotfound)
                     .into(enlargedImageView);
 
