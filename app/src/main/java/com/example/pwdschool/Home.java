@@ -17,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -160,8 +163,15 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                 } else if (selectedWorkorder.equals("Select Workorder")) {
                     showToast("Please select a workorder.");
                 } else {
-                    Intent intent = new Intent(requireActivity(), Upload.class);
-                    startActivity(intent);
+//                    Intent intent = new Intent(requireActivity(), Upload.class);
+//                    startActivity(intent);
+                    // Create a new instance of the fragment you want to navigate to
+                    Upload uploadFragment = new Upload();
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.container, uploadFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                 }
             }
 

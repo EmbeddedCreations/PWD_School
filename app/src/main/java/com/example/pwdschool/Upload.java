@@ -1,5 +1,6 @@
 package com.example.pwdschool;
 
+import androidx.fragment.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -18,7 +19,9 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -53,7 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class Upload extends AppCompatActivity {
+public class Upload extends Fragment {
 
     private static final int CAMERA_CODE = 101;
     private static final int RQS_OPEN_IMAGE = 1;
@@ -81,6 +84,15 @@ public class Upload extends AppCompatActivity {
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
+    public Upload() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_upload, container, false);
+        return view;
+    }
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
                 @Override
@@ -89,7 +101,7 @@ public class Upload extends AppCompatActivity {
                         Bitmap bm;
                         try {
                             bm = BitmapFactory.decodeStream(
-                                    getContentResolver()
+                                    requireActivity().getContentResolver()
                                             .openInputStream(targetUri));
                             iv_imgView.setImageBitmap(bm);
                             encodeBitmap(bm);
@@ -126,24 +138,22 @@ public class Upload extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         // Initialize the dbHelper
-        dbHelper = new UploadDatabaseHelper(this);
+        dbHelper = new UploadDatabaseHelper(getContext());
 
-        status = findViewById(R.id.statusIcon);
-        iv_imgView = findViewById(R.id.image_view);
-        pickImageButton = findViewById(R.id.pickimage);
-        buttonSaveImage = findViewById(R.id.buttonSaveImage);
-        TextView textViewLoggedIn = findViewById(R.id.textViewLoggedIn);
-        ImageView imageViewProfile = findViewById(R.id.imageViewProfile);
-        textUri = findViewById(R.id.Dimensions);
+        status = requireView().findViewById(R.id.statusIcon);
+        iv_imgView = requireView().findViewById(R.id.image_view);
+        pickImageButton = requireView().findViewById(R.id.pickimage);
+        buttonSaveImage = requireView().findViewById(R.id.buttonSaveImage);
+        TextView textViewLoggedIn = requireView().findViewById(R.id.textViewLoggedIn);
+        textUri = requireView().findViewById(R.id.Dimensions);
         textUri.setOnClickListener(textUriOnClickListener);
-        editTextDescription = findViewById(R.id.editTextDescription);
+        editTextDescription = requireView().findViewById(R.id.editTextDescription);
 
-        progressDialog = new ProgressDialog(this);
+        progressDialog = new ProgressDialog(requireContext());
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.setCancelable(false);
 
@@ -153,27 +163,20 @@ public class Upload extends AppCompatActivity {
         String juniorEngineer = Home.juniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
         Log.d("Upload", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
-        // Set a click listener for the "Profile" ImageView
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Upload.this, Profile.class);
-                startActivity(intent);
-            }
-        });
+
 
 // Find the Upload button and set it initially disabled and faded;
-        buttonUploadImage = findViewById(R.id.buttonUploadImage);
+        buttonUploadImage = requireView().findViewById(R.id.buttonUploadImage);
         buttonUploadImage.setEnabled(false);
         buttonUploadImage.setAlpha(0.5f); // Set the alpha value to make it appear faded
 
-        status = findViewById(R.id.statusIcon);
-        networkStatusUtility = new NetworkStatusUtility(this);
+        status = requireView().findViewById(R.id.statusIcon);
+        networkStatusUtility = new NetworkStatusUtility(requireContext());
 
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {
-                runOnUiThread(() -> {
+                requireActivity().runOnUiThread(() -> {
                     status.setImageResource(R.drawable.online);
                     buttonUploadImage.setEnabled(true);
                     buttonUploadImage.setAlpha(1.0f);
@@ -188,7 +191,7 @@ public class Upload extends AppCompatActivity {
 
             @Override
             public void onNetworkLost() {
-                runOnUiThread(() -> {
+                requireActivity().runOnUiThread(() -> {
                     status.setImageResource(R.drawable.offline);
                     buttonUploadImage.setEnabled(false);
                     buttonUploadImage.setAlpha(0.5f);
@@ -207,19 +210,19 @@ public class Upload extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!networkStatusUtility.isNetworkAvailable()) {
-                    Toast.makeText(Upload.this, "No internet connection available", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 String description = editTextDescription.getText().toString().trim();
                 if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
-                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please enter a description.", Toast.LENGTH_SHORT).show();
                 } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
-                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please select an image first.", Toast.LENGTH_SHORT).show();
                 } else if (!imageChanged) {
                     // Display a message to the user indicating they need to select an image
-                    Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     // Save the description in a public static variable for further use
@@ -252,13 +255,13 @@ public class Upload extends AppCompatActivity {
                 String description = editTextDescription.getText().toString().trim();
                 if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
-                    Toast.makeText(Upload.this, "Please enter a description.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please enter a description.", Toast.LENGTH_SHORT).show();
                 } else if (iv_imgView.getDrawable() == null) {
                     // User has not selected an image
-                    Toast.makeText(Upload.this, "Please select an image first.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please select an image first.", Toast.LENGTH_SHORT).show();
                 } else if (!imageChanged) {
                     // Display a message to the user indicating they need to select an image
-                    Toast.makeText(getApplicationContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     // Save the description in a variable
@@ -271,7 +274,7 @@ public class Upload extends AppCompatActivity {
                     insertDataIntoDatabase();
 
                     // Show a message to indicate successful insertion
-                    Toast.makeText(Upload.this, "Image saved to offline database.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Image saved to offline database.", Toast.LENGTH_SHORT).show();
 
                     // Re-enable the save button
                     buttonSaveImage.setEnabled(true);
@@ -280,12 +283,12 @@ public class Upload extends AppCompatActivity {
             }
         });
 
-        textView = findViewById(R.id.textViewTags);
+        textView = requireActivity().findViewById(R.id.textViewTags);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Initialize alert dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
                 // set title
                 builder.setTitle("Select Major Problems");
@@ -384,7 +387,7 @@ public class Upload extends AppCompatActivity {
 
                 // Dismiss the progress dialog
                 progressDialog.dismiss();
-                Toast.makeText(getApplicationContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -394,7 +397,7 @@ public class Upload extends AppCompatActivity {
                 imageChanged = true;
                 // Dismiss the progress dialog
                 progressDialog.dismiss();
-                Toast.makeText(getApplicationContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
             }
         }) {
 
@@ -419,13 +422,13 @@ public class Upload extends AppCompatActivity {
             }
         };
 
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        RequestQueue queue = Volley.newRequestQueue(requireContext());
         queue.add(request);
     }
 
     void showExif(Uri photoUri) {
         if (photoUri != null) {
-            try (ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(photoUri, "r")) {
+            try (ParcelFileDescriptor parcelFileDescriptor = requireActivity().getContentResolver().openFileDescriptor(photoUri, "r")) {
                 FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
 
@@ -461,7 +464,7 @@ public class Upload extends AppCompatActivity {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(),
+                Toast.makeText(getContext(),
                         "Something wrong:\n" + e,
                         Toast.LENGTH_LONG).show();
             }
@@ -469,9 +472,9 @@ public class Upload extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
+        if (resultCode == requireActivity().RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
             Uri uri = data.getData();
             // Enable description and tags input fields after image selection
             editTextDescription.setEnabled(true);
@@ -479,7 +482,7 @@ public class Upload extends AppCompatActivity {
             iv_imgView.setImageURI(uri);
             imageChanged = true;
             try {
-                encodeBitmap(BitmapFactory.decodeStream(getApplicationContext().getContentResolver().openInputStream(uri)));
+                encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -500,9 +503,9 @@ public class Upload extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -557,25 +560,25 @@ public class Upload extends AppCompatActivity {
                 }
 
                 countCursor.close();
-                Toast.makeText(getApplicationContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
             }
         } catch (SQLException e) {
             // Handle the exception here, you can log it or show a specific error message
-            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         } finally {
             db.close();
         }
     }
 
     private void showToast(String statusText) {
-        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
     }
 
     // Method to show the options dialog for capturing or selecting an image
     private void showImageOptionsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(Upload.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Choose an option")
                 .setItems(new String[]{"Capture from Camera", "Select from Gallery"}, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -604,7 +607,7 @@ public class Upload extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         dbHelper.close();
         networkStatusUtility.stopMonitoringNetworkStatus();
