@@ -10,49 +10,34 @@
     android:paddingBottom="16dp"
     tools:context=".Home">
 
-    <ImageView
-        android:id="@+id/statusIcon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="14dp"
-        android:contentDescription="Status"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewProfile"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/online" />
     <!-- "Logged In" TextView -->
     <TextView
         android:id="@+id/textViewLoggedIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:text=""
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Profile ImageView -->
     <ImageView
-        android:id="@+id/imageViewProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="Profile"
-        android:src="@drawable/ic_baseline_person_24"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewLogout"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Logout ImageView -->
-    <ImageView
-        android:id="@+id/imageViewLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="10dp"
-        android:contentDescription="Logout"
-        android:src="@drawable/ic_baseline_logout_24"
+        android:id="@+id/statusIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="2dp"
+        android:contentDescription="Status"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/online" />
+
+    <TextView
+        android:id="@+id/textViewStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status:"
+        android:layout_marginRight="5dp"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@+id/statusIcon"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -62,38 +47,16 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.3" />
 
-    <TextView
-        android:id="@+id/atc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="ATC:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLoggedIn" />
-
-    <TextView
-        android:id="@+id/poOffice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="PO:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/atc"
-        app:layout_constraintTop_toBottomOf="@+id/atc" />
-
     <ImageView
         android:id="@+id/logo"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="170dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
         android:src="@drawable/form"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/poOffice" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewLoggedIn" />
 
     <TextView
         android:id="@+id/start"
@@ -106,6 +69,31 @@
         app:flow_horizontalAlign="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/atc"/>
+
+    <!-- ATC Office EditText -->
+    <EditText
+        android:id="@+id/atc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="ATC Office"
+        android:textSize="15sp"
+        android:textFontWeight="@integer/material_motion_duration_short_1"
+        app:layout_constraintEnd_toStartOf="@+id/po"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
+
+    <!-- PO Office EditText -->
+    <EditText
+        android:id="@+id/po"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="PO Office"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/atc"
         app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <!-- TextView for "School:" -->
@@ -217,8 +205,7 @@
         android:text=""
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/guideline_start"
-    app:layout_constraintTop_toTopOf="@+id/textViewDateTitle" />
-
+        app:layout_constraintTop_toTopOf="@+id/textViewDateTitle" />
 
     <Button
         android:id="@+id/buttonSurvey"
