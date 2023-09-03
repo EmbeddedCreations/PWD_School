@@ -11,16 +11,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -32,29 +34,37 @@ import com.android.volley.toolbox.Volley;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Profile extends AppCompatActivity {
+public class Profile extends Fragment {
 
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
 
+    public Profile() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_profile, container, false);
+        return view;
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
 
         // Find the TextView elements by their IDs
-        TextView atcOfficeText = findViewById(R.id.atc_office_text);
-        TextView poOfficeText = findViewById(R.id.po_office_text);
-        TextView juniorEngineerNameText = findViewById(R.id.junior_engineer_name_text);
-        Button viewHistoryButton = findViewById(R.id.view_history_button);
-        Button logOutButton = findViewById(R.id.logOutButton);
-        status = findViewById(R.id.statusIcon);
-        Button uploadDbButton = findViewById(R.id.upload_db_button);
-        Button viewLocalDBButton = findViewById(R.id.view_db_button);
-        TextView localDbCount = findViewById(R.id.local_dbCount);
-        networkStatusUtility = new NetworkStatusUtility(this);
+        TextView atcOfficeText = requireView().findViewById(R.id.atc_office_text);
+        TextView poOfficeText = requireView().findViewById(R.id.po_office_text);
+        TextView juniorEngineerNameText = requireView().findViewById(R.id.junior_engineer_name_text);
+        Button viewHistoryButton = requireView().findViewById(R.id.view_history_button);
+        Button logOutButton = requireView().findViewById(R.id.logOutButton);
+        status = requireView().findViewById(R.id.statusIcon);
+        Button uploadDbButton = requireView().findViewById(R.id.upload_db_button);
+        Button viewLocalDBButton = requireView().findViewById(R.id.view_db_button);
+        TextView localDbCount = requireView().findViewById(R.id.local_dbCount);
+        networkStatusUtility = new NetworkStatusUtility(requireContext());
         updateButtonStatus(networkStatusUtility.isNetworkAvailable());
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
@@ -82,7 +92,7 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
         Cursor countCursor = db.rawQuery(query, null);
@@ -108,7 +118,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Show the progress dialog
-                ProgressDialog progressDialog = new ProgressDialog(Profile.this);
+                ProgressDialog progressDialog = new ProgressDialog(requireContext());
                 progressDialog.setMessage("Logging out...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -117,7 +127,7 @@ public class Profile extends AppCompatActivity {
                     @Override
                     public void run() {
                         // Clear the stored data from "PWD_App" SharedPreferences
-                        SharedPreferences sharedPreferences = getSharedPreferences("PWD_App", MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("PWD_App", requireActivity().MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.remove("array_key");
                         editor.remove("buildings");
@@ -132,14 +142,14 @@ public class Profile extends AppCompatActivity {
                         }
 
                         // After tasks are complete, hide the progress dialog
-                        runOnUiThread(new Runnable() {
+                        requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 progressDialog.dismiss();
-                                Toast.makeText(Profile.this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(requireContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
 
                                 // Start the Login activity after successful logout and tasks completion
-                                Intent i = new Intent(Profile.this, Login.class);
+                                Intent i = new Intent(requireContext(), Login.class);
                                 startActivity(i);
                             }
                         });
@@ -157,7 +167,7 @@ public class Profile extends AppCompatActivity {
                 // Handle the click event for the "Upload Local DB" button
                 // Initiate the database upload process here
                 // Create a DatabaseHelper instance and get a readable database
-                UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+                UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
 
 
@@ -193,7 +203,7 @@ public class Profile extends AppCompatActivity {
                     cursor.close();
                     db.close();
                 }else{
-                    Toast.makeText(Profile.this, "There is no data in the local database", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "There is no data in the local database", Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -203,18 +213,18 @@ public class Profile extends AppCompatActivity {
                             "Upload Channel",
                             NotificationManager.IMPORTANCE_LOW
                     );
-                    NotificationManager notificationManager = getSystemService(NotificationManager.class);
+                    NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
                     notificationManager.createNotificationChannel(channel);
                 }
                 // Create a notification when the button is clicked
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(Profile.this, "upload_channel_id")
+                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), "upload_channel_id")
                         .setSmallIcon(R.drawable.ic_baseline_cloud_upload_24)
                         .setContentTitle("Uploading Local Database")
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setOnlyAlertOnce(true);
 
                 // Show the initial notification
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(Profile.this);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
                 notificationManager.notify(0, notificationBuilder.build());
                 // Start an AsyncTask or a service for the database upload process
                 new UploadTask(notificationManager, notificationBuilder, dbHelper).execute();
@@ -226,10 +236,10 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(Home.dbCount >0){
-                    Intent intent = new Intent(Profile.this,DbImageActivity.class);
+                    Intent intent = new Intent(requireContext(),DbImageActivity.class);
                     startActivity(intent);
                 }else{
-                    Toast.makeText(Profile.this,"There is No Data in the local database",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(),"There is No Data in the local database",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -239,7 +249,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!networkStatusUtility.isNetworkAvailable()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                     builder.setTitle("Cannot Connect To the Server")
                             .setMessage("Please make Sure you have an Internet Connection to View History")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -249,7 +259,7 @@ public class Profile extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    Intent intent = new Intent(Profile.this, DisplaySchool.class);
+                    Intent intent = new Intent(requireContext(), DisplaySchool.class);
                     startActivity(intent);
                 }
 
@@ -304,14 +314,14 @@ public class Profile extends AppCompatActivity {
             }
         };
 
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        RequestQueue queue = Volley.newRequestQueue(requireContext());
         queue.add(request);
         deleteEntry(image);
     }
 
     private void deleteEntry(String img) {
         // Create a DatabaseHelper instance and get a writable database
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getApplicationContext());
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Define the selection and selectionArgs to specify the row to delete
@@ -326,8 +336,8 @@ public class Profile extends AppCompatActivity {
     }
 
     private void updateButtonStatus(boolean isNetworkAvailable) {
-        Button uploadDbButton = findViewById(R.id.upload_db_button);
-        Button viewHistoryButton = findViewById(R.id.view_history_button);
+        Button uploadDbButton = requireView().findViewById(R.id.upload_db_button);
+        Button viewHistoryButton = requireView().findViewById(R.id.view_history_button);
 
         if (isNetworkAvailable) {
             uploadDbButton.setAlpha(1f);
@@ -343,11 +353,11 @@ public class Profile extends AppCompatActivity {
     }
 
     private void showToast(String statusText) {
-        Toast.makeText(getApplicationContext(), statusText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         networkStatusUtility.stopMonitoringNetworkStatus();
     }

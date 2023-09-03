@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@id/atc"/>
 
     <!-- ATC Office EditText -->
-    <EditText
+    <TextView
         android:id="@+id/atc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
         app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <!-- PO Office EditText -->
-    <EditText
+    <TextView
         android:id="@+id/po"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
