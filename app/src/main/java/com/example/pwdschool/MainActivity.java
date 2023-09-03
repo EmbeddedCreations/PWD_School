@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
 
     Home homeFragment = new Home();
-//    SettingsFragment settingsFragment = new SettingsFragment();
+    Profile profileFragment = new Profile();
 //    NotificationFragment notificationFragment = new NotificationFragment();
 
     @Override
@@ -27,9 +27,10 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container,homeFragment).commit();
 //
-//        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.notification);
-//        badgeDrawable.setVisible(true);
-//        badgeDrawable.setNumber(8);
+        if(Home.dbCount>0){
+            BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.profile);
+            badgeDrawable.setVisible(true);
+        badgeDrawable.setNumber(Home.dbCount);}
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -38,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container,homeFragment).commit();
                         return true;
-//                    case R.id.notification:
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.container,notificationFragment).commit();
-//                        return true;
+                    case R.id.profile:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container,profileFragment).commit();
+                        return true;
 //                    case R.id.settings:
 //                        getSupportFragmentManager().beginTransaction().replace(R.id.container,settingsFragment).commit();
 //                        return true;
