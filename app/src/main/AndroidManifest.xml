@@ -55,20 +55,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".Upload"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-<!--        <activity-->
-<!--            android:name=".Home"-->
-<!--            android:exported="false">-->
-<!--            <meta-data-->
-<!--                android:name="android.app.lib_name"-->
-<!--                android:value="" />-->
-<!--        </activity>-->
-        <activity
             android:name=".DisplaySchool"
             android:exported="false">
             <meta-data
