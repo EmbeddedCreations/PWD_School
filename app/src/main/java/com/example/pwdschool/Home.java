@@ -1,15 +1,10 @@
 package com.example.pwdschool;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.text.SimpleDateFormat;
@@ -64,17 +58,6 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         View view = inflater.inflate(R.layout.activity_home, container, false);
         return view;
     }
-
-//    // Method to set the data for HomeFragment
-//    public void setDataForHome(String[] schools, String[] schoolIds, String[] buildings, String[] schoolBuildingIds) {
-//        // Set the data received from the Login activity to your fragment's variables
-//        Home.schools = schools;
-//        Home.school_id = schoolIds;
-//        Home.all_buildings = buildings;
-//        Home.schoolIDBuilding = schoolBuildingIds;
-
-        // Now you can use this data to update your UI elements in the fragment
-//    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -125,9 +108,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         buttonSurvey = requireView().findViewById(R.id.buttonSurvey);
         TextView textViewLoggedIn = requireView().findViewById(R.id.textViewLoggedIn);
         TextView textViewAtc = requireView().findViewById(R.id.atc);
-        TextView textViewPoOffice = requireView().findViewById(R.id.poOffice);
-        ImageView imageViewLogout = requireView().findViewById(R.id.imageViewLogout);
-        ImageView imageViewProfile = requireView().findViewById(R.id.imageViewProfile);
+        TextView textViewPoOffice = requireView().findViewById(R.id.po);
 
         spinnerSchool.setOnItemSelectedListener(this);
         spinnerBuilding.setOnItemSelectedListener(this);
@@ -161,54 +142,8 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         juniorEngineer = Login.selectedJuniorEngineer;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
 
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(requireActivity(), Profile.class);
-                startActivity(intent);
-            }
-        });
-
-        imageViewLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ProgressDialog progressDialog = new ProgressDialog(requireContext());
-                progressDialog.setMessage("Logging out...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("PWD_App", requireActivity().MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.remove("array_key");
-                        editor.remove("buildings");
-                        editor.remove("schools");
-                        editor.apply();
-
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        requireActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressDialog.dismiss();
-                                Toast.makeText(requireContext(), "Logged out Successfully", Toast.LENGTH_SHORT).show();
-                                Intent i = new Intent(requireActivity(), Login.class);
-                                startActivity(i);
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
-
         atcOffice = Login.selectedAtcOffice;
-        textViewAtc.setText("Atc: " + atcOffice);
+        textViewAtc.setText("Atc Office: " + atcOffice);
 
         poOffice = Login.selectedPoOffice;
         textViewPoOffice.setText("PO Office: " + poOffice);
