@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
 
     Home homeFragment = new Home();
     Profile profileFragment = new Profile();
+    WorkOrderCheckSheet workOrderCheckSheet = new WorkOrderCheckSheet();
+
 //    NotificationFragment notificationFragment = new NotificationFragment();
 
     @Override
@@ -41,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.profile:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container,profileFragment).commit();
+                        return true;
+                    case R.id.progress:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container,workOrderCheckSheet).commit();
                         return true;
 //                    case R.id.settings:
 //                        getSupportFragmentManager().beginTransaction().replace(R.id.container,settingsFragment).commit();
