@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -236,12 +237,12 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View view) {
                 if(Home.dbCount >0){
-                    Intent intent = new Intent(requireContext(),DbImageActivity.class);
-                    startActivity(intent);
+                    Fragment localdbFragment = new DbImageActivity();
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    General.replaceFragment(fragmentManager, R.id.container, localdbFragment, true);
                 }else{
                     Toast.makeText(requireContext(),"There is No Data in the local database",Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
@@ -259,8 +260,9 @@ public class Profile extends Fragment {
                                 }
                             });
                 } else {
-                    Intent intent = new Intent(requireContext(), DisplaySchool.class);
-                    startActivity(intent);
+                    Fragment displaySchoolFragment = new DisplaySchool();
+                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                    General.replaceFragment(fragmentManager, R.id.container, displaySchoolFragment, true);
                 }
 
             }

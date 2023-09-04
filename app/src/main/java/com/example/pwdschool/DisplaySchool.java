@@ -2,9 +2,13 @@ package com.example.pwdschool;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DisplaySchool extends AppCompatActivity {
+public class DisplaySchool extends Fragment {
 
 
     public static String selectedSchoolHistory;
@@ -35,9 +39,14 @@ public class DisplaySchool extends AppCompatActivity {
     private SchoolClassAdapter schoolClassAdapter;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.history_schools);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.history_schools, container, false);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
         getData();
 
@@ -46,9 +55,9 @@ public class DisplaySchool extends AppCompatActivity {
 
             Schools.add(new SchoolClass(entry.getKey(), entry.getValue()));
         }
-        recyclerView = findViewById(R.id.schoolRecyclerView);
+        recyclerView = getView().findViewById(R.id.schoolRecyclerView);
         schoolClassAdapter = new SchoolClassAdapter(Schools);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(schoolClassAdapter);
 
