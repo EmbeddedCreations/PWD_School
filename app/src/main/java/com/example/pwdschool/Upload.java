@@ -101,7 +101,7 @@ public class Upload extends Fragment {
                         Bitmap bm;
                         try {
                             bm = BitmapFactory.decodeStream(
-                                    requireActivity().getContentResolver()
+                                    getContext().getContentResolver()
                                             .openInputStream(targetUri));
                             iv_imgView.setImageBitmap(bm);
                             encodeBitmap(bm);
@@ -283,7 +283,7 @@ public class Upload extends Fragment {
             }
         });
 
-        textView = requireActivity().findViewById(R.id.textViewTags);
+        textView = requireView().findViewById(R.id.textViewTags);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -428,7 +428,7 @@ public class Upload extends Fragment {
 
     void showExif(Uri photoUri) {
         if (photoUri != null) {
-            try (ParcelFileDescriptor parcelFileDescriptor = requireActivity().getContentResolver().openFileDescriptor(photoUri, "r")) {
+            try (ParcelFileDescriptor parcelFileDescriptor = getContext().getContentResolver().openFileDescriptor(photoUri, "r")) {
                 FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
                 ExifInterface exifInterface = new ExifInterface(fileDescriptor);
 
