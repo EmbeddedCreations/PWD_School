@@ -77,7 +77,11 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         countCursor.close();
         status = requireView().findViewById(R.id.statusIcon);
         networkStatusUtility = new NetworkStatusUtility(requireContext());
-
+        if (networkStatusUtility.isNetworkAvailable()) {
+            status.setImageResource(R.drawable.online);
+        } else {
+            status.setImageResource(R.drawable.offline);
+        }
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {

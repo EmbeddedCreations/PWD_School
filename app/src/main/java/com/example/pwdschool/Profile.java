@@ -67,6 +67,11 @@ public class Profile extends Fragment {
         TextView localDbCount = requireView().findViewById(R.id.local_dbCount);
         networkStatusUtility = new NetworkStatusUtility(requireContext());
         updateButtonStatus(networkStatusUtility.isNetworkAvailable());
+        if (networkStatusUtility.isNetworkAvailable()) {
+            status.setImageResource(R.drawable.online);
+        } else {
+            status.setImageResource(R.drawable.offline);
+        }
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {

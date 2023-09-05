@@ -27,8 +27,7 @@
         android:layout_marginTop="2dp"
         android:contentDescription="Status"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/online" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textViewStatus"
