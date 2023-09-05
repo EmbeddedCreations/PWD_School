@@ -44,6 +44,7 @@ public class Profile extends Fragment {
     public Profile() {
         // Required empty public constructor
     }
+    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,8 +98,7 @@ public class Profile extends Fragment {
                 });
             }
         });
-
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
         Cursor countCursor = db.rawQuery(query, null);
@@ -173,7 +173,7 @@ public class Profile extends Fragment {
                 // Handle the click event for the "Upload Local DB" button
                 // Initiate the database upload process here
                 // Create a DatabaseHelper instance and get a readable database
-                UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
+                UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
 
 
@@ -355,7 +355,7 @@ public class Profile extends Fragment {
 
     private void deleteEntry(String img) {
         // Create a DatabaseHelper instance and get a writable database
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
+        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Define the selection and selectionArgs to specify the row to delete
@@ -393,6 +393,7 @@ public class Profile extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        dbHelper.close();
         networkStatusUtility.stopMonitoringNetworkStatus();
     }
 }

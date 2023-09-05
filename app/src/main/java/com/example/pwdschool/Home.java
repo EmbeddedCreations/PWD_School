@@ -59,6 +59,8 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         View view = inflater.inflate(R.layout.activity_home, container, false);
         return view;
     }
+    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -258,6 +260,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     public void onDestroy() {
         super.onDestroy();
         networkStatusUtility.stopMonitoringNetworkStatus();
+        dbHelper.close();
     }
 
     private void showToast(String statusText) {
