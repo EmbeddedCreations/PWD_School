@@ -142,7 +142,7 @@ public class Profile extends Fragment {
 
                         // Simulate some tasks being done
                         try {
-                            Thread.sleep(1500); // Simulate tasks taking 1 second
+                            Thread.sleep(2000); // Simulate tasks taking 2 second
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -265,13 +265,40 @@ public class Profile extends Fragment {
                                 }
                             });
                 } else {
-                    Fragment displaySchoolFragment = new DisplaySchool();
-                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    General.replaceFragment(fragmentManager, R.id.container, displaySchoolFragment, true);
-                }
+                    // Show a loading dialog or progress bar here
+                    ProgressDialog progressDialog = new ProgressDialog(requireContext());
+                    progressDialog.setMessage("Fetching data...");
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
 
+                    // You can replace this delay with your actual data fetching and display logic
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1500); // Simulate data fetching taking 2 seconds
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            // Dismiss the loading dialog when data is fetched
+                            requireActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressDialog.dismiss();
+
+                                    // Start the Fragment or Activity to display the data here
+                                    Fragment displaySchoolFragment = new DisplaySchool();
+                                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                                    General.replaceFragment(fragmentManager, R.id.container, displaySchoolFragment, true);
+                                }
+                            });
+                        }
+                    }).start();
+                }
             }
         });
+
     }
     private void uploadToServer(Cursor cursor) {
         String schoolName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_SCHOOL_NAME));
