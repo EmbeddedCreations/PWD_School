@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Profile profileFragment = new Profile();
     WorkOrderCheckSheet workOrderCheckSheet = new WorkOrderCheckSheet();
 
-//    NotificationFragment notificationFragment = new NotificationFragment();
+    Analytics AnalyticsFragment = new Analytics();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +47,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.progress:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container,workOrderCheckSheet).commit();
                         return true;
-//                    case R.id.settings:
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.container,settingsFragment).commit();
-//                        return true;
+                    case R.id.analytics:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container,AnalyticsFragment).commit();
+                        return true;
                 }
 
                 return false;

@@ -6,7 +6,7 @@
     <item android:id="@+id/progress"
         android:title="Progress"
         android:icon="@drawable/ic_baseline_checklist_24"/>
-    <item android:id="@+id/Analytics"
+    <item android:id="@+id/analytics"
         android:title="Analytics"
         android:icon="@drawable/ic_baseline_analytics_24"/>
     <item android:id="@+id/profile"
