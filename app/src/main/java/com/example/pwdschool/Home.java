@@ -59,6 +59,8 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         View view = inflater.inflate(R.layout.activity_home, container, false);
         return view;
     }
+    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -77,7 +79,11 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         countCursor.close();
         status = requireView().findViewById(R.id.statusIcon);
         networkStatusUtility = new NetworkStatusUtility(requireContext());
-
+        if (networkStatusUtility.isNetworkAvailable()) {
+            status.setImageResource(R.drawable.online);
+        } else {
+            status.setImageResource(R.drawable.offline);
+        }
         networkStatusUtility.startMonitoringNetworkStatus(new NetworkStatusUtility.NetworkStatusListener() {
             @Override
             public void onNetworkAvailable() {
@@ -254,6 +260,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     public void onDestroy() {
         super.onDestroy();
         networkStatusUtility.stopMonitoringNetworkStatus();
+        dbHelper.close();
     }
 
     private void showToast(String statusText) {

@@ -39,8 +39,7 @@
         android:layout_marginStart="8dp"
         android:contentDescription="Status"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/statusText"
-        android:src="@drawable/online" />
+        app:layout_constraintStart_toEndOf="@+id/statusText" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
