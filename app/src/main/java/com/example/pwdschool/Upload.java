@@ -31,7 +31,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -46,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -153,9 +153,18 @@ public class Upload extends Fragment {
         textUri.setOnClickListener(textUriOnClickListener);
         editTextDescription = requireView().findViewById(R.id.editTextDescription);
 
+        // Create a ProgressDialog with a custom message
         progressDialog = new ProgressDialog(requireContext());
-        progressDialog.setMessage("Uploading, please wait...");
+        progressDialog.setTitle("Uploading Image");
+        progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
+        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle cancellation here if needed
+                dialog.dismiss();
+            }
+        });
 
         // Disable description and tags initially
         editTextDescription.setEnabled(false);
@@ -378,9 +387,15 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
+
+//        progressDialog.show();
+
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                // Dismiss the progress dialog
+                progressDialog.dismiss();
+
                 editTextDescription.setText("");
                 iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
                 selectedIssuesList.clear();
@@ -389,19 +404,32 @@ public class Upload extends Fragment {
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
 
-                // Dismiss the progress dialog
-                progressDialog.dismiss();
-                Toast.makeText(requireContext(), "Uploaded Sucesfully", Toast.LENGTH_SHORT).show();
+                // Check the response for success or failure
+                if ("success".equalsIgnoreCase(response)) {
+                    Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                // Dismiss the progress dialog
+                progressDialog.dismiss();
+
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
                 imageChanged = true;
-                // Dismiss the progress dialog
-                progressDialog.dismiss();
-                Toast.makeText(requireContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
+
+                // Log the error message for debugging purposes
+                if (error.networkResponse != null && error.networkResponse.data != null) {
+                    String errorMessage = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                    Log.e("Upload Error", "Upload Failed with error: " + errorMessage);
+                } else {
+                    Log.e("Upload Error", "Upload Failed with unknown error.");
+                }
+                // Show an error message on screen
+                Toast.makeText(requireContext(), "Upload Failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
         }) {
 
@@ -429,6 +457,7 @@ public class Upload extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         queue.add(request);
     }
+
 
     void showExif(Uri photoUri) {
         if (photoUri != null) {
@@ -530,6 +559,8 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
+
+        // Populate ContentValues
         values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchool.trim());
         values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Home.poOffice.trim());
         values.put(UploadDatabaseHelper.COLUMN_ATC_OFFICE, Login.selectedAtcOffice.trim());
@@ -550,23 +581,9 @@ public class Upload extends Fragment {
             long newRowId = db.insertOrThrow(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
 
             if (newRowId != -1) {
-                editTextDescription.setText("");
-                iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
-                imageChanged = false;
-                selectedIssuesList.clear();
-                textView.setText("");
-                db = dbHelper.getReadableDatabase();
-                String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
-                Cursor countCursor = db.rawQuery(query, null);
-
-                if (countCursor .moveToFirst()) {
-                    Home.dbCount = countCursor.getInt(0); // Get the count from the first column
-                }
-
-                countCursor.close();
-                Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
+                handleSuccessfulInsertion();
             } else {
-                Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+                handleInsertionFailure();
             }
         } catch (SQLException e) {
             // Handle the exception here, you can log it or show a specific error message
@@ -574,6 +591,36 @@ public class Upload extends Fragment {
         } finally {
             db.close();
         }
+    }
+
+    private void handleSuccessfulInsertion() {
+        // Clear form fields and update UI after successful insertion
+        editTextDescription.setText("");
+        iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
+        imageChanged = false;
+        selectedIssuesList.clear();
+        textView.setText("");
+
+        // Update the database count
+        updateDatabaseCount();
+
+        Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleInsertionFailure() {
+        Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDatabaseCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+        Cursor countCursor = db.rawQuery(query, null);
+
+        if (countCursor.moveToFirst()) {
+            Home.dbCount = countCursor.getInt(0); // Get the count from the first column
+        }
+
+        countCursor.close();
     }
 
     private void showToast(String statusText) {

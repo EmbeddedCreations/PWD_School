@@ -24,14 +24,16 @@ public class UploadTask extends AsyncTask<Void, Integer, Void> {
     }
 
     public int getRowCount() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + UploadDatabaseHelper.TABLE_UPLOAD, null);
-        cursor.moveToFirst();
-        int count = cursor.getInt(0);
-        cursor.close();
-        db.close();
+        int count = 0;
+        try (SQLiteDatabase db = dbHelper.getReadableDatabase()) {
+            Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + UploadDatabaseHelper.TABLE_UPLOAD, null);
+            cursor.moveToFirst();
+            count = cursor.getInt(0);
+            cursor.close();
+        }
         return count;
     }
+
 
     @Override
     protected Void doInBackground(Void... voids) {
