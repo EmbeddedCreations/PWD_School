@@ -19,11 +19,11 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
         View view = inflater.inflate(R.layout.workorder_checksheet, container, false);
 
         // Example values, replace with your actual input values
-        int numRows = 3;
-        int numCols = 4;
-        String[] columnHeadings = {"Month1", "Month 2", "Month 3", "Month 4"};
-        String[] rowHeadings = {"work 1", " work 2", "work 3"};
 
+        String[] columnHeadings = {"Month1", "Month 2", "Month 3", "Month 4"};
+        String[] rowHeadings = {"work 1", " work 2", "work 3","work 4","work 5","work 6"};
+        int numRows = rowHeadings.length;
+        int numCols = columnHeadings.length;
         createDynamicTable(view, numRows, numCols, columnHeadings, rowHeadings);
 
         return view;
@@ -45,7 +45,6 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
                 checkBox.setVisibility(View.INVISIBLE);
                 headerRow.addView(checkBox);
             }
-
         }
         tableLayout.addView(headerRow);
 
@@ -60,7 +59,7 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
                     textView.setText(rowLabels[i]);
                     row.addView(textView);
                 } else {
-                    // Add four checkboxes in the data cells
+                    // Add four checkboxes in the data cells (including the new row)
                     for (int k = 0; k < 4; k++) {
                         CheckBox checkBox = new CheckBox(requireContext());
                         row.addView(checkBox);
@@ -71,7 +70,6 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
             tableLayout.addView(row);
         }
     }
-
 
 
     @Override
