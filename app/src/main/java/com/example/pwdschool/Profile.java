@@ -280,7 +280,6 @@ public class Profile extends Fragment {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-
                             // Dismiss the loading dialog when data is fetched
                             requireActivity().runOnUiThread(new Runnable() {
                                 @Override
