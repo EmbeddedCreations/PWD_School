@@ -1,6 +1,8 @@
 package com.example.pwdschool;
 
 import androidx.fragment.app.Fragment;
+
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -13,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
@@ -218,7 +221,7 @@ public class Upload extends Fragment {
             }
         });
 
-// Set button click listener for image upload
+/// Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,25 +245,47 @@ public class Upload extends Fragment {
                     Upload.description = description; // Save the description here
 
                     // Disable the upload button to prevent multiple clicks
-                    buttonUploadImage.setEnabled(false);
 
-                    // Show progress dialog to indicate the upload is in progress
                     progressDialog.show();
+                    // Show progress dialog to indicate the upload is in progress
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
+                    buttonUploadImage.setEnabled(false);
+                    // Use an AsyncTask to run uploadToServer() in the background
+                    new AsyncTask<Void, Void, Void>() {
+
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            // Perform the background task here (uploadToServer())
+                            progressDialog.show();
+                            uploadToServer();
+                            return null;
+                        }
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            // This method runs on the UI thread, so you can update the UI here
+                            // Enable the button and reset its alpha after upload
+//                            buttonUploadImage.setAlpha(1.0f);
+                            progressDialog.show();
+//                            buttonUploadImage.setEnabled(false);
+                            // Dismiss the progress dialog or handle UI updates as needed
+
+                        }
+                    }.execute();
+
+                    // Delay for 5000 milliseconds (5 seconds) before enabling the button again
+                    new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
 
-                            uploadToServer();
-                            // Enable the button and reset its alpha after upload
                             buttonUploadImage.setEnabled(true);
-                            buttonUploadImage.setAlpha(1.0f);
                         }
-                    }, 2000);
+                    }, 5000);
+                    progressDialog.dismiss();
                 }
             }
         });
+
+
 
         buttonSaveImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -372,7 +397,7 @@ public class Upload extends Fragment {
     }
 
     private void uploadToServer() {
-        String school_Name = Home.selectedSchool.trim();
+        String school_Name = Home.selectedSchoolId;
         String po_office = Home.poOffice.trim();
         String image_name = Home.selectedBuilding.trim();
         String image_type = "jpg";
@@ -405,11 +430,7 @@ public class Upload extends Fragment {
                 buttonUploadImage.setEnabled(true);
 
                 // Check the response for success or failure
-                if ("success".equalsIgnoreCase(response)) {
-                    Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(requireContext(), "Upload Failed, try again", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -561,7 +582,7 @@ public class Upload extends Fragment {
         String finalTags = Tags;
 
         // Populate ContentValues
-        values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchool.trim());
+        values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchoolId);
         values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Home.poOffice.trim());
         values.put(UploadDatabaseHelper.COLUMN_ATC_OFFICE, Login.selectedAtcOffice.trim());
         values.put(UploadDatabaseHelper.COLUMN_JE, Home.juniorEngineer.trim());

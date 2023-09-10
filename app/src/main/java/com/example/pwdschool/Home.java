@@ -29,6 +29,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     public static String selectedWorkorder;
     public static String selectedBuilding;
     public static String selectedDate;
+    public static String selectedSchoolId;
     public static String juniorEngineer;
     public static String atcOffice;
     public static String poOffice;
@@ -122,7 +123,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         spinnerWorkorder.setOnItemSelectedListener(this);
 
         ArrayList<String> tempSchoolList = new ArrayList<>();
-        tempSchoolList.add("Select School");
+        //tempSchoolList.add("Select School");
         if (schools != null) {
             for (int i = 0; i < schools.length; i++) {
                 tempSchoolList.add(schools[i]);
@@ -184,7 +185,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
             case R.id.spinnerSchool:
                 selectedSchool = parent.getItemAtPosition(position).toString();
                 int index = 0;
-                String ID = "";
+                selectedSchoolId = "";
                 if (schools != null) {
                     for (int i = 0; i < schools.length; i++) {
                         if (selectedSchool.equals(schools[i])) {
@@ -193,19 +194,19 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                         }
                     }
                     if (school_id.length > 0) {
-                        ID = school_id[index];
+                        selectedSchoolId  = school_id[index];
                     }
                 }
                 if (all_buildings != null) {
                     buildings = new ArrayList<>();
                     for (int i = 0; i < all_buildings.length; i++) {
-                        if (schoolIDBuilding[i].equals(ID)) {
+                        if (schoolIDBuilding[i].equals(selectedSchoolId )) {
                             buildings.add(all_buildings[i]);
                         }
                     }
                 }
                 ArrayList<String> tempBuildings = new ArrayList<>();
-                tempBuildings.add("Select Building");
+                //tempBuildings.add("Select Building");
                 if (buildings != null) {
                     for (int i = 0; i < buildings.size(); i++) {
                         tempBuildings.add(buildings.get(i));
