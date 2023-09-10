@@ -4,9 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +20,42 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemSelectedListener {
+    private int[][] checkboxStates;
+
+    private void checkMatchingScheduleAndProgress(int[][] checkboxStates) {
+        TableLayout tableLayout = getView().findViewById(R.id.tableLayout);
+        int numRows = tableLayout.getChildCount();
+
+        for (int i = 1; i < numRows; i += 2) {
+            TableRow scheduleRow = (TableRow) tableLayout.getChildAt(i);
+            TableRow progressRow = (TableRow) tableLayout.getChildAt(i + 1);
+
+            boolean allMatch = true; // Assume all checkboxes match
+
+            for (int j = 1; j < progressRow.getChildCount(); j++) {
+                CheckBox scheduleCheckBox = (CheckBox) scheduleRow.getChildAt(j);
+                CheckBox progressCheckBox = (CheckBox) progressRow.getChildAt(j);
+
+                boolean scheduleChecked = scheduleCheckBox.isChecked();
+                boolean progressChecked = progressCheckBox.isChecked();
+
+                if (scheduleChecked != progressChecked) {
+                    // If at least one checkbox doesn't match, set allMatch to false and break
+                    allMatch = false;
+                    break;
+                }
+            }
+
+            if (allMatch) {
+                // If all checkboxes match, set the background color of progressRow to transparent
+                progressRow.setBackgroundColor(Color.TRANSPARENT);
+            } else {
+                // If any checkbox doesn't match, set the background color of progressRow to red
+                progressRow.setBackgroundColor(Color.RED);
+            }
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -30,7 +66,7 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
         String[] rowHeadings = {"work 1 schedule", "work 1 progress", "work 2 schedule", "work 2 progress", "work 3 schedule", "work 3 progress", "work 4 schedule", "work 4 progress", "work 5 schedule", "work 5 progress", "work 6 schedule", "work 6 progress"};
         int numRows = rowHeadings.length;
         int numCols = columnHeadings.length;
-
+        checkboxStates = new int[numRows][numCols * 4];
         // Example checkboxStates array
         int[][] checkboxStates = {
                 {1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0},
@@ -51,6 +87,7 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
 
         return view;
     }
+
 
     private void createDynamicTable(View view, int numRows, int numCols, String[] colLabels, String[] rowLabels, int[][] checkboxStates) {
         TableLayout tableLayout = view.findViewById(R.id.tableLayout);
@@ -100,8 +137,10 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
                                 if (!isChecked) {
                                     // If the checkbox is unchecked, force it to be checked
                                     checkBox.setChecked(true);
+                                    Toast.makeText(requireContext(), "Checkbox is now checked and cannot be unchecked.", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
+                                checkMatchingScheduleAndProgress(checkboxStates);
                                 // Update the corresponding value in the checkboxStates array
                                 int rowIndex = tableLayout.indexOfChild(row);
                                 int checkboxArrayIndex = (columnIndex - 1) * 4 + checkboxColumnIndex;
@@ -127,14 +166,9 @@ public class WorkOrderCheckSheet extends Fragment implements AdapterView.OnItemS
                     }
                 }
             }
-
-
-
-
             tableLayout.addView(row);
         }
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
