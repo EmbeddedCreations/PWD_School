@@ -164,9 +164,6 @@ public class Profile extends Fragment {
             }
         });
 
-
-
-
         uploadDbButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,7 +241,17 @@ public class Profile extends Fragment {
                 if(Home.dbCount >0){
                     Fragment localdbFragment = new DbImageActivity();
                     FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    General.replaceFragment(fragmentManager, R.id.container, localdbFragment, true);
+                    General.replaceFragment(
+                            fragmentManager,
+                            R.id.container,
+                            localdbFragment,
+                            true,
+                            "LocalDbFragmentTag",
+                            R.anim.slide_in,  // Enter animation
+                            R.anim.slide_out, // Exit animation
+                            0,                // Pop enter animation (you can specify one if needed)
+                            0                 // Pop exit animation (you can specify one if needed)
+                    );
                 }else{
                     Toast.makeText(requireContext(),"There is No Data in the local database",Toast.LENGTH_SHORT).show();
                 }
@@ -289,8 +296,17 @@ public class Profile extends Fragment {
                                     // Start the Fragment or Activity to display the data here
                                     Fragment displaySchoolFragment = new DisplaySchool();
                                     FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                                    General.replaceFragment(fragmentManager, R.id.container, displaySchoolFragment, true);
-                                }
+                                    General.replaceFragment(
+                                            fragmentManager,
+                                            R.id.container,
+                                            displaySchoolFragment,
+                                            true,
+                                            "DisplaySchoolFragmentTag",
+                                            R.anim.slide_in,  // Enter animation
+                                            R.anim.slide_out, // Exit animation
+                                            0,                // Pop enter animation (you can specify one if needed)
+                                            0                 // Pop exit animation (you can specify one if needed)
+                                    );                                }
                             });
                         }
                     }).start();

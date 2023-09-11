@@ -239,48 +239,41 @@ public class Upload extends Fragment {
                 } else if (!imageChanged) {
                     // Display a message to the user indicating they need to select an image
                     Toast.makeText(requireContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
-                    return;
                 } else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
 
                     // Disable the upload button to prevent multiple clicks
+                    buttonUploadImage.setEnabled(false);
 
                     progressDialog.show();
-                    // Show progress dialog to indicate the upload is in progress
 
-                    buttonUploadImage.setEnabled(false);
                     // Use an AsyncTask to run uploadToServer() in the background
                     new AsyncTask<Void, Void, Void>() {
-
                         @Override
                         protected Void doInBackground(Void... voids) {
                             // Perform the background task here (uploadToServer())
-                            progressDialog.show();
                             uploadToServer();
                             return null;
                         }
+
                         @Override
                         protected void onPostExecute(Void aVoid) {
                             // This method runs on the UI thread, so you can update the UI here
-                            // Enable the button and reset its alpha after upload
-//                            buttonUploadImage.setAlpha(1.0f);
-                            progressDialog.show();
-//                            buttonUploadImage.setEnabled(false);
-                            // Dismiss the progress dialog or handle UI updates as needed
+
+
+                            // Re-enable the button and reset its alpha after upload
+
+                            new Handler().postDelayed(new Runnable(){
+                                @Override
+                                public void run() {
+                                    buttonUploadImage.setEnabled(true);
+                                    progressDialog.dismiss();
+                                }
+                            },3000);
 
                         }
                     }.execute();
-
-                    // Delay for 5000 milliseconds (5 seconds) before enabling the button again
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            buttonUploadImage.setEnabled(true);
-                        }
-                    }, 5000);
-                    progressDialog.dismiss();
                 }
             }
         });
