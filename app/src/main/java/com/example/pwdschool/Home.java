@@ -2,6 +2,7 @@ package com.example.pwdschool;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
@@ -60,6 +61,36 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         View view = inflater.inflate(R.layout.activity_home, container, false);
         return view;
     }
+    // Define an AsyncTask to perform database queries in the background
+    private class DatabaseQueryTask extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            int count = 0;
+
+            // Perform database query here
+            UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+            Cursor countCursor = db.rawQuery(query, null);
+
+            if (countCursor.moveToFirst()) {
+                count = countCursor.getInt(0);
+            }
+
+            countCursor.close();
+            db.close(); // Close the database
+
+            return count;
+        }
+        @Override
+        protected void onPostExecute(Integer result) {
+            // Update the dbCount and UI components with the result
+            dbCount = result;
+
+            // Update UI components here if needed
+        }
+    }
     UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
 
 
@@ -67,17 +98,10 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        StrictMode.setThreadPolicy((new StrictMode.ThreadPolicy.Builder().permitNetwork().build()));
-        UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
-        Cursor countCursor = db.rawQuery(query, null);
-
-        if (countCursor.moveToFirst()) {
-            dbCount = countCursor.getInt(0);
-        }
-
-        countCursor.close();
+        // Enable strict mode
+        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitNetwork().build());
+        // Execute the database query in the background
+        new DatabaseQueryTask().execute();
         status = requireView().findViewById(R.id.statusIcon);
         networkStatusUtility = new NetworkStatusUtility(requireContext());
         if (networkStatusUtility.isNetworkAvailable()) {
@@ -170,7 +194,18 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                 } else {
                     Fragment uploadFragment = new Upload();
                     FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    General.replaceFragment(fragmentManager, R.id.container, uploadFragment, true);
+                    General.replaceFragment(
+                            fragmentManager,
+                            R.id.container,
+                            uploadFragment,
+                            true,
+                            "UploadFragmentTag",
+                            R.anim.slide_in,  // Enter animation
+                            R.anim.slide_out, // Exit animation
+                            0,                // Pop enter animation (you can specify one if needed)
+                            0                 // Pop exit animation (you can specify one if needed)
+                    );
+
                 }
             }
             private void showToast(String message) {
