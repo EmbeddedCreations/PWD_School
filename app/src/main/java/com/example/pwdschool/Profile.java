@@ -245,7 +245,7 @@ public class Profile extends Fragment {
                             fragmentManager,
                             R.id.container,
                             localdbFragment,
-                            true,
+                            false,
                             "LocalDbFragmentTag",
                             R.anim.slide_in,  // Enter animation
                             R.anim.slide_out, // Exit animation
@@ -300,7 +300,7 @@ public class Profile extends Fragment {
                                             fragmentManager,
                                             R.id.container,
                                             displaySchoolFragment,
-                                            true,
+                                            false,
                                             "DisplaySchoolFragmentTag",
                                             R.anim.slide_in,  // Enter animation
                                             R.anim.slide_out, // Exit animation
