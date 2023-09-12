@@ -9,11 +9,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
@@ -27,12 +25,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -41,10 +37,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -84,67 +78,21 @@ public class Upload extends Fragment {
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
-    View.OnClickListener textUriOnClickListener =
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (targetUri != null) {
-                        Bitmap bm;
-                        try {
-                            bm = BitmapFactory.decodeStream(
-                                    getContext().getContentResolver()
-                                            .openInputStream(targetUri));
-                            iv_imgView.setImageBitmap(bm);
-//                            encodeBitmap(bm);
-                        } catch (FileNotFoundException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-            };
     private UploadDatabaseHelper dbHelper;
 
     public Upload() {
         // Required empty public constructor
     }
-
-    // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
-    private static double convertToDegree(String coordinate, String ref) {
-        try {
-            String[] parts = coordinate.split(",");
-
-            String[] degreesParts = parts[0].split("/");
-            double degrees = Double.parseDouble(degreesParts[0]) / Double.parseDouble(degreesParts[1]);
-
-            String[] minutesParts = parts[1].split("/");
-            double minutes = Double.parseDouble(minutesParts[0]) / Double.parseDouble(minutesParts[1]);
-
-            String[] secondsParts = parts[2].split("/");
-            double seconds = Double.parseDouble(secondsParts[0]) / Double.parseDouble(secondsParts[1]);
-
-            double result = degrees + minutes / 60.0 + seconds / 3600.0;
-            return ref.equals("N") || ref.equals("E") ? result : -result;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            return 0.0;
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_upload, container, false);
         return view;
     }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         // Initialize the dbHelper
         dbHelper = new UploadDatabaseHelper(getContext());
-
         status = requireView().findViewById(R.id.statusIcon);
         iv_imgView = requireView().findViewById(R.id.image_view);
         pickImageButton = requireView().findViewById(R.id.pickimage);
@@ -154,19 +102,13 @@ public class Upload extends Fragment {
         status = requireView().findViewById(R.id.statusIcon);
         buttonUploadImage = requireView().findViewById(R.id.buttonUploadImage);
         textView = requireView().findViewById(R.id.textViewTags);
-
-        // Create a ProgressDialog with a custom message
         progressDialog = new ProgressDialog(requireContext());
         progressDialog.setTitle("Uploading Image");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-
-        // Disable description and tags initially
         editTextDescription.setEnabled(false);
-        //set junior engineer loggedin
         String juniorEngineer = UserCredential.SELECTED_JE;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-
 
 // Find the Upload button and set it initially disabled and faded;
         buttonUploadImage.setEnabled(false);
@@ -193,7 +135,6 @@ public class Upload extends Fragment {
                     });
                 });
             }
-
             @Override
             public void onNetworkLost() {
                 requireActivity().runOnUiThread(() -> {
@@ -209,7 +150,6 @@ public class Upload extends Fragment {
                 });
             }
         });
-
 /// Set button click listener for image upload
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,10 +171,8 @@ public class Upload extends Fragment {
                 } else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
-
                     // Disable the upload button to prevent multiple clicks
                     buttonUploadImage.setEnabled(false);
-
                     progressDialog.show();
                     Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
                     encodeBitmap(bitmap);
@@ -243,7 +181,6 @@ public class Upload extends Fragment {
                 }
             }
         });
-
         buttonSaveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,19 +208,15 @@ public class Upload extends Fragment {
 
             }
         });
-
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Initialize alert dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-
                 // set title
                 builder.setTitle("Select Major Problems");
-
                 // set dialog non-cancelable
                 builder.setCancelable(false);
-
                 builder.setMultiChoiceItems(issueArray, null, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i, boolean b) {
@@ -295,7 +228,6 @@ public class Upload extends Fragment {
                         }
                     }
                 });
-
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -303,7 +235,6 @@ public class Upload extends Fragment {
                         textView.setText(TextUtils.join(", ", selectedIssuesList));
                     }
                 });
-
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -311,7 +242,6 @@ public class Upload extends Fragment {
                         dialogInterface.dismiss();
                     }
                 });
-
                 builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -320,12 +250,9 @@ public class Upload extends Fragment {
                         textView.setText("");
                     }
                 });
-
                 builder.show();
             }
         });
-
-
 // OnClickListener for pickImageButton
         pickImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -333,7 +260,6 @@ public class Upload extends Fragment {
                 showImageOptionsDialog();
             }
         });
-
 // OnClickListener for img_view
         iv_imgView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,7 +268,6 @@ public class Upload extends Fragment {
             }
         });
     }
-
     private void uploadToServer() {
         String school_Name = Home.selectedSchoolId;
         String po_office = UserCredential.SELECTED_PO;
@@ -372,7 +297,6 @@ public class Upload extends Fragment {
                 imageChanged = false;
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
-
                 // Check the response for success or failure
                 Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
             }
@@ -397,7 +321,6 @@ public class Upload extends Fragment {
                 Toast.makeText(requireContext(), "Upload Failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
         }) {
-
             @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -418,11 +341,9 @@ public class Upload extends Fragment {
                 return map;
             }
         };
-
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         queue.add(request);
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -433,13 +354,7 @@ public class Upload extends Fragment {
             targetUri = uri;
             iv_imgView.setImageURI(uri);
             imageChanged = true;
-//            try {
-//                encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
-//            } catch (FileNotFoundException e) {
-//                throw new RuntimeException(e);
-//            }
             showExif(targetUri);
-
             Uri dataUri = data.getData();
             if (requestCode == RQS_OPEN_IMAGE) {
                 targetUri = dataUri;
@@ -449,7 +364,6 @@ public class Upload extends Fragment {
             }
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -461,16 +375,12 @@ public class Upload extends Fragment {
             }
         }
     }
-
     private void encodeBitmap(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-
         byte[] byteOfImages = byteArrayOutputStream.toByteArray();
         encodedImage = android.util.Base64.encodeToString(byteOfImages, Base64.DEFAULT);
-
     }
-
     // Add this method to insert data into the offline database
     private void insertDataIntoDatabase() {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -478,7 +388,6 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
-
         // Populate ContentValues
         values.put(UploadDatabaseHelper.COLUMN_SCHOOL_NAME, Home.selectedSchoolId);
         values.put(UploadDatabaseHelper.COLUMN_PO_OFFICE, Home.poOffice.trim());
@@ -494,11 +403,8 @@ public class Upload extends Fragment {
         values.put(UploadDatabaseHelper.COLUMN_DESC, Upload.description);
         values.put(UploadDatabaseHelper.COLUMN_TAGS, finalTags);
         values.put(UploadDatabaseHelper.COLUMN_IMG, encodedImage);
-
         try {
-            // Insert the data
             long newRowId = db.insertOrThrow(UploadDatabaseHelper.TABLE_UPLOAD, null, values);
-
             if (newRowId != -1) {
                 handleSuccessfulInsertion();
             } else {
@@ -511,7 +417,6 @@ public class Upload extends Fragment {
             db.close();
         }
     }
-
     // Method to show the options dialog for capturing or selecting an image
     private void showImageOptionsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -542,12 +447,9 @@ public class Upload extends Fragment {
                 });
         builder.show();
     }
-
-
     private void handleInsertionFailure() {
         Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
     }
-
     private void updateDatabaseCount() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
@@ -557,7 +459,6 @@ public class Upload extends Fragment {
         }
         countCursor.close();
     }
-
     private void handleSuccessfulInsertion() {
         // Clear form fields and update UI after successful insertion
         editTextDescription.setText("");
@@ -570,11 +471,30 @@ public class Upload extends Fragment {
 
         Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
     }
-
     private void showToast(String statusText) {
         Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
     }
+    // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
+    private static double convertToDegree(String coordinate, String ref) {
+        try {
+            String[] parts = coordinate.split(",");
 
+            String[] degreesParts = parts[0].split("/");
+            double degrees = Double.parseDouble(degreesParts[0]) / Double.parseDouble(degreesParts[1]);
+
+            String[] minutesParts = parts[1].split("/");
+            double minutes = Double.parseDouble(minutesParts[0]) / Double.parseDouble(minutesParts[1]);
+
+            String[] secondsParts = parts[2].split("/");
+            double seconds = Double.parseDouble(secondsParts[0]) / Double.parseDouble(secondsParts[1]);
+
+            double result = degrees + minutes / 60.0 + seconds / 3600.0;
+            return ref.equals("N") || ref.equals("E") ? result : -result;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return 0.0;
+        }
+    }
     void showExif(Uri photoUri) {
         if (photoUri != null) {
             try (ParcelFileDescriptor parcelFileDescriptor = getContext().getContentResolver().openFileDescriptor(photoUri, "r")) {
@@ -619,12 +539,10 @@ public class Upload extends Fragment {
             }
         }
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         dbHelper.close();
         networkStatusUtility.stopMonitoringNetworkStatus();
     }
-
 }
