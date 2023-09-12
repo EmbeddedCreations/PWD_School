@@ -1,8 +1,5 @@
 package com.example.pwdschool;
 
-import androidx.fragment.app.Fragment;
-
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -17,7 +14,6 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -34,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -74,7 +71,6 @@ public class Upload extends Fragment {
     public String date_today, time_today;
     public String encodedImage;
     Uri targetUri = null;
-    TextView textUri;
     TextView textView;
     List<String> selectedIssuesList = new ArrayList<>();
     String[] issueArray = {"Snake", "Grass", "Mud", "rodents", "Insects", "Mosquitoes"};
@@ -87,15 +83,6 @@ public class Upload extends Fragment {
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
-    public Upload() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_upload, container, false);
-        return view;
-    }
     View.OnClickListener textUriOnClickListener =
             new View.OnClickListener() {
                 @Override
@@ -117,6 +104,10 @@ public class Upload extends Fragment {
 
             };
     private UploadDatabaseHelper dbHelper;
+
+    public Upload() {
+        // Required empty public constructor
+    }
 
     // Helper method to convert GPS coordinates from degrees, minutes, seconds to decimal degrees
     private static double convertToDegree(String coordinate, String ref) {
@@ -141,6 +132,12 @@ public class Upload extends Fragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_upload, container, false);
+        return view;
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -152,8 +149,6 @@ public class Upload extends Fragment {
         pickImageButton = requireView().findViewById(R.id.pickimage);
         buttonSaveImage = requireView().findViewById(R.id.buttonSaveImage);
         TextView textViewLoggedIn = requireView().findViewById(R.id.textViewLoggedIn);
-        textUri = requireView().findViewById(R.id.Dimensions);
-        textUri.setOnClickListener(textUriOnClickListener);
         editTextDescription = requireView().findViewById(R.id.editTextDescription);
 
         // Create a ProgressDialog with a custom message
@@ -161,20 +156,12 @@ public class Upload extends Fragment {
         progressDialog.setTitle("Uploading Image");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-//        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // Handle cancellation here if needed
-//                dialog.dismiss();
-//            }
-//        });
 
         // Disable description and tags initially
         editTextDescription.setEnabled(false);
         //set junior engineer loggedin
         String juniorEngineer = UserCredential.SELECTED_JE;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-
 
 
 // Find the Upload button and set it initially disabled and faded;

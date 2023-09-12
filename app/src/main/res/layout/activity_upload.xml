@@ -69,60 +69,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewSchoolTitle" />
 
-        <TextView
-            android:id="@+id/Dimensions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Description: "
-            android:textSize="15sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/image_view"
-            app:layout_constraintTop_toBottomOf="@+id/image_view" />
-
-<!--        &lt;!&ndash; EditText for Description &ndash;&gt;-->
-<!--        <EditText-->
-<!--            android:id="@+id/editTextDescription"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:hint="Enter description here"-->
-<!--            android:textSize="12sp"-->
-<!--            android:maxLength="300"-->
-<!--            android:maxLines="5"-->
-<!--            android:scrollbars="vertical"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toEndOf="@+id/Dimensions"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/image_view" />-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextDescription"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Enter the detail description here"
-            android:layout_marginTop="8dp"
-            android:textSize="12sp"
-            android:maxLength="300"
-            android:gravity="top|start"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:scrollbars="vertical"
+            app:counterEnabled="true"
+            app:counterMaxLength="300"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/Dimensions"
-            app:layout_constraintTop_toBottomOf="@id/image_view"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image_view">
 
-        <!-- text view to display selected items-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:hint="Enter the detail description here"
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:maxLines="5"
+                android:scrollbars="vertical"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <TextView
             android:id="@+id/textViewTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:background="@android:drawable/editbox_background"
             android:drawableRight="@android:drawable/arrow_down_float"
             android:drawablePadding="16dp"
             android:hint="Select Tags"
             android:padding="12dp"
-
-            app:layout_constraintTop_toBottomOf="@+id/Dimensions" />
+            app:layout_constraintTop_toBottomOf="@+id/til_description" />
 
         <Button
             android:id="@+id/pickimage"
