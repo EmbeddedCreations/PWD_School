@@ -10,7 +10,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -95,7 +94,7 @@ public class Upload extends Fragment {
                                     getContext().getContentResolver()
                                             .openInputStream(targetUri));
                             iv_imgView.setImageBitmap(bm);
-                            //encodeBitmap(bm);
+                            encodeBitmap(bm);
                         } catch (FileNotFoundException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -151,6 +150,9 @@ public class Upload extends Fragment {
         buttonSaveImage = requireView().findViewById(R.id.buttonSaveImage);
         TextView textViewLoggedIn = requireView().findViewById(R.id.textViewLoggedIn);
         editTextDescription = requireView().findViewById(R.id.editTextDescription);
+        status = requireView().findViewById(R.id.statusIcon);
+        buttonUploadImage = requireView().findViewById(R.id.buttonUploadImage);
+        textView = requireView().findViewById(R.id.textViewTags);
 
         // Create a ProgressDialog with a custom message
         progressDialog = new ProgressDialog(requireContext());
@@ -166,11 +168,9 @@ public class Upload extends Fragment {
 
 
 // Find the Upload button and set it initially disabled and faded;
-        buttonUploadImage = requireView().findViewById(R.id.buttonUploadImage);
         buttonUploadImage.setEnabled(false);
         buttonUploadImage.setAlpha(0.5f); // Set the alpha value to make it appear faded
 
-        status = requireView().findViewById(R.id.statusIcon);
         networkStatusUtility = new NetworkStatusUtility(requireContext());
         if (networkStatusUtility.isNetworkAvailable()) {
             status.setImageResource(R.drawable.online);
@@ -230,15 +230,21 @@ public class Upload extends Fragment {
                 } else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
-                    Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
-                    encodeBitmap(bitmap);
+
                     // Disable the upload button to prevent multiple clicks
                     buttonUploadImage.setEnabled(false);
 
                     progressDialog.show();
-                    uploadToServer();
-                    // Use an AsyncTask to run uploadToServer() in the background
 
+                    // Use an AsyncTask to run uploadToServer() in the background
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            // Perform the background task here (uploadToServer())
+                            uploadToServer();
+                            return null;
+                        }
+                    }.execute();
                 }
             }
         });
@@ -260,25 +266,16 @@ public class Upload extends Fragment {
                 } else {
                     // Save the description in a variable
                     Upload.description = description;
-                    Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
-                    encodeBitmap(bitmap);
-                    // Disable the save button to prevent multiple clicks
-                    buttonSaveImage.setEnabled(false);
 
+                    buttonSaveImage.setEnabled(false);
                     // Insert data into the offline database
                     insertDataIntoDatabase();
-
-                    // Show a message to indicate successful insertion
-                    Toast.makeText(requireContext(), "Image saved to offline database.", Toast.LENGTH_SHORT).show();
-
-                    // Re-enable the save button
                     buttonSaveImage.setEnabled(true);
                 }
 
             }
         });
 
-        textView = requireView().findViewById(R.id.textViewTags);
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -328,7 +325,6 @@ public class Upload extends Fragment {
                     }
                 });
 
-                // show dialog
                 builder.show();
             }
         });
@@ -349,8 +345,6 @@ public class Upload extends Fragment {
                 showImageOptionsDialog();
             }
         });
-
-
     }
 
     private void uploadToServer() {
@@ -369,8 +363,6 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
-
-//        progressDialog.show();
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -435,52 +427,6 @@ public class Upload extends Fragment {
         queue.add(request);
     }
 
-
-    void showExif(Uri photoUri) {
-        if (photoUri != null) {
-            try (ParcelFileDescriptor parcelFileDescriptor = getContext().getContentResolver().openFileDescriptor(photoUri, "r")) {
-                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-                ExifInterface exifInterface = new ExifInterface(fileDescriptor);
-
-                // Extract and store the EXIF information in proper variables
-                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-                String latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-                String longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-
-                // Convert latitude and longitude to double values
-                if (latitude != null && latitudeRef != null && longitude != null && longitudeRef != null) {
-                    gpsLatitude = convertToDegree(latitude, latitudeRef);
-                    gpsLongitude = convertToDegree(longitude, longitudeRef);
-                }
-
-                // Parse the datetime attribute to separate date and time variables
-                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
-                if (datetime != null) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
-                    try {
-                        dateTaken = dateFormat.parse(datetime);
-                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-                        timeTaken = timeFormat.parse(datetime.substring(11));
-                        date_today = dateFormat.format(dateTaken);
-                        time_today = timeFormat.format(timeTaken);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        dateTaken = null;
-                        timeTaken = null;
-                        date_today = null;
-                        time_today = null;
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(getContext(),
-                        "Something wrong:\n" + e,
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -491,11 +437,11 @@ public class Upload extends Fragment {
             targetUri = uri;
             iv_imgView.setImageURI(uri);
             imageChanged = true;
-//            try {
-//                //encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
-//            } catch (FileNotFoundException e) {
-//                throw new RuntimeException(e);
-//            }
+            try {
+                encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             showExif(targetUri);
 
             Uri dataUri = data.getData();
@@ -570,40 +516,6 @@ public class Upload extends Fragment {
         }
     }
 
-    private void handleSuccessfulInsertion() {
-        // Clear form fields and update UI after successful insertion
-        editTextDescription.setText("");
-        iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
-        imageChanged = false;
-        selectedIssuesList.clear();
-        textView.setText("");
-
-        // Update the database count
-        updateDatabaseCount();
-
-        Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
-    }
-
-    private void handleInsertionFailure() {
-        Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
-    }
-
-    private void updateDatabaseCount() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
-        Cursor countCursor = db.rawQuery(query, null);
-
-        if (countCursor.moveToFirst()) {
-            Home.dbCount = countCursor.getInt(0); // Get the count from the first column
-        }
-
-        countCursor.close();
-    }
-
-    private void showToast(String statusText) {
-        Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
-    }
-
     // Method to show the options dialog for capturing or selecting an image
     private void showImageOptionsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -622,16 +534,94 @@ public class Upload extends Fragment {
                                 break;
                             case 1:
                                 // "Select from Gallery" option is selected
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
-                                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                intent.setType("image/*"); // Allow all types of images (png, jpg, jpeg)
-                                startActivityForResult(intent, RQS_OPEN_IMAGE);
+                                ImagePicker.with(Upload.this)
+                                        .galleryOnly()
+                                        .crop()
+                                        .compress(1024)
+                                        .maxResultSize(720, 720)
+                                        .start();
                                 break;
                         }
                     }
                 });
         builder.show();
+    }
+
+
+    private void handleInsertionFailure() {
+        Toast.makeText(requireContext(), "Error in saving the data", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDatabaseCount() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+        Cursor countCursor = db.rawQuery(query, null);
+        if (countCursor.moveToFirst()) {
+            Home.dbCount = countCursor.getInt(0); // Get the count from the first column
+        }
+        countCursor.close();
+    }
+
+    private void handleSuccessfulInsertion() {
+        // Clear form fields and update UI after successful insertion
+        editTextDescription.setText("");
+        iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
+        imageChanged = false;
+        selectedIssuesList.clear();
+        textView.setText("");
+        // Update the database count
+        updateDatabaseCount();
+
+        Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showToast(String statusText) {
+        Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
+    }
+
+    void showExif(Uri photoUri) {
+        if (photoUri != null) {
+            try (ParcelFileDescriptor parcelFileDescriptor = getContext().getContentResolver().openFileDescriptor(photoUri, "r")) {
+                FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                ExifInterface exifInterface = new ExifInterface(fileDescriptor);
+
+                // Extract and store the EXIF information in proper variables
+                String latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+                String latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+                String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+                String longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+                // Convert latitude and longitude to double values
+                if (latitude != null && latitudeRef != null && longitude != null && longitudeRef != null) {
+                    gpsLatitude = convertToDegree(latitude, latitudeRef);
+                    gpsLongitude = convertToDegree(longitude, longitudeRef);
+                }
+
+                // Parse the datetime attribute to separate date and time variables
+                String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+                if (datetime != null) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault());
+                    try {
+                        dateTaken = dateFormat.parse(datetime);
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                        timeTaken = timeFormat.parse(datetime.substring(11));
+                        date_today = dateFormat.format(dateTaken);
+                        time_today = timeFormat.format(timeTaken);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        dateTaken = null;
+                        timeTaken = null;
+                        date_today = null;
+                        time_today = null;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(),
+                        "Something wrong:\n" + e,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
