@@ -10,6 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -94,7 +95,7 @@ public class Upload extends Fragment {
                                     getContext().getContentResolver()
                                             .openInputStream(targetUri));
                             iv_imgView.setImageBitmap(bm);
-                            encodeBitmap(bm);
+//                            encodeBitmap(bm);
                         } catch (FileNotFoundException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -235,16 +236,10 @@ public class Upload extends Fragment {
                     buttonUploadImage.setEnabled(false);
 
                     progressDialog.show();
-
+                    Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
+                    encodeBitmap(bitmap);
                     // Use an AsyncTask to run uploadToServer() in the background
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... voids) {
-                            // Perform the background task here (uploadToServer())
-                            uploadToServer();
-                            return null;
-                        }
-                    }.execute();
+                    uploadToServer();
                 }
             }
         });
@@ -266,7 +261,8 @@ public class Upload extends Fragment {
                 } else {
                     // Save the description in a variable
                     Upload.description = description;
-
+                    Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
+                    encodeBitmap(bitmap);
                     buttonSaveImage.setEnabled(false);
                     // Insert data into the offline database
                     insertDataIntoDatabase();
@@ -437,11 +433,11 @@ public class Upload extends Fragment {
             targetUri = uri;
             iv_imgView.setImageURI(uri);
             imageChanged = true;
-            try {
-                encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+//            try {
+//                encodeBitmap(BitmapFactory.decodeStream(requireContext().getContentResolver().openInputStream(uri)));
+//            } catch (FileNotFoundException e) {
+//                throw new RuntimeException(e);
+//            }
             showExif(targetUri);
 
             Uri dataUri = data.getData();
