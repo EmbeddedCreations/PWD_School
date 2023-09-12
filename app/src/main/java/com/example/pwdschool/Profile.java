@@ -32,25 +32,27 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Profile extends Fragment {
 
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
+    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
 
     public Profile() {
         // Required empty public constructor
     }
-    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_profile, container, false);
         return view;
     }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -103,9 +105,9 @@ public class Profile extends Fragment {
         String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + UserCredential.SELECTED_JE + "'";
         Cursor countCursor = db.rawQuery(query, null);
 
-        if (countCursor .moveToFirst()) {
+        if (countCursor.moveToFirst()) {
             Home.dbCount = countCursor.getInt(0); // Get the count from the first column
-            localDbCount.setText("items in Local DB : "+ Home.dbCount);
+            localDbCount.setText("items in Local DB : " + Home.dbCount);
             // Do something with the count, e.g., display it or use it in your code
         }
 
@@ -172,7 +174,7 @@ public class Profile extends Fragment {
                 // Create a DatabaseHelper instance and get a readable database
                 UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
-                if(Home.dbCount >0){
+                if (Home.dbCount > 0) {
                     // Perform the query
                     String query2 = "SELECT " + UploadDatabaseHelper.COLUMN_SCHOOL_NAME + ","
                             + UploadDatabaseHelper.COLUMN_PO_OFFICE + ","
@@ -207,16 +209,16 @@ public class Profile extends Fragment {
                     String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + UserCredential.SELECTED_JE + "'";
                     Cursor countCursor = db.rawQuery(query, null);
 
-                    if (countCursor .moveToFirst()) {
+                    if (countCursor.moveToFirst()) {
                         Home.dbCount = countCursor.getInt(0); // Get the count from the first column
-                        localDbCount.setText("items in Local DB : "+ Home.dbCount);
+                        localDbCount.setText("items in Local DB : " + Home.dbCount);
                         // Do something with the count, e.g., display it or use it in your code
                     }
                     // Close the cursor and the database
                     countCursor.close();
                     cursor.close();
                     db.close();
-                }else{
+                } else {
                     Toast.makeText(requireContext(), "There is no data in the local database", Toast.LENGTH_SHORT).show();
                 }
 
@@ -235,7 +237,7 @@ public class Profile extends Fragment {
         viewLocalDBButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(Home.dbCount >0){
+                if (Home.dbCount > 0) {
                     Fragment localdbFragment = new DbImageActivity();
                     FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                     General.replaceFragment(
@@ -249,8 +251,8 @@ public class Profile extends Fragment {
                             0,                // Pop enter animation (you can specify one if needed)
                             0                 // Pop exit animation (you can specify one if needed)
                     );
-                }else{
-                    Toast.makeText(requireContext(),"There is No Data in the local database",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "There is No Data in the local database", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -303,7 +305,8 @@ public class Profile extends Fragment {
                                             R.anim.slide_out, // Exit animation
                                             0,                // Pop enter animation (you can specify one if needed)
                                             0                 // Pop exit animation (you can specify one if needed)
-                                    );                                }
+                                    );
+                                }
                             });
                         }
                     }).start();
@@ -312,6 +315,7 @@ public class Profile extends Fragment {
         });
 
     }
+
     private void uploadToServer(Cursor cursor) {
         String schoolName = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_SCHOOL_NAME));
         String poOffice = cursor.getString(cursor.getColumnIndexOrThrow(UploadDatabaseHelper.COLUMN_PO_OFFICE));

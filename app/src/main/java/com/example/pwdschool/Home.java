@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -38,10 +39,12 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     public static String[] school_id;
     public static String[] all_buildings;
     public static String[] schoolIDBuilding;
+    public static int dbCount;
     private static String[] schoolNames = {"Select School"};
     private static String[] buildingNames = {"Select Building"};
     private final String[] workorderNames = {"Select Workorder", "General Inspection", "Workorder related Inspection"};
     public ArrayList<String> buildings;
+    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
     private Spinner spinnerSchool;
     private Spinner spinnerBuilding;
     private Spinner spinnerWorkorder;
@@ -50,7 +53,6 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
     private Button buttonSurvey;
     private ImageView status;
     private NetworkStatusUtility networkStatusUtility;
-    public static int dbCount;
 
     public Home() {
         // Required empty public constructor
@@ -61,38 +63,6 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         View view = inflater.inflate(R.layout.activity_home, container, false);
         return view;
     }
-    // Define an AsyncTask to perform database queries in the background
-    private class DatabaseQueryTask extends AsyncTask<Void, Void, Integer> {
-
-        @Override
-        protected Integer doInBackground(Void... voids) {
-            int count = 0;
-
-            // Perform database query here
-            UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
-            Cursor countCursor = db.rawQuery(query, null);
-
-            if (countCursor.moveToFirst()) {
-                count = countCursor.getInt(0);
-            }
-
-            countCursor.close();
-            db.close(); // Close the database
-
-            return count;
-        }
-        @Override
-        protected void onPostExecute(Integer result) {
-            // Update the dbCount and UI components with the result
-            dbCount = result;
-
-            // Update UI components here if needed
-        }
-    }
-    UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -208,6 +178,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
 
                 }
             }
+
             private void showToast(String message) {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
             }
@@ -229,13 +200,13 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                         }
                     }
                     if (school_id.length > 0) {
-                        selectedSchoolId  = school_id[index];
+                        selectedSchoolId = school_id[index];
                     }
                 }
                 if (all_buildings != null) {
                     buildings = new ArrayList<>();
                     for (int i = 0; i < all_buildings.length; i++) {
-                        if (schoolIDBuilding[i].equals(selectedSchoolId )) {
+                        if (schoolIDBuilding[i].equals(selectedSchoolId)) {
                             buildings.add(all_buildings[i]);
                         }
                     }
@@ -301,5 +272,37 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
 
     private void showToast(String statusText) {
         Toast.makeText(requireContext(), statusText, Toast.LENGTH_SHORT).show();
+    }
+
+    // Define an AsyncTask to perform database queries in the background
+    private class DatabaseQueryTask extends AsyncTask<Void, Void, Integer> {
+
+        @Override
+        protected Integer doInBackground(Void... voids) {
+            int count = 0;
+
+            // Perform database query here
+            UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(requireContext());
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+            Cursor countCursor = db.rawQuery(query, null);
+
+            if (countCursor.moveToFirst()) {
+                count = countCursor.getInt(0);
+            }
+
+            countCursor.close();
+            db.close(); // Close the database
+
+            return count;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            // Update the dbCount and UI components with the result
+            dbCount = result;
+
+            // Update UI components here if needed
+        }
     }
 }

@@ -1,10 +1,9 @@
 package com.example.pwdschool;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,30 +24,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bottomNavigationView  = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.container,homeFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
 //
-        if(Home.dbCount>0){
+        if (Home.dbCount > 0) {
             BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.profile);
             badgeDrawable.setVisible(true);
-        badgeDrawable.setNumber(Home.dbCount);}
+            badgeDrawable.setNumber(Home.dbCount);
+        }
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container,homeFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
                         return true;
                     case R.id.profile:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container,profileFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
                         return true;
                     case R.id.progress:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container,workOrderCheckSheet).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, workOrderCheckSheet).commit();
                         return true;
                     case R.id.analytics:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container,AnalyticsFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, AnalyticsFragment).commit();
                         return true;
                 }
 
