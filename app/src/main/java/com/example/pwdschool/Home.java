@@ -171,13 +171,13 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
         String currentDate = dateFormat.format(calendar.getTime());
         textViewSelectedDate.setText(currentDate);
 
-        juniorEngineer = Login.selectedJuniorEngineer;
+        juniorEngineer = UserCredential.SELECTED_JE;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
 
-        atcOffice = Login.selectedAtcOffice;
+        atcOffice = UserCredential.SELECTED_ATC;
         textViewAtc.setText("Atc Office: " + atcOffice);
 
-        poOffice = Login.selectedPoOffice;
+        poOffice = UserCredential.SELECTED_PO;
         textViewPoOffice.setText("PO Office: " + poOffice);
 
         buttonSurvey.setOnClickListener(new View.OnClickListener() {

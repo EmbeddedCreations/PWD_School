@@ -100,7 +100,7 @@ public class Profile extends Fragment {
         });
         UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+        String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + UserCredential.SELECTED_JE + "'";
         Cursor countCursor = db.rawQuery(query, null);
 
         if (countCursor .moveToFirst()) {
@@ -111,9 +111,9 @@ public class Profile extends Fragment {
 
         countCursor.close();
         // Get the values from the MainActivity (or any other class where you have stored these values)
-        String atcOfficeValue = Home.atcOffice;
-        String poOfficeValue = Home.poOffice;
-        String juniorEngineerValue = Home.juniorEngineer;
+        String atcOfficeValue = UserCredential.SELECTED_ATC;
+        String poOfficeValue = UserCredential.SELECTED_PO;
+        String juniorEngineerValue = UserCredential.SELECTED_JE;
 
         // Set the values for the TextView elements
         atcOfficeText.setText(atcOfficeValue);
@@ -185,7 +185,7 @@ public class Profile extends Fragment {
                             + UploadDatabaseHelper.COLUMN_LONGI + ","
                             + UploadDatabaseHelper.COLUMN_DESC + ","
                             + UploadDatabaseHelper.COLUMN_TAGS + ","
-                            + UploadDatabaseHelper.COLUMN_IMG + " FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+                            + UploadDatabaseHelper.COLUMN_IMG + " FROM uploads WHERE junior_engg = '" + UserCredential.SELECTED_JE + "'";
                     Cursor cursor = db.rawQuery(query2, null);
                     // Iterate through the cursor to retrieve the data and upload it to the server
                     while (cursor.moveToNext()) {
@@ -204,7 +204,7 @@ public class Profile extends Fragment {
                     // Start an AsyncTask or a service for the database upload process
                     new UploadTask(notificationManager, notificationBuilder, dbHelper).execute();
 
-                    String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
+                    String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + UserCredential.SELECTED_JE + "'";
                     Cursor countCursor = db.rawQuery(query, null);
 
                     if (countCursor .moveToFirst()) {

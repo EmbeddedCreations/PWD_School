@@ -172,9 +172,9 @@ public class Upload extends Fragment {
         // Disable description and tags initially
         editTextDescription.setEnabled(false);
         //set junior engineer loggedin
-        String juniorEngineer = Home.juniorEngineer;
+        String juniorEngineer = UserCredential.SELECTED_JE;
         textViewLoggedIn.setText("Logged in as: " + juniorEngineer);
-        Log.d("Upload", Home.atcOffice + ',' + Home.poOffice + "," + Home.juniorEngineer);
+
 
 
 // Find the Upload button and set it initially disabled and faded;
@@ -389,13 +389,13 @@ public class Upload extends Fragment {
 
     private void uploadToServer() {
         String school_Name = Home.selectedSchoolId;
-        String po_office = Home.poOffice.trim();
+        String po_office = UserCredential.SELECTED_PO;
         String image_name = Home.selectedBuilding.trim();
         String image_type = "jpg";
         String image_pdf = encodedImage;
         String upload_date = date_today;
         String upload_time = time_today;
-        String EntryBy = Home.juniorEngineer.trim();
+        String EntryBy = UserCredential.SELECTED_JE;
         String Longitude = Double.toString(gpsLongitude);
         String Latitude = Double.toString(gpsLatitude);
         String user_upload_date = Home.selectedDate;
