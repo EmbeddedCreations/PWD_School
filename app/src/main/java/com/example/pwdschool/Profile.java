@@ -172,8 +172,6 @@ public class Profile extends Fragment {
                 // Create a DatabaseHelper instance and get a readable database
                 UploadDatabaseHelper dbHelper = new UploadDatabaseHelper(getContext());
                 SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-
                 if(Home.dbCount >0){
                     // Perform the query
                     String query2 = "SELECT " + UploadDatabaseHelper.COLUMN_SCHOOL_NAME + ","
@@ -193,6 +191,19 @@ public class Profile extends Fragment {
                     while (cursor.moveToNext()) {
                         uploadToServer(cursor);
                     }
+                    // Create a notification when the button is clicked
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), "upload_channel_id")
+                            .setSmallIcon(R.drawable.ic_baseline_cloud_upload_24)
+                            .setContentTitle("Uploading Local Database")
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setOnlyAlertOnce(true);
+
+                    // Show the initial notification
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+                    notificationManager.notify(0, notificationBuilder.build());
+                    // Start an AsyncTask or a service for the database upload process
+                    new UploadTask(notificationManager, notificationBuilder, dbHelper).execute();
+
                     String query = "SELECT COUNT(*) FROM uploads WHERE junior_engg = '" + Home.juniorEngineer + "'";
                     Cursor countCursor = db.rawQuery(query, null);
 
@@ -209,7 +220,6 @@ public class Profile extends Fragment {
                     Toast.makeText(requireContext(), "There is no data in the local database", Toast.LENGTH_SHORT).show();
                 }
 
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel channel = new NotificationChannel(
                             "upload_channel_id",   // Make sure this matches the channel ID used in your code
@@ -219,19 +229,6 @@ public class Profile extends Fragment {
                     NotificationManager notificationManager = requireActivity().getSystemService(NotificationManager.class);
                     notificationManager.createNotificationChannel(channel);
                 }
-                // Create a notification when the button is clicked
-                NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(requireContext(), "upload_channel_id")
-                        .setSmallIcon(R.drawable.ic_baseline_cloud_upload_24)
-                        .setContentTitle("Uploading Local Database")
-                        .setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setOnlyAlertOnce(true);
-
-                // Show the initial notification
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
-                notificationManager.notify(0, notificationBuilder.build());
-                // Start an AsyncTask or a service for the database upload process
-                new UploadTask(notificationManager, notificationBuilder, dbHelper).execute();
-
             }
         });
 

@@ -270,15 +270,13 @@ public class Upload extends Fragment {
                                     buttonUploadImage.setEnabled(true);
                                     progressDialog.dismiss();
                                 }
-                            },3000);
+                            },2000);
 
                         }
                     }.execute();
                 }
             }
         });
-
-
 
         buttonSaveImage.setOnClickListener(new View.OnClickListener() {
             @Override

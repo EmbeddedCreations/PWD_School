@@ -249,9 +249,17 @@ public class Login extends AppCompatActivity {
 
                 inputPassword = passwordEditText.getText().toString();
 
-                if (Password == null || selectedJuniorEngineer == null || selectedPoOffice == null || selectedAtcOffice == null) {
-                    Toast.makeText(Login.this, "Incorrect Password or Incorrect Credentials", Toast.LENGTH_SHORT).show();
-                } else if (Password.equals(inputPassword)) {
+                if (Password == null) {
+                    Toast.makeText(Login.this, "Please select all the fields and enter password correctly", Toast.LENGTH_SHORT).show();
+                } else if (selectedAtcOffice.equals("Select ATC Office")) {
+                    Toast.makeText(Login.this, "Please select ATC Office", Toast.LENGTH_SHORT).show();
+                } else if (selectedPoOffice.equals("Select PO Office")) {
+                    Toast.makeText(Login.this, "Please select PO Office", Toast.LENGTH_SHORT).show();
+                } else if (selectedJuniorEngineer.equals("Select JE")) {
+                    Toast.makeText(Login.this, "Please select Junior Engineer", Toast.LENGTH_SHORT).show();
+                } else if (!Password.equals(inputPassword)) {
+                    Toast.makeText(Login.this, "Password does not match", Toast.LENGTH_SHORT).show();
+                }  else if (Password.equals(inputPassword)) {
                     progressDialog.show(); // Show the progress dialog
 
                     // Perform tasks and network operations here

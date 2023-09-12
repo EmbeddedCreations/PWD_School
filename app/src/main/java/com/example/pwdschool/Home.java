@@ -198,7 +198,7 @@ public class Home extends Fragment implements AdapterView.OnItemSelectedListener
                             fragmentManager,
                             R.id.container,
                             uploadFragment,
-                            true,
+                            false,
                             "UploadFragmentTag",
                             R.anim.slide_in,  // Enter animation
                             R.anim.slide_out, // Exit animation
