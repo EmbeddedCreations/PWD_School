@@ -87,6 +87,9 @@ public class Login extends AppCompatActivity {
                 selectedAtcOffice = retrievedArray[0];
                 selectedPoOffice = retrievedArray[1];
                 selectedJuniorEngineer = retrievedArray[2];
+                UserCredential.SELECTED_ATC =selectedAtcOffice;
+                UserCredential.SELECTED_PO = selectedPoOffice;
+                UserCredential.SELECTED_JE = selectedJuniorEngineer;
                 if (!schoolArrayString.equals("")) {
                     JSONArray schoolJsonArray = new JSONArray(schoolArrayString);
                     JSONObject jo = null;
@@ -262,6 +265,9 @@ public class Login extends AppCompatActivity {
                 }  else if (Password.equals(inputPassword)) {
                     progressDialog.show(); // Show the progress dialog
 
+                    UserCredential.SELECTED_ATC =selectedAtcOffice;
+                    UserCredential.SELECTED_PO = selectedPoOffice;
+                    UserCredential.SELECTED_JE = selectedJuniorEngineer;
                     // Perform tasks and network operations here
                     new Thread(new Runnable() {
                         @Override
