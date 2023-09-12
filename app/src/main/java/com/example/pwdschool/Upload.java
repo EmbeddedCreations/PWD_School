@@ -73,6 +73,7 @@ public class Upload extends Fragment {
     private final String url = "https://embeddedcreation.in/tribalpwd/adminPanelNewVer2/app_upload_Image.php";
     public String date_today, time_today;
     public String encodedImage;
+    private boolean isUploading = false;
     Uri targetUri = null;
     TextView textUri;
     TextView textView;
@@ -222,13 +223,22 @@ public class Upload extends Fragment {
         });
 
 /// Set button click listener for image upload
+        // Declare a boolean flag to track upload status
+
+
         buttonUploadImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isUploading) {
+                    // A previous upload is in progress, ignore this click.
+                    return;
+                }
+
                 if (!networkStatusUtility.isNetworkAvailable()) {
                     Toast.makeText(requireContext(), "No internet connection available", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
                 String description = editTextDescription.getText().toString().trim();
                 if (description.isEmpty() || description.equals("")) {
                     // User has not entered a description
@@ -242,17 +252,14 @@ public class Upload extends Fragment {
                 } else {
                     // Save the description in a public static variable for further use
                     Upload.description = description; // Save the description here
-
                     // Disable the upload button to prevent multiple clicks
                     buttonUploadImage.setEnabled(false);
-
                     progressDialog.show();
+                    isUploading = true; // Set the flag to indicate an upload is in progress
 
-                    // Use an AsyncTask to run uploadToServer() in the background
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            // Perform the background task here (uploadToServer())
                             uploadToServer();
                             return null;
                         }
@@ -260,23 +267,22 @@ public class Upload extends Fragment {
                         @Override
                         protected void onPostExecute(Void aVoid) {
                             // This method runs on the UI thread, so you can update the UI here
-
-
                             // Re-enable the button and reset its alpha after upload
-
-                            new Handler().postDelayed(new Runnable(){
+                            new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     buttonUploadImage.setEnabled(true);
                                     progressDialog.dismiss();
+                                    isUploading = false; // Reset the flag after upload
                                 }
-                            },2000);
+                            }, 2000);
 
                         }
                     }.execute();
                 }
             }
         });
+
 
         buttonSaveImage.setOnClickListener(new View.OnClickListener() {
             @Override
