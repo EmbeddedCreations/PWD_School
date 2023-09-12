@@ -57,7 +57,6 @@ public class Upload extends Fragment {
     private static final int RQS_OPEN_IMAGE = 1;
     private static final int INITIAL_IMAGE_RESOURCE = R.drawable.uploadfile;
     public static String description;
-    // Define public static variables to store the EXIF information
     public static Date dateTaken;
     public static Date timeTaken;
     public static double gpsLatitude;
@@ -79,7 +78,8 @@ public class Upload extends Fragment {
     private NetworkStatusUtility networkStatusUtility;
     private ImageView iv_imgView;
     private UploadDatabaseHelper dbHelper;
-
+    // Storing the selected image URI, description, and other relevant data
+    UploadData uploadData = UploadData.getInstance();
     public Upload() {
         // Required empty public constructor
     }
@@ -176,8 +176,13 @@ public class Upload extends Fragment {
                     progressDialog.show();
                     Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
                     encodeBitmap(bitmap);
-                    // Use an AsyncTask to run uploadToServer() in the background
-                    uploadToServer();
+                    // Use to check if quality is good then only upload the method
+                    if(!networkStatusUtility.isNetworkQualityGood()){
+                        uploadToServer();
+                    }else{
+                        NetworkStatusUtility.showNetworkQualityAlertDialog(requireContext());
+                        progressDialog.show();
+                    }
                 }
             }
         });
@@ -233,6 +238,7 @@ public class Upload extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // Update the text view with the selected issues
                         textView.setText(TextUtils.join(", ", selectedIssuesList));
+//                        uploadData.setSelectedIssuesList(selectedIssuesList);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -284,7 +290,6 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
-
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -305,11 +310,9 @@ public class Upload extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 // Dismiss the progress dialog
                 progressDialog.dismiss();
-
                 // Re-enable the "Upload" button after the upload is completed
                 buttonUploadImage.setEnabled(true);
                 imageChanged = true;
-
                 // Log the error message for debugging purposes
                 if (error.networkResponse != null && error.networkResponse.data != null) {
                     String errorMessage = new String(error.networkResponse.data, StandardCharsets.UTF_8);
@@ -362,6 +365,8 @@ public class Upload extends Fragment {
                 showExif(targetUri);
                 imageChanged = true;
             }
+            uploadData.setSelectedImageUri(targetUri); // Set the selected image URI
+            uploadData.setDescription(description); // Set the description
         }
     }
     @Override
@@ -468,7 +473,6 @@ public class Upload extends Fragment {
         textView.setText("");
         // Update the database count
         updateDatabaseCount();
-
         Toast.makeText(requireContext(), "Inserted in DB Successfully", Toast.LENGTH_SHORT).show();
     }
     private void showToast(String statusText) {
@@ -478,16 +482,12 @@ public class Upload extends Fragment {
     private static double convertToDegree(String coordinate, String ref) {
         try {
             String[] parts = coordinate.split(",");
-
             String[] degreesParts = parts[0].split("/");
             double degrees = Double.parseDouble(degreesParts[0]) / Double.parseDouble(degreesParts[1]);
-
             String[] minutesParts = parts[1].split("/");
             double minutes = Double.parseDouble(minutesParts[0]) / Double.parseDouble(minutesParts[1]);
-
             String[] secondsParts = parts[2].split("/");
             double seconds = Double.parseDouble(secondsParts[0]) / Double.parseDouble(secondsParts[1]);
-
             double result = degrees + minutes / 60.0 + seconds / 3600.0;
             return ref.equals("N") || ref.equals("E") ? result : -result;
         } catch (NumberFormatException e) {
@@ -506,13 +506,13 @@ public class Upload extends Fragment {
                 String latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
                 String longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
                 String longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-
                 // Convert latitude and longitude to double values
                 if (latitude != null && latitudeRef != null && longitude != null && longitudeRef != null) {
                     gpsLatitude = convertToDegree(latitude, latitudeRef);
                     gpsLongitude = convertToDegree(longitude, longitudeRef);
+                    uploadData.setGpsLatitude(gpsLatitude);
+                    uploadData.setGpsLongitude(gpsLongitude);
                 }
-
                 // Parse the datetime attribute to separate date and time variables
                 String datetime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
                 if (datetime != null) {
@@ -523,6 +523,8 @@ public class Upload extends Fragment {
                         timeTaken = timeFormat.parse(datetime.substring(11));
                         date_today = dateFormat.format(dateTaken);
                         time_today = timeFormat.format(timeTaken);
+                        uploadData.setDateTaken(dateTaken);
+                        uploadData.setTimeTaken(timeTaken);
                     } catch (ParseException e) {
                         e.printStackTrace();
                         dateTaken = null;
@@ -531,6 +533,7 @@ public class Upload extends Fragment {
                         time_today = null;
                     }
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(getContext(),
@@ -538,6 +541,22 @@ public class Upload extends Fragment {
                         Toast.LENGTH_LONG).show();
             }
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Retrieve and set the data from your singleton class
+        dateTaken = uploadData.getDateTaken();
+        timeTaken = uploadData.getTimeTaken();
+        gpsLatitude = uploadData.getGpsLatitude();
+        gpsLongitude = uploadData.getGpsLongitude();
+        selectedIssuesList = uploadData.getSelectedIssuesList();
+        description = uploadData.getDescription();
+        targetUri = uploadData.getSelectedImageUri();
+        // Update your UI elements here based on the retrieved data
+        iv_imgView.setImageURI(targetUri);
+        editTextDescription.setText(description);
+        textView.setText(TextUtils.join(", ", selectedIssuesList));
     }
     @Override
     public void onDestroy() {
