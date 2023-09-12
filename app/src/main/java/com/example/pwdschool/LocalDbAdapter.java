@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class LocalDbAdapter extends RecyclerView.Adapter<ImageDescriptionAdapter.ViewHolder>{
+public class LocalDbAdapter extends RecyclerView.Adapter<ImageDescriptionAdapter.ViewHolder> {
 
     private final List<ImageDescriptionModel> dataList;
 

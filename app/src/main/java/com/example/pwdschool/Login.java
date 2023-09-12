@@ -87,7 +87,7 @@ public class Login extends AppCompatActivity {
                 selectedAtcOffice = retrievedArray[0];
                 selectedPoOffice = retrievedArray[1];
                 selectedJuniorEngineer = retrievedArray[2];
-                UserCredential.SELECTED_ATC =selectedAtcOffice;
+                UserCredential.SELECTED_ATC = selectedAtcOffice;
                 UserCredential.SELECTED_PO = selectedPoOffice;
                 UserCredential.SELECTED_JE = selectedJuniorEngineer;
                 if (!schoolArrayString.equals("")) {
@@ -262,10 +262,10 @@ public class Login extends AppCompatActivity {
                     Toast.makeText(Login.this, "Please select Junior Engineer", Toast.LENGTH_SHORT).show();
                 } else if (!Password.equals(inputPassword)) {
                     Toast.makeText(Login.this, "Password does not match", Toast.LENGTH_SHORT).show();
-                }  else if (Password.equals(inputPassword)) {
+                } else if (Password.equals(inputPassword)) {
                     progressDialog.show(); // Show the progress dialog
 
-                    UserCredential.SELECTED_ATC =selectedAtcOffice;
+                    UserCredential.SELECTED_ATC = selectedAtcOffice;
                     UserCredential.SELECTED_PO = selectedPoOffice;
                     UserCredential.SELECTED_JE = selectedJuniorEngineer;
                     // Perform tasks and network operations here

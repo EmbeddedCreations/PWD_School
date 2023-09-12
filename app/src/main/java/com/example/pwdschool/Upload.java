@@ -161,13 +161,13 @@ public class Upload extends Fragment {
         progressDialog.setTitle("Uploading Image");
         progressDialog.setMessage("Please wait...");
         progressDialog.setCancelable(false);
-        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Handle cancellation here if needed
-                dialog.dismiss();
-            }
-        });
+//        progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                // Handle cancellation here if needed
+//                dialog.dismiss();
+//            }
+//        });
 
         // Disable description and tags initially
         editTextDescription.setEnabled(false);
@@ -255,23 +255,6 @@ public class Upload extends Fragment {
                             // Perform the background task here (uploadToServer())
                             uploadToServer();
                             return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            // This method runs on the UI thread, so you can update the UI here
-
-
-                            // Re-enable the button and reset its alpha after upload
-
-                            new Handler().postDelayed(new Runnable(){
-                                @Override
-                                public void run() {
-                                    buttonUploadImage.setEnabled(true);
-                                    progressDialog.dismiss();
-                                }
-                            },2000);
-
                         }
                     }.execute();
                 }
@@ -411,7 +394,6 @@ public class Upload extends Fragment {
             public void onResponse(String response) {
                 // Dismiss the progress dialog
                 progressDialog.dismiss();
-
                 editTextDescription.setText("");
                 iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
                 selectedIssuesList.clear();
