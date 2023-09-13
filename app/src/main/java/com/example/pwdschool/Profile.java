@@ -363,7 +363,6 @@ public class Profile extends Fragment {
                 return map;
             }
         };
-
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         queue.add(request);
         deleteEntry(image);

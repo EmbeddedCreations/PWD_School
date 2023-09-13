@@ -30,14 +30,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -54,7 +57,7 @@ import java.util.Map;
 public class Upload extends Fragment {
 
     private static final int CAMERA_CODE = 101;
-    private static final int RQS_OPEN_IMAGE = 1;
+    private static final int RQS_OPEN_IMAGE = 100;
     private static final int INITIAL_IMAGE_RESOURCE = R.drawable.uploadfile;
     public static String description;
     public static Date dateTaken;
@@ -177,12 +180,13 @@ public class Upload extends Fragment {
                     Bitmap bitmap = ((BitmapDrawable) iv_imgView.getDrawable()).getBitmap();
                     encodeBitmap(bitmap);
                     // Use to check if quality is good then only upload the method
-                    if(!networkStatusUtility.isNetworkQualityGood()){
+//                    if(!networkStatusUtility.isNetworkQualityGood()){
                         uploadToServer();
-                    }else{
-                        NetworkStatusUtility.showNetworkQualityAlertDialog(requireContext());
-                        progressDialog.show();
-                    }
+//                    }else{
+//                        NetworkStatusUtility.showNetworkQualityAlertDialog(requireContext());
+//                        progressDialog.dismiss();
+//                        buttonUploadImage.setEnabled(true);
+//                    }
                 }
             }
         });
@@ -290,89 +294,129 @@ public class Upload extends Fragment {
         String Tags = Arrays.toString(selectedIssuesList.toArray());
         Tags = Tags.substring(1, Tags.length() - 1);
         String finalTags = Tags;
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                // Dismiss the progress dialog
-                progressDialog.dismiss();
-                editTextDescription.setText("");
-                iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
-                selectedIssuesList.clear();
-                textView.setText("");
-                imageChanged = false;
-                // Re-enable the "Upload" button after the upload is completed
-                buttonUploadImage.setEnabled(true);
-                // Check the response for success or failure
-                Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Dismiss the progress dialog
-                progressDialog.dismiss();
-                // Re-enable the "Upload" button after the upload is completed
-                buttonUploadImage.setEnabled(true);
-                imageChanged = true;
-                // Log the error message for debugging purposes
-                if (error.networkResponse != null && error.networkResponse.data != null) {
-                    String errorMessage = new String(error.networkResponse.data, StandardCharsets.UTF_8);
-                    Log.e("Upload Error", "Upload Failed with error: " + errorMessage);
-                } else {
-                    Log.e("Upload Error", "Upload Failed with unknown error.");
+
+        // Declare the request variable outside the try-catch block
+        final StringRequest[] request = {null};
+
+        try {
+            request[0] = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    // Dismiss the progress dialog
+                    progressDialog.dismiss();
+                    editTextDescription.setText("");
+                    iv_imgView.setImageResource(INITIAL_IMAGE_RESOURCE); // Reset to the initial image
+                    selectedIssuesList.clear();
+                    textView.setText("");
+                    imageChanged = false;
+                    // Re-enable the "Upload" button after the upload is completed
+                    buttonUploadImage.setEnabled(true);
+                    // Check the response for success or failure
+                    Toast.makeText(requireContext(), "Uploaded Successfully", Toast.LENGTH_SHORT).show();
                 }
-                // Show an error message on screen
-                Toast.makeText(requireContext(), "Upload Failed. Please try again.", Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<>();
-                map.put("school_Name", school_Name);
-                map.put("po_office", po_office);
-                map.put("image_name", image_name);
-                map.put("image_type", image_type);
-                map.put("image_pdf", image_pdf);
-                map.put("upload_date", upload_date);
-                map.put("upload_time", upload_time);
-                map.put("EntryBy", EntryBy);
-                map.put("Longitude", Longitude);
-                map.put("Latitude", Latitude);
-                map.put("user_upload_date", user_upload_date);
-                map.put("Description", Description);
-                map.put("Tags", finalTags);
-                return map;
-            }
-        };
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
-        queue.add(request);
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    // Dismiss the progress dialog
+                    progressDialog.dismiss();
+                    // Re-enable the "Upload" button after the upload is completed
+                    buttonUploadImage.setEnabled(true);
+                    imageChanged = true;
+                    // Log the error message for debugging purposes
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        String errorMessage = new String(error.networkResponse.data, StandardCharsets.UTF_8);
+                        Log.e("Upload Error", "Upload Failed with error: " + errorMessage);
+                    } else {
+                        Log.e("Upload Error", "Upload Failed with an unknown error.");
+                    }
+                    // Show an error message on screen
+                    Toast.makeText(requireContext(), "Upload Failed. Please try again.", Toast.LENGTH_SHORT).show();
+                    // Retry the upload in case of a network failure (up to 3 retries)
+                    int maxRetries = 3;
+                    int initialTimeoutMs = 3000; // Initial timeout in milliseconds
+                    int backoffMultiplier = 2;  // Backoff multiplier
+                    RetryPolicy retryPolicy = new DefaultRetryPolicy(initialTimeoutMs, maxRetries, backoffMultiplier);
+                    request[0].setRetryPolicy(retryPolicy);
+
+                    // Notify the user about the retry attempt
+                    Toast.makeText(requireContext(), "Retrying upload...", Toast.LENGTH_SHORT).show();
+
+                    // Add the request back to the queue for retry
+                    RequestQueue queue = Volley.newRequestQueue(requireContext());
+                    queue.add(request[0]);
+                }
+            }) {
+                @Nullable
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("school_Name", school_Name);
+                    map.put("po_office", po_office);
+                    map.put("image_name", image_name);
+                    map.put("image_type", image_type);
+                    map.put("image_pdf", image_pdf);
+                    map.put("upload_date", upload_date);
+                    map.put("upload_time", upload_time);
+                    map.put("EntryBy", EntryBy);
+                    map.put("Longitude", Longitude);
+                    map.put("Latitude", Latitude);
+                    map.put("user_upload_date", user_upload_date);
+                    map.put("Description", Description);
+                    map.put("Tags", finalTags);
+                    return map;
+                }
+            };
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Check if the request is not null and add it to the queue for the first attempt
+        if (request[0] != null) {
+            RequestQueue queue = Volley.newRequestQueue(requireContext());
+            queue.add(request[0]);
+        }
     }
+
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == requireActivity().RESULT_OK || requestCode == ImagePicker.REQUEST_CODE) {
-            Uri uri = data.getData();
-            // Enable description and tags input fields after image selection
-            editTextDescription.setEnabled(true);
-            targetUri = uri;
-            iv_imgView.setImageURI(uri);
-            imageChanged = true;
-            showExif(targetUri);
-            Uri dataUri = data.getData();
-            if (requestCode == RQS_OPEN_IMAGE) {
-                targetUri = dataUri;
-                iv_imgView.setImageURI(uri);
-                showExif(targetUri);
-                imageChanged = true;
+
+        if (resultCode == requireActivity().RESULT_OK) {
+            Uri uri;
+
+            if (requestCode == ImagePicker.REQUEST_CODE || requestCode == CAMERA_CODE) {
+                uri = data.getData();
+            }else {
+                return; // Return early if requestCode is not recognized
             }
-            uploadData.setSelectedImageUri(targetUri); // Set the selected image URI
-            uploadData.setDescription(description); // Set the description
+            if (uri != null) {
+                // Enable description and tags input fields after image selection
+                editTextDescription.setEnabled(true);
+                targetUri = uri;
+                iv_imgView.setImageURI(targetUri);
+                imageChanged = true;
+                showExif(targetUri);
+
+                // Set the selected image URI and description
+                uploadData.setSelectedImageUri(targetUri);
+                uploadData.setDescription(description);
+            }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(requireContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "PERMISSION Denied ", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == RQS_OPEN_IMAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(requireContext(), "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
             } else {
@@ -542,22 +586,22 @@ public class Upload extends Fragment {
             }
         }
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Retrieve and set the data from your singleton class
-        dateTaken = uploadData.getDateTaken();
-        timeTaken = uploadData.getTimeTaken();
-        gpsLatitude = uploadData.getGpsLatitude();
-        gpsLongitude = uploadData.getGpsLongitude();
-        selectedIssuesList = uploadData.getSelectedIssuesList();
-        description = uploadData.getDescription();
-        targetUri = uploadData.getSelectedImageUri();
-        // Update your UI elements here based on the retrieved data
-        iv_imgView.setImageURI(targetUri);
-        editTextDescription.setText(description);
-        textView.setText(TextUtils.join(", ", selectedIssuesList));
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        // Retrieve and set the data from your singleton class
+//        dateTaken = uploadData.getDateTaken();
+//        timeTaken = uploadData.getTimeTaken();
+//        gpsLatitude = uploadData.getGpsLatitude();
+//        gpsLongitude = uploadData.getGpsLongitude();
+//        selectedIssuesList = uploadData.getSelectedIssuesList();
+//        description = uploadData.getDescription();
+//        targetUri = uploadData.getSelectedImageUri();
+//        // Update your UI elements here based on the retrieved data
+//        iv_imgView.setImageURI(targetUri);
+//        editTextDescription.setText(description);
+//        textView.setText(TextUtils.join(", ", selectedIssuesList));
+//    }
     @Override
     public void onDestroy() {
         super.onDestroy();
